@@ -17,7 +17,7 @@ public class StudentDetailJpaEntity {
     private Long id;
 
     @JoinColumn(name = "member_id")
-    @OneToOne(mappedBy = "tb_member")
+    @OneToOne
     private MemberJpaEntity member;
 
     @Column(name = "grade", nullable = false)
