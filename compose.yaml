@@ -2,10 +2,10 @@ services:
   mysql:
     image: 'mysql:latest'
     environment:
-      - 'MYSQL_DATABASE=${DB_URL}'
-      - 'MYSQL_PASSWORD=${DB_PASSWORD}'
-      - 'MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}'
-      - 'MYSQL_USER=${DB_USER}'
+      - 'MYSQL_DATABASE=jdbc:mysql://localhost:3306/gsmc_db'
+      - 'MYSQL_PASSWORD=12345'
+      - 'MYSQL_ROOT_PASSWORD=12345'
+      - 'MYSQL_USER=root'
     ports:
       - '3306'
   redis:
