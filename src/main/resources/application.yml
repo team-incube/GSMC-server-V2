@@ -1,8 +1,16 @@
 spring:
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  application:
+    name: GSMC-server-V2
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   jpa:
-     database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:none}
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        format_sql: true
+
+server:
+  port: ${SERVER_PORT:8080}
