@@ -9,7 +9,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -29,9 +29,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-
-	// jakarta
-	implementation("jakarta.validation:jakarta.validation-api")
 
 	// docker
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
@@ -56,10 +53,8 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
 	// queryDSL
-	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
-	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
-	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
-	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
+	annotationProcessor("com.querydsl:querydsl-apt:5.1.0:jakarta")
 
 	// aop
 	implementation("org.springframework.boot:spring-boot-starter-aop")
