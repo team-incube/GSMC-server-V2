@@ -26,7 +26,7 @@ public class ActivityEvidenceJpaEntity {
     private String imageUri;
 
     @Builder
-    public ActivityEvidenceJpaEntity(EvidenceJpaEntity id, String title, String content, String imageUrl) {
+    public ActivityEvidenceJpaEntity(EvidenceJpaEntity id, String title, String content, String imageUri) {
         this.id = id;
         this.title = title;
         this.content = content;

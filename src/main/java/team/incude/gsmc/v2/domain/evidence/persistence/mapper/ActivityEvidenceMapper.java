@@ -18,7 +18,7 @@ public class ActivityEvidenceMapper implements GenericMapper<ActivityEvidenceJpa
                 .id(evidenceMapper.toEntity(activityEvidence.getId()))
                 .title(activityEvidence.getTitle())
                 .content(activityEvidence.getContent())
-                .imageUrl(activityEvidence.getImageUrl())
+                .imageUri(activityEvidence.getImageUrl())
                 .build();
     }
 
@@ -28,7 +28,7 @@ public class ActivityEvidenceMapper implements GenericMapper<ActivityEvidenceJpa
                 .id(evidenceMapper.toDomain(activityEvidenceJpaEntity.getId()))
                 .title(activityEvidenceJpaEntity.getTitle())
                 .content(activityEvidenceJpaEntity.getContent())
-                .imageUrl(activityEvidenceJpaEntity.getImageUrl())
+                .imageUrl(activityEvidenceJpaEntity.getImageUri())
                 .build();
     }
 }
