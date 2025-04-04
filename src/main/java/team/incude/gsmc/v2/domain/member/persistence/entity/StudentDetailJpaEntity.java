@@ -35,7 +35,8 @@ public class StudentDetailJpaEntity {
     private String studentCode;
 
     @Builder
-    public StudentDetailJpaEntity(MemberJpaEntity member, Integer grade, Integer classNumber, Integer number, Integer totalScore, String studentCode) {
+    public StudentDetailJpaEntity(Long id, MemberJpaEntity member, Integer grade, Integer classNumber, Integer number, Integer totalScore, String studentCode) {
+        this.id = id;
         this.member = member;
         this.grade = grade;
         this.classNumber = classNumber;

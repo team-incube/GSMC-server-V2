@@ -29,7 +29,8 @@ public class MemberJpaEntity {
     private MemberRole role;
 
     @Builder
-    public MemberJpaEntity(String name, String email, String password, MemberRole role) {
+    public MemberJpaEntity(Long id, String name, String email, String password, MemberRole role) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;

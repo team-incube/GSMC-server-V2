@@ -41,7 +41,8 @@ public class EvidenceJpaEntity {
     private LocalDateTime updatedAt;
 
     @Builder
-    public EvidenceJpaEntity(ScoreJpaEntity score, EvidenceType evidenceType, ReviewStatus reviewStatus) {
+    public EvidenceJpaEntity(Long id, ScoreJpaEntity score, EvidenceType evidenceType, ReviewStatus reviewStatus) {
+        this.id = id;
         this.score = score;
         this.evidenceType = evidenceType;
         this.reviewStatus = reviewStatus;

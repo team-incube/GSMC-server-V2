@@ -26,7 +26,8 @@ public class HomeroomTeacherDetailJpaEntity {
     private Integer classNumber;
 
     @Builder
-    public HomeroomTeacherDetailJpaEntity(MemberJpaEntity member, Integer grade, Integer classNumber) {
+    public HomeroomTeacherDetailJpaEntity(Long id, MemberJpaEntity member, Integer grade, Integer classNumber) {
+        this.id = id;
         this.member = member;
         this.grade = grade;
         this.classNumber = classNumber;

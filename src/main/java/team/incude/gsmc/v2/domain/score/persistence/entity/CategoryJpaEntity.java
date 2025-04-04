@@ -31,7 +31,8 @@ public class CategoryJpaEntity {
     private Boolean isLimitedBySemester;
 
     @Builder
-    public CategoryJpaEntity(String name, Integer maximumValue, Integer weight, Boolean isEvidenceRequired, Boolean isLimitedBySemester) {
+    public CategoryJpaEntity(Long id, String name, Integer maximumValue, Integer weight, Boolean isEvidenceRequired, Boolean isLimitedBySemester) {
+        this.id = id;
         this.name = name;
         this.maximumValue = maximumValue;
         this.weight = weight;

@@ -31,7 +31,8 @@ public class ScoreJpaEntity {
     private Integer semester;
 
     @Builder
-    public ScoreJpaEntity(MemberJpaEntity member, CategoryJpaEntity category, Integer value, Integer semester) {
+    public ScoreJpaEntity(Long id, MemberJpaEntity member, CategoryJpaEntity category, Integer value, Integer semester) {
+        this.id = id;
         this.member = member;
         this.category = category;
         this.value = value;
