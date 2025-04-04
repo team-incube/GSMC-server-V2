@@ -22,14 +22,14 @@ public class ActivityEvidenceJpaEntity {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    @Column(name = "image_uri", unique = true)
+    private String imageUri;
 
     @Builder
     public ActivityEvidenceJpaEntity(EvidenceJpaEntity id, String title, String content, String imageUrl) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.imageUrl = imageUrl;
+        this.imageUri = imageUri;
     }
 }
