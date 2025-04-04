@@ -12,12 +12,4 @@ public class Category {
     private Integer weight;
     private Boolean isEvidenceRequired;
     private Boolean isLimitedBySemester;
-
-    public Category(String name, Integer maximumValue, Integer weight, Boolean isEvidenceRequired, Boolean isLimitedBySemester) {
-        this.name = name;
-        this.maximumValue = maximumValue;
-        this.weight = weight;
-        this.isEvidenceRequired = isEvidenceRequired;
-        this.isLimitedBySemester = isLimitedBySemester;
-    }
 }
