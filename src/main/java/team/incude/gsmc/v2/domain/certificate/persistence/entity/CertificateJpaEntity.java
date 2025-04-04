@@ -1,0 +1,37 @@
+package team.incude.gsmc.v2.domain.certificate.persistence.entity;
+
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import team.incude.gsmc.v2.domain.member.persistence.entity.MemberJpaEntity;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "tb_evidence")
+@Getter
+@NoArgsConstructor
+public class CertificateJpaEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "certificate_id")
+    private Long id;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "member_id", nullable = false)
+    private MemberJpaEntity member;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "acquisition_date", nullable = false)
+    private LocalDate acquisitionDate;
+
+    @Builder
+    public CertificateJpaEntity(MemberJpaEntity member, String name, LocalDate acquisitionDate) {
+        this.member = member;
+        this.name = name;
+        this.acquisitionDate = acquisitionDate;
+    }
+}
