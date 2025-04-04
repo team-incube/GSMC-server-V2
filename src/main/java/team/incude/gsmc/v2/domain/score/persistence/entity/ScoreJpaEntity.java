@@ -1,7 +1,7 @@
 package team.incude.gsmc.v2.domain.score.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import team.incude.gsmc.v2.domain.member.persistence.entity.MemberJpaEntity;
@@ -10,7 +10,6 @@ import team.incude.gsmc.v2.domain.member.persistence.entity.MemberJpaEntity;
 @Table(name = "tb_score")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class ScoreJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +29,12 @@ public class ScoreJpaEntity {
 
     @Column(name = "semester")
     private Integer semester;
+
+    @Builder
+    public ScoreJpaEntity(MemberJpaEntity member, CategoryJpaEntity category, Integer value, Integer semester) {
+        this.member = member;
+        this.category = category;
+        this.value = value;
+        this.semester = semester;
+    }
 }

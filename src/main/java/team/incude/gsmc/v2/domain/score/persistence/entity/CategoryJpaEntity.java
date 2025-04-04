@@ -1,7 +1,7 @@
 package team.incude.gsmc.v2.domain.score.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "tb_category")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class CategoryJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +29,13 @@ public class CategoryJpaEntity {
 
     @Column(name = "is_limited_by_semester", nullable = false)
     private Boolean isLimitedBySemester;
+
+    @Builder
+    public CategoryJpaEntity(String name, Integer maximumValue, Integer weight, Boolean isEvidenceRequired, Boolean isLimitedBySemester) {
+        this.name = name;
+        this.maximumValue = maximumValue;
+        this.weight = weight;
+        this.isEvidenceRequired = isEvidenceRequired;
+        this.isLimitedBySemester = isLimitedBySemester;
+    }
 }

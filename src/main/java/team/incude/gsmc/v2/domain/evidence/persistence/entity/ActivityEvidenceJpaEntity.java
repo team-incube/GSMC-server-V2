@@ -1,7 +1,7 @@
 package team.incude.gsmc.v2.domain.evidence.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "tb_activity_evidence")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class ActivityEvidenceJpaEntity {
     @Id
     @MapsId
@@ -25,4 +24,12 @@ public class ActivityEvidenceJpaEntity {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @Builder
+    public ActivityEvidenceJpaEntity(EvidenceJpaEntity id, String title, String content, String imageUrl) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.imageUrl = imageUrl;
+    }
 }

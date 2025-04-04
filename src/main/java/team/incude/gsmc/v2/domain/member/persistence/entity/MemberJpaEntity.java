@@ -1,7 +1,7 @@
 package team.incude.gsmc.v2.domain.member.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
@@ -10,7 +10,6 @@ import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
 @Table(name = "tb_member")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class MemberJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +27,12 @@ public class MemberJpaEntity {
 
     @Column(name = "role", nullable = false)
     private MemberRole role;
+
+    @Builder
+    public MemberJpaEntity(String name, String email, String password, MemberRole role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 }

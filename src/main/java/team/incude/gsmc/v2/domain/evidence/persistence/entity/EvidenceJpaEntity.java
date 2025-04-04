@@ -1,7 +1,7 @@
 package team.incude.gsmc.v2.domain.evidence.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Table(name = "tb_evidence")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class EvidenceJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,4 +39,11 @@ public class EvidenceJpaEntity {
     @Column(name = "updated_at", nullable = false)
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Builder
+    public EvidenceJpaEntity(ScoreJpaEntity score, EvidenceType evidenceType, ReviewStatus reviewStatus) {
+        this.score = score;
+        this.evidenceType = evidenceType;
+        this.reviewStatus = reviewStatus;
+    }
 }

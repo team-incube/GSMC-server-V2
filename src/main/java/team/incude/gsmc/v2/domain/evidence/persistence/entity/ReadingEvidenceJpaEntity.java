@@ -1,7 +1,7 @@
 package team.incude.gsmc.v2.domain.evidence.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "tb_reading_evidence")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class ReadingEvidenceJpaEntity {
     @Id
     @MapsId
@@ -28,4 +27,13 @@ public class ReadingEvidenceJpaEntity {
 
     @Column(name = "content", nullable = false)
     private String content;
+
+    @Builder
+    public ReadingEvidenceJpaEntity(EvidenceJpaEntity id, String title, String author, Integer page, String content) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.page = page;
+        this.content = content;
+    }
 }
