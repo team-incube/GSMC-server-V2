@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class OtherEvidence {
     private Evidence id;
-    private String fileUrl;
+    private String fileUri;
 }

@@ -16,12 +16,12 @@ public class OtherEvidenceJpaEntity {
     @JoinColumn(name = "evidence_id")
     private EvidenceJpaEntity id;
 
-    @Column(name = "file_url", nullable = false)
-    private String fileUrl;
+    @Column(name = "file_uri", nullable = false, unique = true)
+    private String fileUri;
 
     @Builder
-    public OtherEvidenceJpaEntity(EvidenceJpaEntity id, String fileUrl) {
+    public OtherEvidenceJpaEntity(EvidenceJpaEntity id, String fileUri) {
         this.id = id;
-        this.fileUrl = fileUrl;
+        this.fileUri = fileUri;
     }
 }
