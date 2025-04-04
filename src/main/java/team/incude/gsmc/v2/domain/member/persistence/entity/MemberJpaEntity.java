@@ -26,6 +26,7 @@ public class MemberJpaEntity {
     private String password;
 
     @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
     private MemberRole role;
 
     @Builder

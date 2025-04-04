@@ -27,9 +27,11 @@ public class EvidenceJpaEntity {
     private ScoreJpaEntity score;
 
     @Column(name = "evidence_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private EvidenceType evidenceType;
 
     @Column(name = "review_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private ReviewStatus reviewStatus;
 
     @Column(name = "created_at", nullable = false)
