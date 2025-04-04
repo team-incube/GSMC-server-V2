@@ -8,8 +8,8 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
 @Builder
 public class Score {
     private Long id;
-    private Member memberId;
-    private Category categoryId;
+    private Member member;
+    private Category category;
     private Integer value;
     private Integer semester;
 }

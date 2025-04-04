@@ -16,24 +16,12 @@ public class OtherEvidenceJpaEntity {
     @JoinColumn(name = "evidence_id")
     private EvidenceJpaEntity id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
-
-    @Column(name = "book_author", nullable = false)
-    private String author;
-
-    @Column(name = "page", nullable = false)
-    private Integer page;
-
-    @Column(name = "content", nullable = false)
-    private String content;
+    @Column(name = "file_url", nullable = false)
+    private String fileUrl;
 
     @Builder
-    public OtherEvidenceJpaEntity(EvidenceJpaEntity id, String title, String author, Integer page, String content) {
+    public OtherEvidenceJpaEntity(EvidenceJpaEntity id, String fileUrl) {
         this.id = id;
-        this.title = title;
-        this.author = author;
-        this.page = page;
-        this.content = content;
+        this.fileUrl = fileUrl;
     }
 }
