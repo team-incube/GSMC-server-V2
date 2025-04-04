@@ -29,7 +29,8 @@ public class CertificateJpaEntity {
     private LocalDate acquisitionDate;
 
     @Builder
-    public CertificateJpaEntity(MemberJpaEntity member, String name, LocalDate acquisitionDate) {
+    public CertificateJpaEntity(Long id, MemberJpaEntity member, String name, LocalDate acquisitionDate) {
+        this.id = id;
         this.member = member;
         this.name = name;
         this.acquisitionDate = acquisitionDate;
