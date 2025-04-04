@@ -9,7 +9,7 @@ import team.incude.gsmc.v2.domain.member.persistence.entity.MemberJpaEntity;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tb_evidence")
+@Table(name = "tb_certificate")
 @Getter
 @NoArgsConstructor
 public class CertificateJpaEntity {
