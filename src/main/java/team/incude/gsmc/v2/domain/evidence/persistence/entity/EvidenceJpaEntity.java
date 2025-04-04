@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.LastModifiedDate;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.score.persistence.entity.ScoreJpaEntity;
@@ -35,11 +33,9 @@ public class EvidenceJpaEntity {
     private ReviewStatus reviewStatus;
 
     @Column(name = "created_at", nullable = false)
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @Builder
