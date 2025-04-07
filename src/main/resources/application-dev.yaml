@@ -16,3 +16,9 @@ spring:
   sql:
     init:
       mode: always
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+  bucket:
+    name: gsmc-dev
+    region: ap-northeast-2
