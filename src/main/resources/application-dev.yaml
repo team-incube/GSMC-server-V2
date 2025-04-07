@@ -16,3 +16,10 @@ spring:
   sql:
     init:
       mode: always
+jwt:
+  access-token:
+    secret: ${ACCESS_TOKEN_SECRET:f2ba6a534025117d28f915841d241bb1ecb758550803220812374020ef48d3cf}
+    expiration: ${ACCESS_TOKEN_EXPIRATION:3600000}
+  refresh-token:
+    secret: ${REFRESH_TOKEN_SECRET:f1b1ce8f8c978ab7b6bab79cf406c51fdf2383d1cd1b10bd1080dad3ceb1dda3}
+    expiration: ${REFRESH_TOKEN_EXPIRATION:1209600000}
