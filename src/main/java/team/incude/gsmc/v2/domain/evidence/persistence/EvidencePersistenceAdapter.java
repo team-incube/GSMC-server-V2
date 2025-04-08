@@ -11,7 +11,6 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
-import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
@@ -56,5 +55,4 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
     public void deleteEvidenceById(Long evidenceId) {
         evidenceJpaRepository.deleteById(evidenceId);
     }
-
 }
