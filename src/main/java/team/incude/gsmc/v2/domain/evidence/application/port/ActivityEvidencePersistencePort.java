@@ -10,9 +10,7 @@ import java.util.List;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface ActivityEvidencePersistencePort {
-    List<ActivityEvidence> findMajorEvidenceByMember(Member member);
-
-    List<ActivityEvidence> findHumanitiesEvidenceByMember(Member member);
+    List<ActivityEvidence> findActivityEvidenceByMemberAndEvidenceType(Member member, EvidenceType evidenceType);
 
     ActivityEvidence findActivityEvidenceByEvidenceIdAndEvidenceType(Long evidenceId, EvidenceType evidenceType);
 
