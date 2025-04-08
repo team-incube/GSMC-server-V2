@@ -2,7 +2,7 @@ package team.incude.gsmc.v2.domain.score.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import team.incude.gsmc.v2.domain.certificate.exception.CertificateNotFoundException;
+import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.persistence.mapper.ScoreMapper;
@@ -22,19 +22,22 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     private final ScoreMapper scoreMapper;
     private final JPAQueryFactory jpaQueryFactory;
 
+    private final CategoryPersistencePort categoryPersistencePort;
+
     @Override
-    public Optional<Score> findScoreByNameAndEmail(String name, String email) {
+    public Score findScoreByNameAndEmail(String name, String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(scoreJpaEntity)
+                        .join(scoreJpaEntity.category)
                         .where(scoreJpaEntity.category.name.eq(name))
                         .where(scoreJpaEntity.member.email.eq(email))
                         .fetchOne()
-        ).map(scoreMapper::toDomain);
+        ).map(scoreMapper::toDomain).orElse(null);
     }
 
     @Override
     public void saveScore(Score score) {
-        scoreJpaRepository.save(scoreMapper.toEntity(score));
+        scoreJpaRepository.saveAndFlush(scoreMapper.toEntity(score));
     }
 }

@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
+import team.incude.gsmc.v2.domain.member.exception.MemberNotFoundException;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.domain.member.persistence.repository.MemberJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -22,12 +23,12 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
     private final MemberMapper memberMapper;
 
     @Override
-    public Optional<Member> findMemberByEmail(String email) {
+    public Member findMemberByEmail(String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(memberJpaEntity)
                         .where(memberJpaEntity.email.eq(email))
                         .fetchOne()
-        ).map(memberMapper::toDomain);
+        ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
     }
 }
