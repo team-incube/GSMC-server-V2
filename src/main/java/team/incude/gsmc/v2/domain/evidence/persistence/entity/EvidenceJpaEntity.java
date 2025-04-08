@@ -20,7 +20,7 @@ public class EvidenceJpaEntity {
     @Column(name = "evidence_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "score_id", nullable = false)
     private ScoreJpaEntity score;
 
