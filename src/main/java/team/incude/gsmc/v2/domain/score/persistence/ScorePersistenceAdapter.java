@@ -12,6 +12,8 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.Optional;
 
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -22,19 +24,19 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     private final ScoreMapper scoreMapper;
     private final JPAQueryFactory jpaQueryFactory;
 
-    private final CategoryPersistencePort categoryPersistencePort;
-
     @Override
     public Score findScoreByNameAndEmail(String name, String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(scoreJpaEntity)
-                        .rightJoin(scoreJpaEntity.category)
+                        .leftJoin(categoryJpaEntity)
+                        .on(scoreJpaEntity.id.eq(categoryJpaEntity.id))
+                        .leftJoin(memberJpaEntity)
+                        .on(scoreJpaEntity.member.id.eq(memberJpaEntity.id))
                         .fetchJoin()
-                        .leftJoin(scoreJpaEntity.member)
-                        .fetchJoin()
-                        .where(scoreJpaEntity.category.name.eq(name))
-                        .where(scoreJpaEntity.member.email.eq(email))
+                        .where(scoreJpaEntity.category.name.eq(name)
+                                        .and(scoreJpaEntity.member.email.eq(email))
+                        )
                         .fetchOne()
         ).map(scoreMapper::toDomain).orElse(null);
     }
