@@ -22,11 +22,12 @@ public class FileUploadService implements FileUploadUseCase {
 
     @Override
     public CompletableFuture<String> execute(String fileName, InputStream fileInputStream) {
-        try{
+        try {
             ObjectMetadata metadata = new ObjectMetadata();
-            s3Client.putObject(bucketName, fileName + UUID.randomUUID(), fileInputStream, metadata);
-            return CompletableFuture.completedFuture(s3Client.getUrl(bucketName, fileName).toString());
-        }catch (Exception e) {
+            String uniqueFileName = UUID.randomUUID() + "/" + fileName;
+            s3Client.putObject(bucketName, uniqueFileName, fileInputStream, metadata);
+            return CompletableFuture.completedFuture(String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, "ap-northeast-2", uniqueFileName));
+        } catch (Exception e) {
             throw new S3UploadFailedException();
         }
     }
