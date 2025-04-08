@@ -2,7 +2,7 @@ package team.incude.gsmc.v2.domain.score.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import team.incude.gsmc.v2.domain.certificate.exception.CertificateNotFoundException;
+import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.persistence.mapper.ScoreMapper;
@@ -12,6 +12,8 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.Optional;
 
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -23,18 +25,24 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Optional<Score> findScoreByNameAndEmail(String name, String email) {
+    public Score findScoreByNameAndEmail(String name, String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(scoreJpaEntity)
-                        .where(scoreJpaEntity.category.name.eq(name))
-                        .where(scoreJpaEntity.member.email.eq(email))
+                        .leftJoin(categoryJpaEntity)
+                        .on(scoreJpaEntity.id.eq(categoryJpaEntity.id))
+                        .leftJoin(memberJpaEntity)
+                        .on(scoreJpaEntity.member.id.eq(memberJpaEntity.id))
+                        .fetchJoin()
+                        .where(scoreJpaEntity.category.name.eq(name)
+                                        .and(scoreJpaEntity.member.email.eq(email))
+                        )
                         .fetchOne()
-        ).map(scoreMapper::toDomain);
+        ).map(scoreMapper::toDomain).orElse(null);
     }
 
     @Override
     public void saveScore(Score score) {
-        scoreJpaRepository.save(scoreMapper.toEntity(score));
+        scoreJpaRepository.saveAndFlush(scoreMapper.toEntity(score));
     }
 }

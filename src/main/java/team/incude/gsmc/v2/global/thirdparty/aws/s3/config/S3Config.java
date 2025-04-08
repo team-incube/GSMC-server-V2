@@ -19,7 +19,7 @@ public class S3Config {
     @Value("${aws.secret-access-key}")
     private String secretAccessKey;
 
-    @Value("${aws.region}")
+    @Value("${aws.bucket.region}")
     private String region;
 
     @Bean

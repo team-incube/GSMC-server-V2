@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class ActivityEvidenceJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "evidence_id")
     private Long id;
 
     @OneToOne
