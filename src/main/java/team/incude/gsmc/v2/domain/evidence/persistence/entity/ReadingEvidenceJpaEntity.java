@@ -11,10 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReadingEvidenceJpaEntity {
     @Id
-    @MapsId
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @OneToOne
     @JoinColumn(name = "evidence_id")
-    private EvidenceJpaEntity id;
+    private EvidenceJpaEntity evidence;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -29,8 +31,8 @@ public class ReadingEvidenceJpaEntity {
     private String content;
 
     @Builder
-    public ReadingEvidenceJpaEntity(EvidenceJpaEntity id, String title, String author, Integer page, String content) {
-        this.id = id;
+    public ReadingEvidenceJpaEntity(EvidenceJpaEntity evidence, String title, String author, Integer page, String content) {
+        this.evidence = evidence;
         this.title = title;
         this.author = author;
         this.page = page;

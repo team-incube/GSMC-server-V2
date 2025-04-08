@@ -15,7 +15,7 @@ public class ActivityEvidenceMapper implements GenericMapper<ActivityEvidenceJpa
     @Override
     public ActivityEvidenceJpaEntity toEntity(ActivityEvidence activityEvidence) {
         return ActivityEvidenceJpaEntity.builder()
-                .id(evidenceMapper.toEntity(activityEvidence.getId()))
+                .evidence(evidenceMapper.toEntity(activityEvidence.getId()))
                 .title(activityEvidence.getTitle())
                 .content(activityEvidence.getContent())
                 .imageUri(activityEvidence.getImageUrl())
@@ -25,7 +25,7 @@ public class ActivityEvidenceMapper implements GenericMapper<ActivityEvidenceJpa
     @Override
     public ActivityEvidence toDomain(ActivityEvidenceJpaEntity activityEvidenceJpaEntity) {
         return ActivityEvidence.builder()
-                .id(evidenceMapper.toDomain(activityEvidenceJpaEntity.getId()))
+                .id(evidenceMapper.toDomain(activityEvidenceJpaEntity.getEvidence()))
                 .title(activityEvidenceJpaEntity.getTitle())
                 .content(activityEvidenceJpaEntity.getContent())
                 .imageUrl(activityEvidenceJpaEntity.getImageUri())
