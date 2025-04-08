@@ -30,7 +30,6 @@ public class ActivityEvidenceJpaEntity {
     @Builder
     public ActivityEvidenceJpaEntity(EvidenceJpaEntity evidence, String title, String content, String imageUri) {
         this.evidence = evidence;
-        this.id = evidence.getId();
         this.title = title;
         this.content = content;
         this.imageUri = imageUri;

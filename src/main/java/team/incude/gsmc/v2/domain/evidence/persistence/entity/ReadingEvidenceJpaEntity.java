@@ -33,7 +33,6 @@ public class ReadingEvidenceJpaEntity {
     @Builder
     public ReadingEvidenceJpaEntity(EvidenceJpaEntity evidence, String title, String author, Integer page, String content) {
         this.evidence = evidence;
-        this.id = evidence.getId();
         this.title = title;
         this.author = author;
         this.page = page;
