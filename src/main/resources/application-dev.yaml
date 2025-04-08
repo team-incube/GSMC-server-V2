@@ -23,3 +23,10 @@ jwt:
   refresh-token:
     secret: ${REFRESH_TOKEN_SECRET:f1b1ce8f8c978ab7b6bab79cf406c51fdf2383d1cd1b10bd1080dad3ceb1dda3}
     expiration: ${REFRESH_TOKEN_EXPIRATION:1209600000}
+
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+  bucket:
+    name: gsmc-dev
+    region: ap-northeast-2

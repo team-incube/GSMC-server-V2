@@ -8,7 +8,6 @@ import team.incude.gsmc.v2.domain.certificate.domain.Certificate;
 import team.incude.gsmc.v2.domain.certificate.persistence.mapper.CertificateMapper;
 import team.incude.gsmc.v2.domain.certificate.persistence.projection.CertificateProjection;
 import team.incude.gsmc.v2.domain.certificate.persistence.repository.CertificateJpaRepository;
-import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
