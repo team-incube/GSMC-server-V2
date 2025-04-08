@@ -11,17 +11,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OtherEvidenceJpaEntity {
     @Id
-    @MapsId
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "evidence_id")
+    private Long id;
+
     @OneToOne
-    @JoinColumn(name = "evidence_id")
-    private EvidenceJpaEntity id;
+    @JoinColumn(name = "evidence_id", referencedColumnName = "evidence_id", insertable = false, updatable = false)
+    private EvidenceJpaEntity evidence;
 
     @Column(name = "file_uri", nullable = false, unique = true)
     private String fileUri;
 
     @Builder
-    public OtherEvidenceJpaEntity(EvidenceJpaEntity id, String fileUri) {
+    public OtherEvidenceJpaEntity(Long id, EvidenceJpaEntity evidence, String fileUri) {
         this.id = id;
+        this.evidence = evidence;
         this.fileUri = fileUri;
     }
 }
