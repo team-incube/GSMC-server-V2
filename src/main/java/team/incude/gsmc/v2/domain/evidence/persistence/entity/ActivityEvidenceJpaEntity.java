@@ -11,10 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ActivityEvidenceJpaEntity {
     @Id
-    @MapsId
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @OneToOne
     @JoinColumn(name = "evidence_id")
-    private EvidenceJpaEntity id;
+    private EvidenceJpaEntity evidence;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -26,8 +28,8 @@ public class ActivityEvidenceJpaEntity {
     private String imageUri;
 
     @Builder
-    public ActivityEvidenceJpaEntity(EvidenceJpaEntity id, String title, String content, String imageUri) {
-        this.id = id;
+    public ActivityEvidenceJpaEntity(EvidenceJpaEntity evidence, String title, String content, String imageUri) {
+        this.evidence = evidence;
         this.title = title;
         this.content = content;
         this.imageUri = imageUri;
