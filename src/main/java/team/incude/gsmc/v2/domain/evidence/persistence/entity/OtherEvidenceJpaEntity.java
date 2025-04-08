@@ -16,7 +16,7 @@ public class OtherEvidenceJpaEntity {
     private Long id;
 
     @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "evidence_id", referencedColumnName = "evidence_id", insertable = false, updatable = false)
+    @JoinColumn(name = "evidence_id", referencedColumnName = "evidence_id")
     private EvidenceJpaEntity evidence;
 
     @Column(name = "file_uri", nullable = false, unique = true)
