@@ -19,12 +19,12 @@ public class CertificateJpaEntity {
     @Column(name = "certificate_id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private MemberJpaEntity member;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_uri",referencedColumnName = "file_uri", nullable = false)
+    @JoinColumn(name = "file_uri", referencedColumnName = "file_uri", nullable = false)
     private OtherEvidenceJpaEntity evidence;
 
     @Column(name = "name", nullable = false)

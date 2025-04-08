@@ -15,7 +15,7 @@ public class OtherEvidenceJpaEntity {
     @Column(name = "evidence_id")
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "evidence_id", referencedColumnName = "evidence_id", insertable = false, updatable = false)
     private EvidenceJpaEntity evidence;
 

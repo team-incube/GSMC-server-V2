@@ -29,7 +29,10 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(scoreJpaEntity)
-                        .join(scoreJpaEntity.category)
+                        .rightJoin(scoreJpaEntity.category)
+                        .fetchJoin()
+                        .leftJoin(scoreJpaEntity.member)
+                        .fetchJoin()
                         .where(scoreJpaEntity.category.name.eq(name))
                         .where(scoreJpaEntity.member.email.eq(email))
                         .fetchOne()
