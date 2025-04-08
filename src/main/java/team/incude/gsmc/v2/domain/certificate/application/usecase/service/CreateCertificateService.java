@@ -53,47 +53,38 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         String email = getAuthenticatedEmail();
         Member member = memberPersistencePort.findMemberByEmail(email);
 
-        // 1. 자격증 점수 업데이트
         Score updatedScore = updateScore(name, member);
 
-        // 2. 증빙 자료 생성 및 저장
         Evidence evidence = createEvidence(updatedScore);
 
-        // 3. 파일 업로드 후 다른 증빙 자료로 연결
         String fileUri = uploadFileToS3(file);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUri);
 
-        // 4. 자격증 등록
         saveCertificate(name, member, acquisitionDate, otherEvidence);
     }
 
     private String getAuthenticatedEmail() {
-        // 현재 인증된 사용자의 이메일을 가져오는 부분 (예시로 mock 이메일 사용)
         setSecurityContext("s24058@gsm.hs.kr");
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     private Score updateScore(String name, Member member) {
-        // 기존 점수를 가져옴
         Score score = scorePersistencePort.findScoreByNameAndEmail(name, member.getEmail());
-        Category category = categoryPersistencePort.findCategoryByName(CATEGORY_NAME);
 
-        if (score != null) {
-            // 점수를 1점 올리기 전에 제한을 확인
-            if (ValueLimiterUtil.isExceedingLimit(score.getValue() + 1, category.getMaximumValue())) {
+        if (score == null) {
+            score = createNewScore(categoryPersistencePort.findCategoryByName(CATEGORY_NAME), member);
+        } else {
+            if (ValueLimiterUtil.isExceedingLimit(score.getValue() + 1, score.getCategory().getMaximumValue())) {
                 throw new ScoreLimitExceededException();
             }
 
-            // 점수 업데이트: 새 Score 객체를 빌더 패턴으로 생성
             score = Score.builder()
                     .id(score.getId())
-                    .category(category)
+                    .category(score.getCategory())
                     .member(score.getMember())
                     .value(score.getValue() + 1)
                     .semester(score.getSemester())
                     .build();
-        } else {
-            score = createNewScore(category, member);
         }
         return score;
     }
@@ -118,15 +109,13 @@ public class CreateCertificateService implements CreateCertificateUseCase {
 
     private String uploadFileToS3(MultipartFile file) {
         try {
-            CompletableFuture<String> fileUriFuture = s3Port.uploadFile(file.getOriginalFilename(), file.getInputStream());
-            return fileUriFuture.get();
+            return s3Port.uploadFile(file.getOriginalFilename(), file.getInputStream()).join();
         } catch (Exception e) {
             throw new S3UploadFailedException();
         }
     }
 
     private OtherEvidence createOtherEvidence(Evidence evidence, String fileUri) {
-        // Evidence와 파일 URI를 사용해 OtherEvidence를 생성
         return OtherEvidence.builder()
                 .id(evidence)
                 .fileUri(fileUri)
@@ -134,7 +123,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     }
 
     private void saveCertificate(String name, Member member, LocalDate acquisitionDate, OtherEvidence otherEvidence) {
-        log.info("Member info"+" : {}", member.getEmail());
+        log.info("Member info : {}", member.getEmail());
         Certificate certificate = Certificate.builder()
                 .member(member)
                 .name(name)
@@ -144,7 +133,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         certificatePersistencePort.saveCertificate(certificate);
     }
 
-    // 인증/인가를 위한 보조 메서드 (현재는 mock 이메일을 사용)
+    // TODO: auth 구현 전 임시 코드
     private void setSecurityContext(String email) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, "");
         SecurityContextHolder.getContext().setAuthentication(authentication);
