@@ -24,7 +24,6 @@ public class OtherEvidenceJpaEntity {
 
     @Builder
     public OtherEvidenceJpaEntity(Long id, EvidenceJpaEntity evidence, String fileUri) {
-        this.id = id;
         this.evidence = evidence;
         this.fileUri = fileUri;
     }
