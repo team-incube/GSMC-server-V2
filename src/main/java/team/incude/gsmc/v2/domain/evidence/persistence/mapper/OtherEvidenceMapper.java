@@ -15,6 +15,7 @@ public class OtherEvidenceMapper implements GenericMapper<OtherEvidenceJpaEntity
     @Override
     public OtherEvidenceJpaEntity toEntity(OtherEvidence otherEvidence) {
         return OtherEvidenceJpaEntity.builder()
+                .id(otherEvidence.getId().getId())
                 .evidence(evidenceMapper.toEntity(otherEvidence.getId()))
                 .fileUri(otherEvidence.getFileUri())
                 .build();
