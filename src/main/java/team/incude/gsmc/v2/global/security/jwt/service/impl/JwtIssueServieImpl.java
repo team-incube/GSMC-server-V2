@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
 import team.incude.gsmc.v2.global.security.jwt.service.JwtIssueService;
-import team.incude.gsmc.v2.global.security.jwt.RefreshTokenRedisEntity;
-import team.incude.gsmc.v2.global.security.jwt.RefreshTokenRedisRepository;
+import team.incude.gsmc.v2.global.security.jwt.entity.RefreshTokenRedisEntity;
+import team.incude.gsmc.v2.global.security.jwt.repository.RefreshTokenRedisRepository;
 import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
 
 import javax.crypto.SecretKey;
