@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.domain.auth.presentation.data;
+package team.incude.gsmc.v2.domain.auth.presentation.data.request;
 
 import jakarta.validation.constraints.Size;
 
