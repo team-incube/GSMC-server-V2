@@ -2,7 +2,6 @@ package team.incude.gsmc.v2.domain.score.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.persistence.mapper.ScoreMapper;
@@ -29,20 +28,19 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(scoreJpaEntity)
-                        .leftJoin(categoryJpaEntity)
-                        .on(scoreJpaEntity.id.eq(categoryJpaEntity.id))
-                        .leftJoin(memberJpaEntity)
+                        .leftJoin(scoreJpaEntity.category, categoryJpaEntity)
+                        .on(scoreJpaEntity.category.id.eq(categoryJpaEntity.id))
+                        .leftJoin(scoreJpaEntity.member, memberJpaEntity)
                         .on(scoreJpaEntity.member.id.eq(memberJpaEntity.id))
-                        .fetchJoin()
                         .where(scoreJpaEntity.category.name.eq(name)
-                                        .and(scoreJpaEntity.member.email.eq(email))
+                                .and(scoreJpaEntity.member.email.eq(email))
                         )
                         .fetchOne()
         ).map(scoreMapper::toDomain).orElse(null);
     }
 
     @Override
-    public void saveScore(Score score) {
-        scoreJpaRepository.saveAndFlush(scoreMapper.toEntity(score));
+    public Score saveScore(Score score) {
+        return scoreMapper.toDomain(scoreJpaRepository.save(scoreMapper.toEntity(score)));
     }
 }
