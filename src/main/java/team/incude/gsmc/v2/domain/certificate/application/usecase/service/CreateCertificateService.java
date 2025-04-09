@@ -26,6 +26,7 @@ import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -98,7 +99,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     private String uploadFileToS3(MultipartFile file) {
         try {
             return s3Port.uploadFile(file.getOriginalFilename(), file.getInputStream()).join();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new S3UploadFailedException();
         }
     }
