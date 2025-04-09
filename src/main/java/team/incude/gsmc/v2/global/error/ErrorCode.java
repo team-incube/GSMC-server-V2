@@ -25,7 +25,10 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND("Category Not Found", HttpStatus.NOT_FOUND.value()),
 
     // Auth
-    MEMBER_UNAUTHORIZED("Member Not Authorized", HttpStatus.UNAUTHORIZED.value());
+    MEMBER_UNAUTHORIZED("Member Not Authorized", HttpStatus.UNAUTHORIZED.value()),
+    REFRESH_TOKEN_INVALID("RefreshToken Expired Or Invalid", HttpStatus.UNAUTHORIZED.value()),
+    EMAIL_AUTH_ATTEMPT_EXCEEDED("Email Auth Attempt Exceeded", HttpStatus.TOO_MANY_REQUESTS.value()),
+    PASSWORD_INVALID("Password Invalid", HttpStatus.UNAUTHORIZED.value());
 
     private final String message;
     private final int status;
