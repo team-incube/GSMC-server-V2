@@ -1,7 +1,6 @@
 package team.incude.gsmc.v2.domain.certificate.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incude.gsmc.v2.domain.certificate.application.usecase.CreateCertificateUseCase;
 import team.incude.gsmc.v2.domain.certificate.domain.Certificate;
-import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
@@ -30,16 +28,13 @@ import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.concurrent.CompletableFuture;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CreateCertificateService implements CreateCertificateUseCase {
 
     private final CertificatePersistencePort certificatePersistencePort;
-    private final EvidencePersistencePort evidencePersistencePort;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final MemberPersistencePort memberPersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
@@ -51,40 +46,33 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     @Override
     public void execute(String name, LocalDate acquisitionDate, MultipartFile file) {
         String email = getAuthenticatedEmail();
-        Member member = memberPersistencePort.findMemberByEmail(email);
+        Member member = memberPersistencePort.findMemberByEmailWithLock(email);
 
-        Score updatedScore = updateScore(name, member);
+        Score updatedScore = scorePersistencePort.saveScore(updateScore(member));
 
         Evidence evidence = createEvidence(updatedScore);
 
         String fileUri = uploadFileToS3(file);
-        OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUri);
+        OtherEvidence otherEvidence = otherEvidencePersistencePort.saveOtherEvidence(createOtherEvidence(evidence, fileUri));
 
         saveCertificate(name, member, acquisitionDate, otherEvidence);
     }
 
+    // TODO: 인증인가 구현 시 변경 필
     private String getAuthenticatedEmail() {
         setSecurityContext("s24058@gsm.hs.kr");
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    private Score updateScore(String name, Member member) {
-        Score score = scorePersistencePort.findScoreByNameAndEmail(name, member.getEmail());
-
+    private Score updateScore(Member member) {
+        Score score = scorePersistencePort.findScoreByNameAndEmail(CATEGORY_NAME, member.getEmail());
         if (score == null) {
             score = createNewScore(categoryPersistencePort.findCategoryByName(CATEGORY_NAME), member);
         } else {
             if (ValueLimiterUtil.isExceedingLimit(score.getValue() + 1, score.getCategory().getMaximumValue())) {
                 throw new ScoreLimitExceededException();
             }
-
-            score = Score.builder()
-                    .id(score.getId())
-                    .category(score.getCategory())
-                    .member(score.getMember())
-                    .value(score.getValue() + 1)
-                    .semester(score.getSemester())
-                    .build();
+            score.plusValue(1);
         }
         return score;
     }
@@ -123,7 +111,6 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     }
 
     private void saveCertificate(String name, Member member, LocalDate acquisitionDate, OtherEvidence otherEvidence) {
-        log.info("Member info : {}", member.getEmail());
         Certificate certificate = Certificate.builder()
                 .member(member)
                 .name(name)
@@ -136,6 +123,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     // TODO: auth 구현 전 임시 코드
     private void setSecurityContext(String email) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, "");
+        SecurityContextHolder.clearContext();
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
