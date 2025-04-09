@@ -31,5 +31,5 @@ public interface EvidenceApplicationPort {
 
     void submitOtherEvidence(String categoryName, MultipartFile file);
 
-    ReviewStatus updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus);
+    void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus);
 }
