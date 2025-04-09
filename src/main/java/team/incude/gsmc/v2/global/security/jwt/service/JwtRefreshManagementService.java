@@ -1,5 +1,5 @@
 package team.incude.gsmc.v2.global.security.jwt.service;
 
-public interface JwtRefreshManagement {
+public interface JwtRefreshManagementService {
     void deleteRefreshToken(String refreshToken);
 }
