@@ -15,8 +15,8 @@ public class ActivityEvidenceJpaEntity {
     @Column(name = "evidence_id")
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "evidence_id")
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "evidence_id", unique = true)
     private EvidenceJpaEntity evidence;
 
     @Column(name = "title", nullable = false)
@@ -29,7 +29,8 @@ public class ActivityEvidenceJpaEntity {
     private String imageUri;
 
     @Builder
-    public ActivityEvidenceJpaEntity(EvidenceJpaEntity evidence, String title, String content, String imageUri) {
+    public ActivityEvidenceJpaEntity(Long id, EvidenceJpaEntity evidence, String title, String content, String imageUri) {
+        this.id = id;
         this.evidence = evidence;
         this.title = title;
         this.content = content;
