@@ -11,6 +11,8 @@ public enum ErrorCode {
     // AWS S3
     S3_UPLOAD_FAILED("AWS S3 Upload Failed", HttpStatus.INTERNAL_SERVER_ERROR.value()),
     S3_DELETE_FAILED("AWS S3 Delete Failed", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+    FILE_NAME_TOO_LONG("File Name Too Long", HttpStatus.BAD_REQUEST.value()),
+    FILE_IS_EMPTY("File is Empty", HttpStatus.BAD_REQUEST.value()),
 
     // Certificate
     CERTIFICATE_NOT_FOUND("Certificate Not Found", HttpStatus.NOT_FOUND.value()),
