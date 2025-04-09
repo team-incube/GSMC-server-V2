@@ -46,7 +46,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     @Override
     public void execute(String name, LocalDate acquisitionDate, MultipartFile file) {
         String email = getAuthenticatedEmail();
-        Member member = memberPersistencePort.findMemberByEmailWithLock(email);
+        Member member = memberPersistencePort.findMemberByEmail(email);
 
         Score updatedScore = scorePersistencePort.saveScore(updateScore(member));
 
@@ -65,7 +65,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     }
 
     private Score updateScore(Member member) {
-        Score score = scorePersistencePort.findScoreByNameAndEmail(CATEGORY_NAME, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(CATEGORY_NAME, member.getEmail());
         if (score == null) {
             score = createNewScore(categoryPersistencePort.findCategoryByName(CATEGORY_NAME), member);
         } else {
