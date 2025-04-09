@@ -15,8 +15,8 @@ public class OtherEvidenceJpaEntity {
     @Column(name = "evidence_id")
     private Long id;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "evidence_id", referencedColumnName = "evidence_id")
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "evidence_id", unique = true)
     private EvidenceJpaEntity evidence;
 
     @Column(name = "file_uri", nullable = false, unique = true)
@@ -24,6 +24,7 @@ public class OtherEvidenceJpaEntity {
 
     @Builder
     public OtherEvidenceJpaEntity(Long id, EvidenceJpaEntity evidence, String fileUri) {
+        this.id = id;
         this.evidence = evidence;
         this.fileUri = fileUri;
     }

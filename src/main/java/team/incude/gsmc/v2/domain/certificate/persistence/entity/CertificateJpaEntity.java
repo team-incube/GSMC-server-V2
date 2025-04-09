@@ -23,8 +23,8 @@ public class CertificateJpaEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private MemberJpaEntity member;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_uri", referencedColumnName = "file_uri", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "evidence_id", nullable = false)
     private OtherEvidenceJpaEntity evidence;
 
     @Column(name = "name", nullable = false)

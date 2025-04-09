@@ -15,7 +15,7 @@ public class ReadingEvidenceJpaEntity {
     @Column(name = "evidence_id")
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "evidence_id")
     private EvidenceJpaEntity evidence;
 
@@ -32,7 +32,8 @@ public class ReadingEvidenceJpaEntity {
     private String content;
 
     @Builder
-    public ReadingEvidenceJpaEntity(EvidenceJpaEntity evidence, String title, String author, Integer page, String content) {
+    public ReadingEvidenceJpaEntity(Long id, EvidenceJpaEntity evidence, String title, String author, Integer page, String content) {
+        this.id = id;
         this.evidence = evidence;
         this.title = title;
         this.author = author;

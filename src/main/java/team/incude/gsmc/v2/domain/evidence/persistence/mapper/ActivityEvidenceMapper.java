@@ -15,6 +15,7 @@ public class ActivityEvidenceMapper implements GenericMapper<ActivityEvidenceJpa
     @Override
     public ActivityEvidenceJpaEntity toEntity(ActivityEvidence activityEvidence) {
         return ActivityEvidenceJpaEntity.builder()
+                .id(activityEvidence.getId().getId())
                 .evidence(evidenceMapper.toEntity(activityEvidence.getId()))
                 .title(activityEvidence.getTitle())
                 .content(activityEvidence.getContent())
