@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.domain.member.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -28,6 +29,17 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
                 jpaQueryFactory
                         .selectFrom(memberJpaEntity)
                         .where(memberJpaEntity.email.eq(email))
+                        .fetchOne()
+        ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
+    }
+
+    @Override
+    public Member findMemberByEmailWithLock(String email) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(memberJpaEntity)
+                        .where(memberJpaEntity.email.eq(email))
+                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne()
         ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
     }
