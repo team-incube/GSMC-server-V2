@@ -1,7 +1,6 @@
-package team.incude.gsmc.v2.global.security;
+package team.incude.gsmc.v2.global.security.jwt.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import team.incude.gsmc.v2.domain.member.exception.MemberNotFoundException;
@@ -12,7 +11,7 @@ import team.incude.gsmc.v2.global.security.jwt.auth.CustomUserDetails;
 
 @Component
 @RequiredArgsConstructor
-public class CurrentUserProvider {
+public class CurrentMemberProvider {
 
     private final MemberJpaRepository memberJpaRepository;
 
