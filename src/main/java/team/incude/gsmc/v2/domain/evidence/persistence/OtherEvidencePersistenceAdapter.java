@@ -19,7 +19,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private final OtherEvidenceMapper otherEvidenceMapper;
 
     @Override
-    public void saveOtherEvidence(OtherEvidence otherEvidence) {
-        otherEvidenceJpaRepository.save(otherEvidenceMapper.toEntity(otherEvidence));
+    public OtherEvidence saveOtherEvidence(OtherEvidence otherEvidence) {
+        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceMapper.toEntity(otherEvidence)));
     }
 }
