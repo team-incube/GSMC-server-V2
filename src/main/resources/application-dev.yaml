@@ -21,4 +21,4 @@ aws:
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   bucket:
     name: gsmc-dev
-    region: AP_NORTHEAST_2
+    region: ap-northeast-2
