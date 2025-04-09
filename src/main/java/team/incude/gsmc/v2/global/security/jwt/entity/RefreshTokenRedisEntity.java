@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt;
+package team.incude.gsmc.v2.global.security.jwt.entity;
 
 import jakarta.persistence.Id;
 import lombok.Builder;
