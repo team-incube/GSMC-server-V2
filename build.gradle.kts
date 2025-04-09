@@ -69,6 +69,9 @@ dependencies {
 
 	// aop
 	implementation("org.springframework.boot:spring-boot-starter-aop")
+
+	// thymeleaf
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 }
 
 tasks.withType<Test> {
