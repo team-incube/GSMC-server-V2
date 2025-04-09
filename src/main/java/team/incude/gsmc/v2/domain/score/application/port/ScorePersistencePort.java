@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface ScorePersistencePort {
     Score findScoreByNameAndEmail(String name, String email);
 
-    void saveScore(Score score);
+    Score saveScore(Score score);
 }
