@@ -22,7 +22,11 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND("Member Not Found", HttpStatus.NOT_FOUND.value()),
 
     // Category
-    CATEGORY_NOT_FOUND("Category Not Found", HttpStatus.NOT_FOUND.value());
+    CATEGORY_NOT_FOUND("Category Not Found", HttpStatus.NOT_FOUND.value()),
+
+
+    // Evidence
+    EVIDENCE_NOT_FOUND("Evidence Not Found", HttpStatus.NOT_FOUND.value());
 
     private final String message;
     private final int status;
