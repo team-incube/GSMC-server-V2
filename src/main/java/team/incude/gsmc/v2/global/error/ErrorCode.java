@@ -20,6 +20,8 @@ public enum ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND("Member Not Found", HttpStatus.NOT_FOUND.value()),
+    MEMBER_FORBIDDEN("Member Forbidden", HttpStatus.FORBIDDEN.value()),
+    MEMBER_ALREADY_EXISTS("Member Already Exists", HttpStatus.CONFLICT.value()),
 
     // Category
     CATEGORY_NOT_FOUND("Category Not Found", HttpStatus.NOT_FOUND.value()),
