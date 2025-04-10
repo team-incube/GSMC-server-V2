@@ -30,4 +30,28 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
                         .fetchOne()
         ).map(memberMapper::toDomain);
     }
+
+    @Override
+    public Boolean existsMemberByEmail(String email) {
+        var result = jpaQueryFactory
+                .selectOne()
+                .from(memberJpaEntity)
+                .where(memberJpaEntity.email.eq(email))
+                .fetchFirst();
+        return result != null;
+    }
+
+    @Override
+    public void updateMemberPassword(Long id, String password) {
+        jpaQueryFactory
+                .update(memberJpaEntity)
+                .set(memberJpaEntity.password, password)
+                .where(memberJpaEntity.id.eq(id))
+                .execute();
+    }
+
+    @Override
+    public void saveMember(Member member) {
+        memberJpaRepository.save(memberMapper.toEntity(member));
+    }
 }
