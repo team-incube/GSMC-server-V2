@@ -42,33 +42,36 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     private final ScorePersistencePort scorePersistencePort;
     private final S3Port s3Port;
 
-    private static final String CATEGORY_NAME = "MAJOR-CERTIFICATE-NUM";
+    private static final String MAJOR_CERTIFICATE_CATEGORY_NAME = "MAJOR-CERTIFICATE-NUM";
+    private static final String HUMANITIES_CERTIFICATE_KOREAN_HISTORY_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-KOREAN-HISTORY";
+    private static final String HUMANITIES_CERTIFICATE_CHINESE_CHARACTER_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-CHINESE-CHARACTER";
 
     @Override
     public void execute(String name, LocalDate acquisitionDate, MultipartFile file) {
         String email = getAuthenticatedEmail();
         Member member = memberPersistencePort.findMemberByEmail(email);
 
-        Score updatedScore = scorePersistencePort.saveScore(updateScore(member));
+        Score updatedScore = updateScore(member, name);
+        Score savedScore = scorePersistencePort.saveScore(updatedScore);
 
-        Evidence evidence = createEvidence(updatedScore);
-
+        Evidence evidence = createEvidence(savedScore);
         String fileUri = uploadFileToS3(file);
         OtherEvidence otherEvidence = otherEvidencePersistencePort.saveOtherEvidence(createOtherEvidence(evidence, fileUri));
 
         saveCertificate(name, member, acquisitionDate, otherEvidence);
     }
 
-    // TODO: 인증인가 구현 시 변경 필
     private String getAuthenticatedEmail() {
         setSecurityContext("s24058@gsm.hs.kr");
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    private Score updateScore(Member member) {
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(CATEGORY_NAME, member.getEmail());
+    private Score updateScore(Member member, String certificateName) {
+        String categoryName = resolveCategoryFromCertificateName(certificateName);
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, member.getEmail());
+
         if (score == null) {
-            score = createNewScore(categoryPersistencePort.findCategoryByName(CATEGORY_NAME), member);
+            score = createNewScore(categoryPersistencePort.findCategoryByName(categoryName), member);
         } else {
             if (ValueLimiterUtil.isExceedingLimit(score.getValue() + 1, score.getCategory().getMaximumValue())) {
                 throw new ScoreLimitExceededException();
@@ -76,6 +79,16 @@ public class CreateCertificateService implements CreateCertificateUseCase {
             score.plusValue(1);
         }
         return score;
+    }
+
+    private String resolveCategoryFromCertificateName(String certificateName) {
+        if (certificateName.startsWith("한국사 능력검정")) {
+            return HUMANITIES_CERTIFICATE_KOREAN_HISTORY_CATEGORY_NAME;
+        }
+        if (certificateName.startsWith("한자검정시험")) {
+            return HUMANITIES_CERTIFICATE_CHINESE_CHARACTER_CATEGORY_NAME;
+        }
+        return MAJOR_CERTIFICATE_CATEGORY_NAME;
     }
 
     private Score createNewScore(Category category, Member member) {
@@ -121,7 +134,6 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         certificatePersistencePort.saveCertificate(certificate);
     }
 
-    // TODO: auth 구현 전 임시 코드
     private void setSecurityContext(String email) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, "");
         SecurityContextHolder.clearContext();
