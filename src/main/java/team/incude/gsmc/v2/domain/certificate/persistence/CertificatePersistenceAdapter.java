@@ -28,8 +28,14 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
     private final CertificateMapper certificateMapper;
 
     @Override
-    public Certificate findCertificateById(Long id) {
-        return certificateJpaRepository.findById(id).map(certificateMapper::toDomain).orElseThrow(CertificateNotFoundException::new);
+    public Certificate findCertificateByIdWithLock(Long id) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(certificateJpaEntity)
+                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                        .where(certificateJpaEntity.id.eq(id))
+                        .fetchOne()
+        ).map(certificateMapper::toDomain).orElseThrow(CertificateNotFoundException::new);
     }
 
     @Override
@@ -49,26 +55,6 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
                 .stream()
                 .map(certificateMapper::fromProjection)
                 .toList();
-    }
-
-    @Override
-    public Certificate findCertificateByNameAndMemberEmailWithLock(String name, String email) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .select(Projections.constructor(
-                                CertificateProjection.class,
-                                certificateJpaEntity.id,
-                                certificateJpaEntity.name,
-                                certificateJpaEntity.acquisitionDate,
-                                certificateJpaEntity.evidence.fileUri
-                        ))
-                        .from(certificateJpaEntity)
-                        .join(certificateJpaEntity.member, memberJpaEntity)
-                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                        .where(memberJpaEntity.email.eq(email)
-                                .and(certificateJpaEntity.name.eq(name)))
-                        .fetchOne()
-        ).map(certificateMapper::fromProjection).orElseThrow(CertificateNotFoundException::new);
     }
 
     @Override
