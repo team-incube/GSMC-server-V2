@@ -17,7 +17,7 @@ public class FindCertificateByEmailService implements FindCertificateByEmailUseC
 
     @Override
     public GetCertificatesResponse execute(String email) {
-        return new GetCertificatesResponse(certificatePersistencePort.findCertificateByEmail(email)
+        return new GetCertificatesResponse(certificatePersistencePort.findCertificateByMemberEmail(email)
         .stream()
                 .map(certificate -> new GetCertificateDto(
                         certificate.getId(),
