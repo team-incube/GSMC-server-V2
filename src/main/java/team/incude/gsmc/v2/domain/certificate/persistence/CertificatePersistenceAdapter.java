@@ -28,6 +28,11 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
     private final CertificateMapper certificateMapper;
 
     @Override
+    public Certificate findCertificateById(Long id) {
+        return certificateJpaRepository.findById(id).map(certificateMapper::toDomain).orElseThrow(CertificateNotFoundException::new);
+    }
+
+    @Override
     public List<Certificate> findCertificateByMemberEmail(String email) {
         return jpaQueryFactory
                 .select(Projections.constructor(
