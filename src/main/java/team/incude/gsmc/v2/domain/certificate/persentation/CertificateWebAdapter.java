@@ -36,4 +36,15 @@ public class CertificateWebAdapter {
         certificateApplicationPort.createCertificate(name, acquisitionDate, file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PatchMapping("/current/{certificateId}")
+    public ResponseEntity<Void> updateCurrentCertificates(
+            @PathVariable(value = "certificateId") Long certificateId,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "acquisitionDate", required = false) LocalDate acquisitionDate,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) {
+        certificateApplicationPort.updateCurrentCertificate(certificateId, name, acquisitionDate, file);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
