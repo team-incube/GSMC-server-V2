@@ -46,12 +46,15 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
     }
 
     @Override
-    public void deleteEvidenceById(Long evidenceId) {
-        evidenceJpaRepository.deleteById(evidenceId);
+    public Evidence findEvidenceById(Long id) {
+        return evidenceJpaRepository.findById(id)
+                .map(evidenceMapper::toDomain)
+                .orElseThrow(EvidenceNotFoundException::new);
     }
 
     @Override
     public void deleteEvidenceById(Long evidenceId) {
         evidenceJpaRepository.deleteById(evidenceId);
     }
+
 }
