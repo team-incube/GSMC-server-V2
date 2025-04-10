@@ -15,5 +15,6 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
         format_sql: true
+        use_sql_comments: true
 server:
   port: ${SERVER_PORT:8080}

@@ -8,7 +8,8 @@ import java.util.Optional;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface ScorePersistencePort {
-    Optional<Score> findScoreByNameAndEmail(String name, String email);
+    Score findScoreByCategoryNameAndMemberEmail(String name, String email);
+    Score findScoreByCategoryNameAndMemberEmailWithLock(String name, String email);
 
-    void saveScore(Score score);
+    Score saveScore(Score score);
 }

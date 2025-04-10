@@ -20,7 +20,6 @@ public enum ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND("Member Not Found", HttpStatus.NOT_FOUND.value()),
-    MEMBER_FORBIDDEN("Member Forbidden", HttpStatus.FORBIDDEN.value()),
     MEMBER_ALREADY_EXISTS("Member Already Exists", HttpStatus.CONFLICT.value()),
 
     // Category
@@ -28,9 +27,14 @@ public enum ErrorCode {
 
     // Auth
     MEMBER_UNAUTHORIZED("Member Not Authorized", HttpStatus.UNAUTHORIZED.value()),
+    MEMBER_FORBIDDEN("Member Forbidden", HttpStatus.FORBIDDEN.value()),
     REFRESH_TOKEN_INVALID("RefreshToken Expired Or Invalid", HttpStatus.UNAUTHORIZED.value()),
     EMAIL_AUTH_ATTEMPT_EXCEEDED("Email Auth Attempt Exceeded", HttpStatus.TOO_MANY_REQUESTS.value()),
-    PASSWORD_INVALID("Password Invalid", HttpStatus.UNAUTHORIZED.value());
+    PASSWORD_INVALID("Password Invalid", HttpStatus.UNAUTHORIZED.value()),
+
+
+    // Evidence
+    EVIDENCE_NOT_FOUND("Evidence Not Found", HttpStatus.NOT_FOUND.value());
 
     private final String message;
     private final int status;

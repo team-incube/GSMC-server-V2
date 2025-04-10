@@ -7,5 +7,5 @@ import team.incude.gsmc.v2.global.annotation.port.Port;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface OtherEvidencePersistencePort {
-    void saveOtherEvidence(OtherEvidence evidence);
+    OtherEvidence saveOtherEvidence(OtherEvidence evidence);
 }

@@ -61,7 +61,7 @@ dependencies {
 	implementation("org.apache.poi:poi:5.4.0")
 
 	// aws
-	implementation("com.amazonaws:aws-java-sdk-s3:1.12.782")
+	implementation("software.amazon.awssdk:s3:2.29.49")
 
 	// jakarta
 	annotationProcessor("jakarta.annotation:jakarta.annotation-api")

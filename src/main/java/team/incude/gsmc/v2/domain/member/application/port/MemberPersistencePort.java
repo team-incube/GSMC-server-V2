@@ -8,11 +8,12 @@ import java.util.Optional;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface MemberPersistencePort {
-    Optional<Member> findMemberByEmail(String email);
 
     Boolean existsMemberByEmail(String email);
 
     void updateMemberPassword(Long id, String newPassword);
 
     void saveMember(Member member);
+
+    Member findMemberByEmail(String email);
 }

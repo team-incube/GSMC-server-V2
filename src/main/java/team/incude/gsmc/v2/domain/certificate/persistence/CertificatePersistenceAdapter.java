@@ -42,4 +42,9 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
                 .map(certificateMapper::fromProjection)
                 .toList();
     }
+
+    @Override
+    public void saveCertificate(Certificate certificate) {
+        certificateJpaRepository.save(certificateMapper.toEntity(certificate));
+    }
 }
