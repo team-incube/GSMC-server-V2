@@ -14,4 +14,6 @@ public interface CertificateApplicationPort {
     GetCertificatesResponse findCertificateByEmail(String email);
 
     void createCertificate(String name, LocalDate acquisitionDate, MultipartFile file);
+
+    void updateCurrentCertificate(Long id, String name, LocalDate acquisitionDate, MultipartFile file);
 }
