@@ -36,7 +36,6 @@ public class UpdateCurrentCertificateService implements UpdateCurrentCertificate
     private final MemberPersistencePort memberPersistencePort;
     private final S3Port s3Port;
 
-
     // TODO: auth 구현 전 임시 코드
     private void setSecurityContext(String email) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, "");
