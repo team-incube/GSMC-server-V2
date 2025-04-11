@@ -12,8 +12,7 @@ public class ExtractFileKeyUtil {
     public String extractFileKey(String fileUrl) {
         try {
             URL url = new URL(fileUrl);
-            String path = url.getPath();
-            return path.substring(path.lastIndexOf("/") + 1);
+            return url.getPath().substring(1);
         } catch (MalformedURLException e) {
             throw new InvalidFileUrlException();
         }
