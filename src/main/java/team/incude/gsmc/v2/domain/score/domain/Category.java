@@ -11,5 +11,4 @@ public class Category {
     private Integer maximumValue;
     private Integer weight;
     private Boolean isEvidenceRequired;
-    private Boolean isLimitedBySemester;
 }

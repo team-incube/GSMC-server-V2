@@ -27,16 +27,12 @@ public class CategoryJpaEntity {
     @Column(name = "is_evidence_required", nullable = false)
     private Boolean isEvidenceRequired;
 
-    @Column(name = "is_limited_by_semester", nullable = false)
-    private Boolean isLimitedBySemester;
-
     @Builder
-    public CategoryJpaEntity(Long id, String name, Integer maximumValue, Integer weight, Boolean isEvidenceRequired, Boolean isLimitedBySemester) {
+    public CategoryJpaEntity(Long id, String name, Integer maximumValue, Integer weight, Boolean isEvidenceRequired) {
         this.id = id;
         this.name = name;
         this.maximumValue = maximumValue;
         this.weight = weight;
         this.isEvidenceRequired = isEvidenceRequired;
-        this.isLimitedBySemester = isLimitedBySemester;
     }
 }
