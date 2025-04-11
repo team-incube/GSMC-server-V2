@@ -47,4 +47,10 @@ public class CertificateWebAdapter {
         certificateApplicationPort.updateCurrentCertificate(certificateId, name, acquisitionDate, file);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @DeleteMapping("/current/{certificateId}")
+    public ResponseEntity<Void> deleteCurrentCertificates(@PathVariable(value = "certificateId") Long certificateId) {
+        certificateApplicationPort.deleteCurrentCertificate(certificateId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
