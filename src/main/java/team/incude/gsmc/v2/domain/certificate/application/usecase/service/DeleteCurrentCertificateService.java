@@ -18,6 +18,7 @@ import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.InvalidScoreValueException;
 import team.incude.gsmc.v2.global.util.ExtractFileKeyUtil;
 
 @Service
@@ -64,6 +65,8 @@ public class DeleteCurrentCertificateService implements DeleteCurrentCertificate
         if (score.getValue() > 0) {
             score.minusValue(1);
             scorePersistencePort.saveScore(score);
+        } else {
+            throw new InvalidScoreValueException();
         }
 
         certificatePersistencePort.deleteCertificateById(certificate.getId());
