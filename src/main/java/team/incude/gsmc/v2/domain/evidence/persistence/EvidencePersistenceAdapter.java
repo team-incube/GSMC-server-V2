@@ -44,6 +44,7 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
                 .toList();
     }
 
+
     @Override
     public Evidence findEvidenceById(Long id) {
         return evidenceJpaRepository.findById(id)
