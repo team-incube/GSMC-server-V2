@@ -45,7 +45,7 @@ public class CertificateWebAdapter {
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
         certificateApplicationPort.updateCurrentCertificate(certificateId, name, acquisitionDate, file);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/current/{certificateId}")
