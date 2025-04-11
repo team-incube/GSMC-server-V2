@@ -27,6 +27,6 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
 
     @Override
     public Evidence saveEvidence(Evidence evidence) {
-        return evidenceMapper.toDomain(evidenceJpaRepository.saveAndFlush(evidenceMapper.toEntity(evidence)));
+        return evidenceMapper.toDomain(evidenceJpaRepository.save(evidenceMapper.toEntity(evidence)));
     }
 }

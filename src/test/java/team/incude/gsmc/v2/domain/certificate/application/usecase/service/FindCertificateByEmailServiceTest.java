@@ -65,7 +65,7 @@ class FindCertificateByEmailServiceTest {
                         .evidence(otherEvidence2)
                         .build();
 
-                when(certificatePersistencePort.findCertificateByEmail(email))
+                when(certificatePersistencePort.findCertificateByMemberEmail(email))
                         .thenReturn(List.of(certificate1, certificate2));
 
                 // when

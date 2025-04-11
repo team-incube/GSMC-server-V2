@@ -1,8 +1,8 @@
 package team.incude.gsmc.v2.global.util;
 
 import lombok.experimental.UtilityClass;
-import team.incude.gsmc.v2.global.thirdparty.aws.exception.EmptyFileException;
-import team.incude.gsmc.v2.global.thirdparty.aws.exception.FileNameTooLongException;
+import team.incude.gsmc.v2.global.util.exception.EmptyFileException;
+import team.incude.gsmc.v2.global.util.exception.FileNameTooLongException;
 
 import java.io.IOException;
 import java.io.InputStream;
