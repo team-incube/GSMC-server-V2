@@ -29,4 +29,9 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
     public Evidence saveEvidence(Evidence evidence) {
         return evidenceMapper.toDomain(evidenceJpaRepository.save(evidenceMapper.toEntity(evidence)));
     }
+
+    @Override
+    public void deleteEvidenceById(Long id) {
+        evidenceJpaRepository.deleteById(id);
+    }
 }

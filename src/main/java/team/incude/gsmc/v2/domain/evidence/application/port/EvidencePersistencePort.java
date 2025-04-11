@@ -9,4 +9,6 @@ public interface EvidencePersistencePort {
     Evidence findEvidenceById(Long id);
 
     Evidence saveEvidence(Evidence evidence);
+
+    void deleteEvidenceById(Long id);
 }
