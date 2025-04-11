@@ -8,11 +8,12 @@ import java.util.List;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface EvidencePersistencePort {
+    Evidence saveEvidence(Evidence evidence);
+
     List<Evidence> findEvidencesByEmail(String email);
 
-    void deleteEvidenceByEvidenceId(Long evidenceId);
+    void deleteEvidenceById(Long evidenceId);
 
     Evidence findEvidenceById(Long id);
 
-    Evidence saveEvidence(Evidence evidence);
 }
