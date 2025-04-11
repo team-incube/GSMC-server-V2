@@ -1,11 +1,12 @@
 package team.incude.gsmc.v2.domain.evidence.persistence;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
-import team.incude.gsmc.v2.domain.evidence.persistence.entity.ActivityEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ActivityEvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -45,29 +46,64 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public ActivityEvidence findActivityEvidenceByEvidenceIdAndEvidenceType(Long evidenceId, EvidenceType evidenceType) {
-        ActivityEvidenceJpaEntity jpaEntity = jpaQueryFactory
+    public List<ActivityEvidence> findActivityEvidenceByMemberAndTypeAndTitle(Member member, EvidenceType evidenceType, String title) {
+        return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
+                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
                 .where(
-                        evidenceJpaEntity.id.eq(evidenceId),
-                        evidenceJpaEntity.evidenceType.eq(evidenceType)
+                        memberEq(member),
+                        evidenceTypeEq(evidenceType),
+                        titleEq(title)
                 )
-                .fetchOne();
-
-        return activityEvidenceMapper.toDomain(jpaEntity);
+                .fetch()
+                .stream()
+                .map(activityEvidenceMapper::toDomain)
+                .toList();
     }
 
     @Override
-    public void saveActivityEvidence(ActivityEvidence activityEvidence) {
-        activityEvidenceJpaRepository.save(activityEvidenceMapper.toEntity(activityEvidence));
+    public ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence) {
+        return activityEvidenceMapper.toDomain(activityEvidenceJpaRepository.save(activityEvidenceMapper.toEntity(activityEvidence)));
     }
 
     @Override
-    public void deleteActivityEvidenceByEvidenceId(Long evidenceId) {
-        jpaQueryFactory
+    public void deleteActivityEvidenceById(Long evidenceId) {
+        long deletedCount = jpaQueryFactory
                 .delete(activityEvidenceJpaEntity)
-                .where(activityEvidenceJpaEntity.evidence.id.eq(evidenceId))
+                .where(activityEvidenceJpaEntity.id.eq(evidenceId))
                 .execute();
+
+        if (deletedCount == 0) {
+            throw new ActivityEvidenceNotFountException();
+        }
     }
+
+    @Override
+    public Boolean existsActivityEvidenceByEvidenceId(Long evidenceId) {
+        Integer result = jpaQueryFactory
+                .selectOne()
+                .from(activityEvidenceJpaEntity)
+                .where(activityEvidenceJpaEntity.id.eq(evidenceId))
+                .fetchFirst();
+
+        return result != null;
+    }
+
+    private BooleanExpression memberEq(Member member) {
+        if (member == null) return null;
+        return scoreJpaEntity.member.eq(memberMapper.toEntity(member));
+    }
+
+    private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
+        if (evidenceType == null) return null;
+        return evidenceJpaEntity.evidenceType.eq(evidenceType);
+    }
+
+    private BooleanExpression titleEq(String title) {
+        if (title == null || title.isBlank()) return null;
+        return activityEvidenceJpaEntity.title.eq(title);
+    }
+
+
 }
