@@ -13,7 +13,11 @@ public interface ReadingEvidencePersistencePort {
 
     ReadingEvidence findReadingEvidenceByEvidenceId(Long evidenceId);
 
-    void saveReadingEvidence(ReadingEvidence readingEvidence);
+    ReadingEvidence saveReadingEvidence(ReadingEvidence readingEvidence);
 
-    void deleteReadingEvidenceByEvidenceId(Long evidenceId);
+    List<ReadingEvidence> findReadingEvidenceByMemberAndTypeAndTitle(Member member);
+
+    void deleteReadingEvidenceById(Long evidenceId);
+
+    Boolean existsReadingEvidenceByEvidenceId(Long evidenceId);
 }

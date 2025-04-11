@@ -52,15 +52,32 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     @Override
-    public void saveReadingEvidence(ReadingEvidence readingEvidence) {
-        readingEvidenceJpaRepository.save(readingEvidenceMapper.toEntity(readingEvidence));
+    public ReadingEvidence saveReadingEvidence(ReadingEvidence readingEvidence) {
+        return readingEvidenceMapper.toDomain(readingEvidenceJpaRepository.save(readingEvidenceMapper.toEntity(readingEvidence)));
     }
 
     @Override
-    public void deleteReadingEvidenceByEvidenceId(Long evidenceId) {
+    public List<ReadingEvidence> findReadingEvidenceByMemberAndTypeAndTitle(Member member) {
+        return List.of();
+    }
+
+    @Override
+    public void deleteReadingEvidenceById(Long evidenceId) {
         jpaQueryFactory
                 .delete(readingEvidenceJpaEntity)
-                .where(readingEvidenceJpaEntity.evidence.id.eq(evidenceId))
+                .where(readingEvidenceJpaEntity.id.eq(evidenceId))
                 .execute();
+    }
+
+    @Override
+    public Boolean existsReadingEvidenceByEvidenceId(Long evidenceId) {
+         Integer result = jpaQueryFactory
+                .selectOne()
+                .from(readingEvidenceJpaEntity)
+                .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
+                .where(evidenceJpaEntity.id.eq(evidenceId))
+                .fetchFirst();
+
+         return result != null;
     }
 }
