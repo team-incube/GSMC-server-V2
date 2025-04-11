@@ -18,4 +18,6 @@ public interface CertificateApplicationPort {
     void updateCurrentCertificate(Long id, String name, LocalDate acquisitionDate, MultipartFile file);
 
     void deleteCurrentCertificate(Long id);
+
+    void deleteCertificateByEmailAndId(String email, Long id);
 }
