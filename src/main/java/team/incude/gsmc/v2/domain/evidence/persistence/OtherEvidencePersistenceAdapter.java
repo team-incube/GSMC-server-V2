@@ -22,4 +22,9 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     public OtherEvidence saveOtherEvidence(OtherEvidence otherEvidence) {
         return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceMapper.toEntity(otherEvidence)));
     }
+
+    @Override
+    public void deleteOtherEvidenceById(Long id) {
+        otherEvidenceJpaRepository.deleteById(id);
+    }
 }
