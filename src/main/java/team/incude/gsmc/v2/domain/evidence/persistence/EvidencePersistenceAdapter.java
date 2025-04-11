@@ -11,6 +11,7 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
@@ -23,13 +24,6 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
     private final EvidenceJpaRepository evidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final EvidenceMapper evidenceMapper;
-
-    @Override
-    public Evidence findEvidenceById(Long id) {
-        return evidenceJpaRepository.findById(id)
-                .map(evidenceMapper::toDomain)
-                .orElseThrow(EvidenceNotFoundException::new);
-    }
 
     @Override
     public Evidence saveEvidence(Evidence evidence) {
@@ -56,4 +50,8 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
         evidenceJpaRepository.deleteById(evidenceId);
     }
 
+    @Override
+    public void deleteEvidenceById(Long evidenceId) {
+        evidenceJpaRepository.deleteById(evidenceId);
+    }
 }
