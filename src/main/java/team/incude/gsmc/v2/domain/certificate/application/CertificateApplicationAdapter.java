@@ -3,9 +3,7 @@ package team.incude.gsmc.v2.domain.certificate.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificateApplicationPort;
-import team.incude.gsmc.v2.domain.certificate.application.usecase.CreateCertificateUseCase;
-import team.incude.gsmc.v2.domain.certificate.application.usecase.FindCertificateByEmailUseCase;
-import team.incude.gsmc.v2.domain.certificate.application.usecase.UpdateCurrentCertificateUseCase;
+import team.incude.gsmc.v2.domain.certificate.application.usecase.*;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificatesResponse;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
@@ -19,6 +17,8 @@ public class CertificateApplicationAdapter implements CertificateApplicationPort
     private final FindCertificateByEmailUseCase findCertificateByEmailUseCase;
     private final CreateCertificateUseCase createCertificateUseCase;
     private final UpdateCurrentCertificateUseCase updateCurrentCertificateUseCase;
+    private final DeleteCurrentCertificateUseCase deleteCurrentCertificateUseCase;
+    private final DeleteCertificateByEmailUseCase deleteCertificateByEmailUseCase;
 
     @Override
     public GetCertificatesResponse findCurrentCertificate() {
@@ -38,5 +38,15 @@ public class CertificateApplicationAdapter implements CertificateApplicationPort
     @Override
     public void updateCurrentCertificate(Long id, String name, LocalDate acquisitionDate, MultipartFile file) {
         updateCurrentCertificateUseCase.execute(id, name, acquisitionDate, file);
+    }
+
+    @Override
+    public void deleteCurrentCertificate(Long id) {
+        deleteCurrentCertificateUseCase.execute(id);
+    }
+
+    @Override
+    public void deleteCertificateByEmailAndId(String email, Long id) {
+        deleteCertificateByEmailUseCase.execute(email, id);
     }
 }

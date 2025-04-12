@@ -3,8 +3,10 @@ package team.incude.gsmc.v2.domain.evidence.persistence;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
+import team.incude.gsmc.v2.domain.evidence.exception.EvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.entity.OtherEvidenceJpaEntity;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.OtherEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.OtherEvidenceJpaRepository;
@@ -14,6 +16,7 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QOtherEvidenceJpaEntity.otherEvidenceJpaEntity;
@@ -47,14 +50,13 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public OtherEvidence findOtherEvidenceByEvidenceId(Long evidenceId) {
-        OtherEvidenceJpaEntity jpaEntity = jpaQueryFactory
+    public OtherEvidence findOtherEvidenceById(Long evidenceId) {
+        return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .leftJoin(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .where(evidenceJpaEntity.id.eq(evidenceId))
-                .fetchOne();
-
-        return otherEvidenceMapper.toDomain(jpaEntity);
+                .fetchOne()
+        ).map(otherEvidenceMapper::toDomain).orElseThrow(EvidenceNotFoundException::new);
     }
 
     @Override
@@ -74,7 +76,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .from(otherEvidenceJpaEntity)
                 .where(otherEvidenceJpaEntity.id.eq(evidenceId))
                 .fetchOne();
-
         return result != null;
     }
 }

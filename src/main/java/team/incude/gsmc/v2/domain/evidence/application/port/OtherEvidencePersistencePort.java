@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.application.port;
 
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -14,7 +15,7 @@ public interface OtherEvidencePersistencePort {
 
     List<OtherEvidence> findOtherEvidenceByMember(Member member);
 
-    OtherEvidence findOtherEvidenceByEvidenceId(Long evidenceId);
+    OtherEvidence findOtherEvidenceById(Long evidenceId);
 
     List<OtherEvidence> findOtherEvidenceByMemberAndType(Member member, EvidenceType evidenceType);
 

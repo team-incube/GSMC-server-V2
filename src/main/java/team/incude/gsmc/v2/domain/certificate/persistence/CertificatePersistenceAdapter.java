@@ -58,7 +58,12 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
     }
 
     @Override
-    public void saveCertificate(Certificate certificate) {
-        certificateJpaRepository.save(certificateMapper.toEntity(certificate));
+    public Certificate saveCertificate(Certificate certificate) {
+        return certificateMapper.toDomain(certificateJpaRepository.save(certificateMapper.toEntity(certificate)));
+    }
+
+    @Override
+    public void deleteCertificateById(Long id) {
+        certificateJpaRepository.deleteById(id);
     }
 }

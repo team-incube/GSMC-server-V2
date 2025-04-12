@@ -45,6 +45,18 @@ public class CertificateWebAdapter {
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
         certificateApplicationPort.updateCurrentCertificate(certificateId, name, acquisitionDate, file);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{email}/{certificateId}")
+    public ResponseEntity<Void> deleteCertificates(@PathVariable String email, @PathVariable Long certificateId) {
+        certificateApplicationPort.deleteCertificateByEmailAndId(email, certificateId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/current/{certificateId}")
+    public ResponseEntity<Void> deleteCurrentCertificates(@PathVariable(value = "certificateId") Long certificateId) {
+        certificateApplicationPort.deleteCurrentCertificate(certificateId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

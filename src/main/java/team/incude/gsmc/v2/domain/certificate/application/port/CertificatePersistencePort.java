@@ -12,5 +12,7 @@ public interface CertificatePersistencePort {
 
     List<Certificate> findCertificateByMemberEmail(String email);
 
-    void saveCertificate(Certificate certificate);
+    Certificate saveCertificate(Certificate certificate);
+
+    void deleteCertificateById(Long id);
 }
