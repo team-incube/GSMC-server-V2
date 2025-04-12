@@ -22,7 +22,7 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
     @Override
     @Transactional
     public void execute(Long evidenceId) {
-        Evidence evidence = evidencePersistencePort.findEvidenceByEvidenceId(evidenceId);
+        Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
 
         deleteSubEvidenceIfExists(evidence.getId());
 
