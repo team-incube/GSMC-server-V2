@@ -4,7 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
-import team.incude.gsmc.v2.domain.evidence.persistence.entity.ReadingEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.exception.EvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -13,6 +13,7 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QReadingEvidenceJpaEntity.readingEvidenceJpaEntity;
@@ -42,13 +43,13 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
 
     @Override
     public ReadingEvidence findReadingEvidenceByEvidenceId(Long evidenceId) {
-        ReadingEvidenceJpaEntity jpaEntity = jpaQueryFactory
-                .selectFrom(readingEvidenceJpaEntity)
-                .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .where(evidenceJpaEntity.id.eq(evidenceId))
-                .fetchOne();
-
-        return readingEvidenceMapper.toDomain(jpaEntity);
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(readingEvidenceJpaEntity)
+                        .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
+                        .where(evidenceJpaEntity.id.eq(evidenceId))
+                        .fetchOne()
+        ).map(readingEvidenceMapper::toDomain).orElseThrow(EvidenceNotFoundException::new);
     }
 
     @Override
@@ -71,13 +72,12 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
 
     @Override
     public Boolean existsReadingEvidenceByEvidenceId(Long evidenceId) {
-         Integer result = jpaQueryFactory
+        Integer result = jpaQueryFactory
                 .selectOne()
                 .from(readingEvidenceJpaEntity)
                 .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .where(evidenceJpaEntity.id.eq(evidenceId))
                 .fetchFirst();
-
-         return result != null;
+        return result != null;
     }
 }
