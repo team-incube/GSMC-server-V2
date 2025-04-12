@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.domain.evidence.persentation;
+package team.incude.gsmc.v2.domain.evidence.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;

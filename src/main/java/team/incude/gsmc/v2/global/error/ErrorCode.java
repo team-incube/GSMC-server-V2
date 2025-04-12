@@ -31,7 +31,16 @@ public enum ErrorCode {
 
 
     // Evidence
-    EVIDENCE_NOT_FOUND("Evidence Not Found", HttpStatus.NOT_FOUND.value());
+    EVIDENCE_NOT_FOUND("Evidence Not Found", HttpStatus.NOT_FOUND.value()),
+
+    // Activity Evidence
+    ACTIVITY_EVIDENCE_NOT_FOUNT("Activity Evidence Not Found", HttpStatus.NOT_FOUND.value()),
+
+    // Other Evidence
+    OTHER_EVIDENCE_NOT_FOUND("Other Evidence Not Found", HttpStatus.NOT_FOUND.value()),
+
+    // Reading Evidence
+    READING_EVIDENCE_NOT_FOUND("Reading Evidence Not Found", HttpStatus.NOT_FOUND.value());
 
     private final String message;
     private final int status;
