@@ -104,6 +104,4 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
         if (title == null || title.isBlank()) return null;
         return activityEvidenceJpaEntity.title.eq(title);
     }
-
-
 }
