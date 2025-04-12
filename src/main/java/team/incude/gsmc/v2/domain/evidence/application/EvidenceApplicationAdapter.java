@@ -56,17 +56,17 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public void submitActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
+    public void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
 
     }
 
     @Override
-    public void submitReadingEvidence(String title, String author, int page, String content) {
+    public void createReadingEvidence(String title, String author, int page, String content) {
 
     }
 
     @Override
-    public void submitOtherEvidence(String categoryName, MultipartFile file) {
+    public void createOtherEvidence(String categoryName, MultipartFile file) {
 
     }
 

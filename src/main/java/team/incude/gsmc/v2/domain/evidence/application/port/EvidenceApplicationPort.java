@@ -25,11 +25,11 @@ public interface EvidenceApplicationPort {
 
     void deleteEvidence(Long evidenceId);
 
-    void submitActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType);
+    void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType);
 
-    void submitReadingEvidence(String title, String author, int page, String content);
+    void createReadingEvidence(String title, String author, int page, String content);
 
-    void submitOtherEvidence(String categoryName, MultipartFile file);
+    void createOtherEvidence(String categoryName, MultipartFile file);
 
     void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus);
 }
