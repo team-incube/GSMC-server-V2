@@ -1,0 +1,37 @@
+name: Deploy to Cloudtype
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: ''
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Deploy to Cloudtype
+        env:
+          CLOUDTYPE_TOKEN: ${{ secrets.CLOUDTYPE_TOKEN }}
+          CLOUDTYPE_APP_NAME: ${{ secrets.CLOUDTYPE_USERNAME }}
+          CLOUDTYPE_USERNAME: ${{ secrets.CLOUDTYPE_APP_NAME }}
+        run: |
+          curl -X POST https://api.cloudtype.io/hooks/redeploy \
+            -H "Authorization: Bearer $CLOUDTYPE_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "owner": "'"$CLOUDTYPE_USERNAME"'",
+              "project": "'"$CLOUDTYPE_APP_NAME"'"
+            }'
