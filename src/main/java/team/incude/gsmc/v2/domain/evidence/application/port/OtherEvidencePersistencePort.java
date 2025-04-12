@@ -15,7 +15,7 @@ public interface OtherEvidencePersistencePort {
 
     List<OtherEvidence> findOtherEvidenceByMember(Member member);
 
-    OtherEvidence findOtherEvidenceByEvidenceId(Long evidenceId);
+    OtherEvidence findOtherEvidenceById(Long evidenceId);
 
     List<OtherEvidence> findOtherEvidenceByMemberAndType(Member member, EvidenceType evidenceType);
 
