@@ -16,19 +16,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
 
-    private final DeleteEvidenceUseCase deleteEvidenceUseCase;
-//    private final FindEvidenceByCurrentUserUseCase findEvidenceByCurrentUserUseCase;
-//    private final FindEvidenceByEmailUseCase findEvidenceByEmailUseCase;
-//    private final SubmitActivityEvidenceUseCase submitActivityEvidenceUseCase;
-//    private final SubmitOtherEvidenceUseCase submitOtherEvidenceUseCase;
-//    private final SubmitReadingEvidenceUseCase submitReadingEvidenceUseCase;
-//    private final UpdateHumanitiesEvidenceByCurrentUserUseCase updateHumanitiesEvidenceByCurrentUserUseCase;
-//    private final UpdateMajorEvidenceByCurrentUserUseCase updateMajorEvidenceByCurrentUserUseCase;
-//    private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
-//    private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
-//    private final UpdateReviewStatusUseCase updateReviewStatusUseCase;
+    // TODO: 추후 useCase 구현시 추가 예정
 
-    // TODO: 추후 usecase 구현시 변경예정
+    private final DeleteEvidenceUseCase deleteEvidenceUseCase;
 
     @Override
     public List<GetEvidencesResponse> findEvidenceByCurrentUser() {
