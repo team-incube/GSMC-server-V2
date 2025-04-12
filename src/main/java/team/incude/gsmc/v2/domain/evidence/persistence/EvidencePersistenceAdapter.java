@@ -53,11 +53,6 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
     }
 
     @Override
-    public void deleteEvidenceById(Long evidenceId) {
-        evidenceJpaRepository.deleteById(evidenceId);
-    }
-
-    @Override
     public void deleteEvidenceById(Long id) {
         evidenceJpaRepository.deleteById(id);
     }
