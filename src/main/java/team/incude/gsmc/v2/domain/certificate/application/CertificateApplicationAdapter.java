@@ -17,8 +17,7 @@ public class CertificateApplicationAdapter implements CertificateApplicationPort
     private final FindCertificateByEmailUseCase findCertificateByEmailUseCase;
     private final CreateCertificateUseCase createCertificateUseCase;
     private final UpdateCurrentCertificateUseCase updateCurrentCertificateUseCase;
-    private final DeleteCurrentCertificateUseCase deleteCurrentCertificateUseCase;
-    private final DeleteCertificateByEmailUseCase deleteCertificateByEmailUseCase;
+    private final DeleteCertificateUseCase deleteCertificateUseCase;
 
     @Override
     public GetCertificatesResponse findCurrentCertificate() {
@@ -42,11 +41,11 @@ public class CertificateApplicationAdapter implements CertificateApplicationPort
 
     @Override
     public void deleteCurrentCertificate(Long id) {
-        deleteCurrentCertificateUseCase.execute(id);
+        deleteCertificateUseCase.execute(id);
     }
 
     @Override
     public void deleteCertificateByEmailAndId(String email, Long id) {
-        deleteCertificateByEmailUseCase.execute(email, id);
+        deleteCertificateUseCase.execute(email, id);
     }
 }
