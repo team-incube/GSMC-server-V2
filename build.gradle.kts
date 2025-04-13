@@ -21,6 +21,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven("https://jitpack.io")
 }
 
 dependencies {
@@ -58,6 +59,9 @@ dependencies {
 
 	// apache poi
 	implementation("org.apache.poi:poi:5.4.0")
+
+	// aws
+	implementation("software.amazon.awssdk:s3:2.29.49")
 
 	// jakarta
 	annotationProcessor("jakarta.annotation:jakarta.annotation-api")

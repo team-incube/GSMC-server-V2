@@ -11,10 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ActivityEvidenceJpaEntity {
     @Id
-    @MapsId
-    @OneToOne
-    @JoinColumn(name = "evidence_id")
-    private EvidenceJpaEntity id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "evidence_id")
+    private Long id;
+
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "evidence_id", unique = true)
+    private EvidenceJpaEntity evidence;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -26,8 +29,9 @@ public class ActivityEvidenceJpaEntity {
     private String imageUri;
 
     @Builder
-    public ActivityEvidenceJpaEntity(EvidenceJpaEntity id, String title, String content, String imageUri) {
+    public ActivityEvidenceJpaEntity(Long id, EvidenceJpaEntity evidence, String title, String content, String imageUri) {
         this.id = id;
+        this.evidence = evidence;
         this.title = title;
         this.content = content;
         this.imageUri = imageUri;

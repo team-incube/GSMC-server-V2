@@ -8,5 +8,11 @@ import java.util.List;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface CertificatePersistencePort {
-    List<Certificate> findCertificateByEmail(String email);
+    Certificate findCertificateByIdWithLock(Long id);
+
+    List<Certificate> findCertificateByMemberEmail(String email);
+
+    Certificate saveCertificate(Certificate certificate);
+
+    void deleteCertificateById(Long id);
 }

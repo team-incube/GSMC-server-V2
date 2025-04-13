@@ -15,7 +15,8 @@ public class ReadingEvidenceMapper implements GenericMapper<ReadingEvidenceJpaEn
     @Override
     public ReadingEvidenceJpaEntity toEntity(ReadingEvidence readingEvidence) {
         return ReadingEvidenceJpaEntity.builder()
-                .id(evidenceMapper.toEntity(readingEvidence.getId()))
+                .id(readingEvidence.getId().getId())
+                .evidence(evidenceMapper.toEntity(readingEvidence.getId()))
                 .title(readingEvidence.getTitle())
                 .author(readingEvidence.getAuthor())
                 .page(readingEvidence.getPage())
@@ -26,7 +27,7 @@ public class ReadingEvidenceMapper implements GenericMapper<ReadingEvidenceJpaEn
     @Override
     public ReadingEvidence toDomain(ReadingEvidenceJpaEntity readingEvidenceJpaEntity) {
         return ReadingEvidence.builder()
-                .id(evidenceMapper.toDomain(readingEvidenceJpaEntity.getId()))
+                .id(evidenceMapper.toDomain(readingEvidenceJpaEntity.getEvidence()))
                 .title(readingEvidenceJpaEntity.getTitle())
                 .author(readingEvidenceJpaEntity.getAuthor())
                 .page(readingEvidenceJpaEntity.getPage())
