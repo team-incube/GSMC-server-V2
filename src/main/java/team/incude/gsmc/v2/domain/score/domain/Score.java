@@ -16,4 +16,8 @@ public class Score {
     public void plusValue(Integer value) {
         this.value += value;
     }
+
+    public void minusValue(Integer value) {
+        this.value -= value;
+    }
 }

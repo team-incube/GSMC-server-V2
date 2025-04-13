@@ -1,14 +1,17 @@
 package team.incude.gsmc.v2.global.thirdparty.aws.s3.usecase.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3DeleteFailedException;
 import team.incude.gsmc.v2.global.thirdparty.aws.s3.usecase.FileDeleteUseCase;
 
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileDeleteService implements FileDeleteUseCase {
@@ -24,7 +27,10 @@ public class FileDeleteService implements FileDeleteUseCase {
                 .key(uniqueFileName)
                 .build();
         return s3AsyncClient.deleteObject(deleteObjectRequest).thenAccept(response -> {
-            System.out.println("File deleted successfully: " + uniqueFileName);
+            log.info("File deleted successfully: {}", uniqueFileName);
+        }).exceptionally(throwable -> {
+            log.error("Failed to delete file: {}", uniqueFileName, throwable);
+            throw new S3DeleteFailedException();
         });
     }
 }

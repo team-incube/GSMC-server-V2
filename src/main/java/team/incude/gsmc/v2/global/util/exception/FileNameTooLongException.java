@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.thirdparty.aws.exception;
+package team.incude.gsmc.v2.global.util.exception;
 
 import team.incude.gsmc.v2.global.error.ErrorCode;
 import team.incude.gsmc.v2.global.error.exception.GsmcException;
