@@ -24,7 +24,8 @@ public class RefreshUseCase {
     public AuthTokenResponse execute(String refreshToken) {
         if(jwtParserService.validateRefreshToken(refreshToken)) {
             String email = jwtParserService.getEmailFromRefreshToken(refreshToken);
-            Member member = memberPersistencePort.findMemberByEmail(email).orElseThrow(MemberNotFoundException::new);
+            Member member = memberPersistencePort.findMemberByEmail(email);
+            if (member == null) { throw new MemberNotFoundException();}
             jwtRefreshManagementService.deleteRefreshToken(refreshToken);
             TokenDto newAccessToken = jwtIssueService.issueAccessToken(email, member.getRole());
             TokenDto newRefreshToken = jwtIssueService.issueRefreshToken(email);

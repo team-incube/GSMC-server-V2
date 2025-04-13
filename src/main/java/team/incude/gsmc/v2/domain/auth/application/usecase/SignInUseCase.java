@@ -20,7 +20,8 @@ public class SignInUseCase {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public AuthTokenResponse execute(String email, String password) {
-        Member member = memberPersistencePort.findMemberByEmail(email).orElseThrow(MemberNotFoundException::new);
+        Member member = memberPersistencePort.findMemberByEmail(email);
+        if (member == null) { throw new MemberNotFoundException(); }
         if (bCryptPasswordEncoder.matches(password, member.getPassword())) {
             TokenDto accessToken = jwtIssueService.issueAccessToken(member.getEmail(), member.getRole());
             TokenDto refreshToken = jwtIssueService.issueRefreshToken(member.getEmail());
