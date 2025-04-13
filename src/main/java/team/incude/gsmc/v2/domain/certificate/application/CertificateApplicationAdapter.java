@@ -14,19 +14,19 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class CertificateApplicationAdapter implements CertificateApplicationPort {
 
-    private final FindCertificateByEmailUseCase findCertificateByEmailUseCase;
+    private final FindCertificateUseCase findCertificateUseCase;
     private final CreateCertificateUseCase createCertificateUseCase;
     private final UpdateCurrentCertificateUseCase updateCurrentCertificateUseCase;
     private final DeleteCertificateUseCase deleteCertificateUseCase;
 
     @Override
     public GetCertificatesResponse findCurrentCertificate() {
-        return null;
+        return findCertificateUseCase.execute();
     }
 
     @Override
     public GetCertificatesResponse findCertificateByEmail(String email) {
-        return findCertificateByEmailUseCase.execute(email);
+        return findCertificateUseCase.execute(email);
     }
 
     @Override
