@@ -31,7 +31,7 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALID("RefreshToken Expired Or Invalid", HttpStatus.UNAUTHORIZED.value()),
     EMAIL_AUTH_ATTEMPT_EXCEEDED("Email Auth Attempt Exceeded", HttpStatus.TOO_MANY_REQUESTS.value()),
     PASSWORD_INVALID("Password Invalid", HttpStatus.UNAUTHORIZED.value()),
-
+    VERIFICATION_INVALID("Verification Invalid", HttpStatus.UNAUTHORIZED.value()),
 
     // Evidence
     EVIDENCE_NOT_FOUND("Evidence Not Found", HttpStatus.NOT_FOUND.value());
