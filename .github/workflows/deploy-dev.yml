@@ -27,11 +27,11 @@ jobs:
               ports: "8080"
               env:
                 - name: SPRING_PROFILES_ACTIVE
-                  value: dev
+                  value: ${{ secrets.SPRING_PROFILES_ACTIVE }}
                 - name: JPA_DDL_AUTO
-                  value: none
+                  value: ${{ secrets.JPA_DDL_AUTO }}
                 - name: SERVER_PORT
-                  value: 8080
+                  value: ${{ secrets.SERVER_PORT }}
                 - name: AWS_ACCESS_KEY_ID
                   value: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 - name: AWS_SECRET_ACCESS_KEY
