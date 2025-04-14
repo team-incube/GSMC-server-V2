@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.score.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team.incude.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
@@ -18,12 +19,12 @@ public class ScoreWebAdapter {
 
     @GetMapping("/current")
     public ResponseEntity<GetScoreResponse> getCurrentScore() {
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.findCurrentScore());
     }
 
     @GetMapping("/{email}")
     public ResponseEntity<GetScoreResponse> getScoreByEmail(@PathVariable(value = "email") String email) {
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.findScoreByEmail(email));
     }
 
     @PatchMapping("/current")
