@@ -16,8 +16,8 @@ public class AuthCodePersistenceAdapter implements AuthCodePersistencePort {
     private final AuthCodeMapper authCodeMapper;
 
     @Override
-    public void saveAuthCode(AuthCode authCode) {
-        authCodeRedisRepository.save(authCodeMapper.toEntity(authCode));
+    public AuthCode saveAuthCode(AuthCode authCode) {
+        return authCodeMapper.toDomain(authCodeRedisRepository.save(authCodeMapper.toEntity(authCode)));
     }
 
     @Override

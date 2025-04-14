@@ -27,7 +27,7 @@ public class AuthenticationPersistenceAdapter implements AuthenticationPersisten
     }
 
     @Override
-    public void saveAuthentication(Authentication authentication) {
-        authenticationRedisRepository.save(authenticationMapper.toEntity(authentication));
+    public Authentication saveAuthentication(Authentication authentication) {
+        return authenticationMapper.toDomain(authenticationRedisRepository.save(authenticationMapper.toEntity(authentication)));
     }
 }

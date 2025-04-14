@@ -4,16 +4,11 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
 
-import java.util.Optional;
-
 @Port(direction = PortDirection.OUTBOUND)
 public interface MemberPersistencePort {
-
     Boolean existsMemberByEmail(String email);
 
-    void updateMemberPassword(Long id, String newPassword);
-
-    void saveMember(Member member);
+    Member saveMember(Member member);
 
     Member findMemberByEmail(String email);
 }
