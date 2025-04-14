@@ -31,18 +31,10 @@ aws:
     name: gsmc-dev
     region: ap-northeast-2
 
-email:
+mail:
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  username: ${EMAIL_USERNAME:test@gmail.com}
-  password: ${EMAIL_PASSWORD:password1234}
+  username: ${EMAIL_USERNAME:wangjajihooon@gmail.com}
+  password: ${EMAIL_PASSWORD:glaqmpwiqtuwalps}
   ttl: 300
   attempt-limits: 5
-
-  properties:
-    mail:
-      smtp:
-        auth: true
-        starttls:
-          enable: true
-          required: true
