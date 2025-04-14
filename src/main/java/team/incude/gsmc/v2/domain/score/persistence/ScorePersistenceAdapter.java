@@ -62,11 +62,11 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     public List<Score> findScoreByMemberEmail(String email) {
         return jpaQueryFactory
                 .selectFrom(scoreJpaEntity)
-                .leftJoin(scoreJpaEntity.category, categoryJpaEntity)
-                .on(scoreJpaEntity.category.id.eq(categoryJpaEntity.id))
-                .leftJoin(scoreJpaEntity.member, memberJpaEntity)
-                .on(scoreJpaEntity.member.id.eq(memberJpaEntity.id))
-                .where(scoreJpaEntity.member.email.eq(email))
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.category, categoryJpaEntity)
+                .fetchJoin()
+                .where(memberJpaEntity.email.eq(email))
                 .fetch()
                 .stream()
                 .map(scoreMapper::toDomain)
