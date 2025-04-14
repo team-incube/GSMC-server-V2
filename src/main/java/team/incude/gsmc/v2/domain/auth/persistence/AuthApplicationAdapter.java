@@ -39,7 +39,7 @@ public class AuthApplicationAdapter implements AuthApplicationPort {
     }
 
     @Override
-    public void sendAuthenticationEmail(String email) throws MessagingException {
+    public void sendAuthenticationEmail(String email) {
         sendAuthenticationEmailUseCase.execute(email);
     }
 }

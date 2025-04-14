@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.auth.application.usecase.service;
 
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incude.gsmc.v2.domain.auth.application.port.AuthCodePersistencePort;
@@ -15,6 +16,7 @@ import team.incude.gsmc.v2.global.thirdparty.email.EmailSendService;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SendAuthenticationEmailService implements SendAuthenticationEmailUseCase {
 
     private final AuthCodePersistencePort authCodePersistencePort;
@@ -25,7 +27,7 @@ public class SendAuthenticationEmailService implements SendAuthenticationEmailUs
     @Value("${mail.attempt-limits}")
     private int attemptCountLimit;
 
-    public void execute(String email) throws MessagingException {
+    public void execute(String email) {
         if (authenticationPersistencePort.existsAuthenticationByEmail(email)) {
             Authentication authentication = authenticationPersistencePort.findAuthenticationByEmail(email);
             if (authentication.getAttemptCount() >= attemptCountLimit) {
@@ -52,6 +54,10 @@ public class SendAuthenticationEmailService implements SendAuthenticationEmailUs
                 .ttl(ttl)
                 .build();
         authCodePersistencePort.saveAuthCode(authCode);
-        emailSendService.sendEmail(email, authCode.getAuthCode());
+        try {
+            emailSendService.sendEmail(email, authCode.getAuthCode());
+        } catch (MessagingException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }
