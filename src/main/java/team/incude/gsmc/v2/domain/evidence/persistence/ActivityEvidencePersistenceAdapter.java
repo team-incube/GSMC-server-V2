@@ -9,15 +9,17 @@ import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ActivityEvidenceJpaRepository;
-import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QActivityEvidenceJpaEntity.activityEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -30,14 +32,16 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private final MemberMapper memberMapper;
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByMemberAndEvidenceType(Member member, EvidenceType evidenceType) {
+    public List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .leftJoin(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
                 .where(
-                        scoreJpaEntity.member.eq(memberMapper.toEntity(member)),
-                        evidenceJpaEntity.evidenceType.eq(evidenceType)
+                        memberEmailEq(email),
+                        evidenceTypeEq(evidenceType)
                 )
                 .fetch()
                 .stream()
@@ -46,20 +50,13 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByMemberAndTypeAndTitle(Member member, EvidenceType evidenceType, String title) {
-        return jpaQueryFactory
+    public ActivityEvidence findActivityEvidenceById(Long id) {
+        return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .where(
-                        memberEq(member),
-                        evidenceTypeEq(evidenceType),
-                        titleEq(title)
-                )
-                .fetch()
-                .stream()
-                .map(activityEvidenceMapper::toDomain)
-                .toList();
+                .where(evidenceJpaEntity.id.eq(id))
+                .fetchOne()
+        ).map(activityEvidenceMapper::toDomain).orElseThrow(ActivityEvidenceNotFountException::new);
     }
 
     @Override
@@ -90,18 +87,13 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
         return result != null;
     }
 
-    private BooleanExpression memberEq(Member member) {
-        if (member == null) return null;
-        return scoreJpaEntity.member.eq(memberMapper.toEntity(member));
+    private BooleanExpression memberEmailEq(String email) {
+        if (email == null) return null;
+        return memberJpaEntity.email.eq(email);
     }
 
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
         if (evidenceType == null) return null;
         return evidenceJpaEntity.evidenceType.eq(evidenceType);
-    }
-
-    private BooleanExpression titleEq(String title) {
-        if (title == null || title.isBlank()) return null;
-        return activityEvidenceJpaEntity.title.eq(title);
     }
 }
