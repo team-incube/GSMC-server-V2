@@ -1,16 +1,13 @@
 package team.incude.gsmc.v2.domain.evidence.persistence;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
-import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.exception.EvidenceNotFoundException;
-import team.incude.gsmc.v2.domain.evidence.persistence.entity.OtherEvidenceJpaEntity;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.OtherEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.OtherEvidenceJpaRepository;
-import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
@@ -20,6 +17,8 @@ import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QOtherEvidenceJpaEntity.otherEvidenceJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -37,12 +36,14 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public List<OtherEvidence> findOtherEvidenceByMember(Member member) {
+    public List<OtherEvidence> findOtherEvidenceByEmail(String email) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .leftJoin(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .where(scoreJpaEntity.member.eq(memberMapper.toEntity(member)))
+                .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .leftJoin(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
+                .where(memberEmailEq(email))
                 .fetch()
                 .stream()
                 .map(otherEvidenceMapper::toDomain)
@@ -60,11 +61,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public List<OtherEvidence> findOtherEvidenceByMemberAndType(Member member, EvidenceType evidenceType) {
-        return List.of();
-    }
-
-    @Override
     public void deleteOtherEvidenceById(Long evidenceId) {
         otherEvidenceJpaRepository.deleteById(evidenceId);
     }
@@ -77,5 +73,10 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .where(otherEvidenceJpaEntity.id.eq(evidenceId))
                 .fetchOne();
         return result != null;
+    }
+
+    private BooleanExpression memberEmailEq(String email) {
+        if (email == null) return null;
+        return memberJpaEntity.email.eq(email);
     }
 }
