@@ -8,6 +8,8 @@ public class DomainAuthorizationConfig {
 
     public void configureAuthorization(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v2/auth/**").permitAll()
+                .requestMatchers("/api/v2/**").hasAnyRole("STUDENT", "ADMIN", "TEACHER")
                 .anyRequest().permitAll()
         );
     }
