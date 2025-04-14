@@ -10,8 +10,6 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidenc
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
-import java.util.List;
-
 @Adapter(direction = PortDirection.INBOUND)
 @RequiredArgsConstructor
 public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
@@ -21,13 +19,13 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final DeleteEvidenceUseCase deleteEvidenceUseCase;
 
     @Override
-    public List<GetEvidencesResponse> findEvidenceByCurrentUser() {
-        return List.of();
+    public GetEvidencesResponse findEvidenceByCurrentUser() {
+        return null;
     }
 
     @Override
-    public List<GetEvidencesResponse> findEvidenceByEmail(String email) {
-        return List.of();
+    public GetEvidencesResponse findEvidenceByEmail(String email) {
+        return null;
     }
 
     @Override

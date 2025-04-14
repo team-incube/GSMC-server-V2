@@ -11,9 +11,9 @@ import java.util.List;
 
 @Port(direction = PortDirection.INBOUND)
 public interface EvidenceApplicationPort {
-    List<GetEvidencesResponse> findEvidenceByCurrentUser();
+    GetEvidencesResponse findEvidenceByCurrentUser();
 
-    List<GetEvidencesResponse> findEvidenceByEmail(String email);
+    GetEvidencesResponse findEvidenceByEmail(String email);
 
     void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
 
