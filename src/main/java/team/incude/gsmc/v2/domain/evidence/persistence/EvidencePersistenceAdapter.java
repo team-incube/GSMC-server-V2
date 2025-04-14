@@ -10,12 +10,6 @@ import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRep
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
-import java.util.List;
-
-import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
-import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
-import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
-
 @Adapter(direction = PortDirection.OUTBOUND)
 @RequiredArgsConstructor
 public class EvidencePersistenceAdapter implements EvidencePersistencePort {
