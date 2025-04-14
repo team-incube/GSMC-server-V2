@@ -43,16 +43,7 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
     }
 
     @Override
-    public void updateMemberPassword(Long id, String password) {
-        jpaQueryFactory
-                .update(memberJpaEntity)
-                .set(memberJpaEntity.password, password)
-                .where(memberJpaEntity.id.eq(id))
-                .execute();
-    }
-
-    @Override
-    public void saveMember(Member member) {
-        memberJpaRepository.save(memberMapper.toEntity(member));
+    public Member saveMember(Member member) {
+        return memberMapper.toDomain(memberJpaRepository.save(memberMapper.toEntity(member)));
     }
 }
