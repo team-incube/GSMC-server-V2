@@ -15,10 +15,8 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
 
     private final DeleteEvidenceUseCase deleteEvidenceUseCase;
-    private final FindEvidenceByCurrentUserUseCase findEvidenceByCurrentUserUseCase;
-    private final FindEvidenceByEmailUseCase findEvidenceByEmailUseCase;
-    private final UpdateMajorEvidenceByCurrentUser updateMajorEvidenceByCurrentUser;
-    private final UpdateHumanitiesEvidenceByCurrentUserUseCase updateHumanitiesEvidenceByCurrentUserUseCase;
+    private final FindEvidenceUseCase findEvidenceUseCase;
+    private final UpdateActivityEvidenceByCurrentUserUseCase updateActivityEvidenceByCurrentUserUseCase;
     private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
     private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
     private final CreateActivityEvidenceUseCase createActivityEvidenceUseCase;
@@ -28,22 +26,22 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
 
     @Override
     public GetEvidencesResponse findEvidenceByCurrentUser() {
-        return findEvidenceByCurrentUserUseCase.execute();
+        return findEvidenceUseCase.execute();
     }
 
     @Override
     public GetEvidencesResponse findEvidenceByEmail(String email) {
-        return findEvidenceByEmailUseCase.execute(email);
+        return findEvidenceUseCase.execute(email);
     }
 
     @Override
     public void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file) {
-        updateMajorEvidenceByCurrentUser.execute(evidenceId, title, content, file);
+        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.MAJOR);
     }
 
     @Override
     public void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file) {
-        updateHumanitiesEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file);
+        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.HUMANITIES);
     }
 
     @Override
