@@ -60,7 +60,7 @@ public class SignUpService implements SignUpUseCase {
 
     private String parsingEmail(String email) {
 
-        if (email == null | !email.startsWith("s") || !email.endsWith("@gsm.hs.kr")) {
+        if (!email.startsWith("s") || !email.endsWith("@gsm.hs.kr")) {
             throw new EmailFormatInvalidException();
         }
 
