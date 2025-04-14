@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.persistence;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
@@ -7,8 +8,6 @@ import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.exception.EvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
-import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
@@ -17,6 +16,8 @@ import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QReadingEvidenceJpaEntity.readingEvidenceJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -26,15 +27,15 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private final ReadingEvidenceJpaRepository readingEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ReadingEvidenceMapper readingEvidenceMapper;
-    private final MemberMapper memberMapper;
 
     @Override
-    public List<ReadingEvidence> findReadingEvidenceByMember(Member member) {
+    public List<ReadingEvidence> findReadingEvidenceByEmail(String email) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
                 .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .where(scoreJpaEntity.member.eq(memberMapper.toEntity(member)))
+                .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .where(memberEmailEq(email))
                 .fetch()
                 .stream()
                 .map(readingEvidenceMapper::toDomain)
@@ -58,8 +59,21 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     @Override
-    public List<ReadingEvidence> findReadingEvidenceByMemberAndTypeAndTitle(Member member) {
-        return List.of();
+    public List<ReadingEvidence> findReadingEvidenceByEmailAndTitle(String email, String title) {
+        return jpaQueryFactory
+                .selectFrom(readingEvidenceJpaEntity)
+                .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
+                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .leftJoin(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
+                .where(
+                        memberEmailEq(email),
+                        readingEvidenceJpaEntity.title.eq(title)
+                )
+                .fetch()
+                .stream()
+                .map(readingEvidenceMapper::toDomain)
+                .toList();
     }
 
     @Override
@@ -79,5 +93,10 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
                 .where(evidenceJpaEntity.id.eq(evidenceId))
                 .fetchFirst();
         return result != null;
+    }
+
+    private BooleanExpression memberEmailEq(String email) {
+        if (email == null) return null;
+        return memberJpaEntity.email.eq(email);
     }
 }
