@@ -30,22 +30,6 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
     }
 
     @Override
-    public List<Evidence> findEvidencesByEmail(String email) {
-        return jpaQueryFactory
-                .selectFrom(evidenceJpaEntity)
-                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
-                .where(
-                        memberJpaEntity.email.eq(email)
-                )
-                .fetch()
-                .stream()
-                .map(evidenceMapper::toDomain)
-                .toList();
-    }
-
-
-    @Override
     public Evidence findEvidenceById(Long id) {
         return evidenceJpaRepository.findById(id)
                 .map(evidenceMapper::toDomain)

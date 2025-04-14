@@ -12,7 +12,5 @@ public interface EvidencePersistencePort {
 
     Evidence saveEvidence(Evidence evidence);
 
-    List<Evidence> findEvidencesByEmail(String email);
-
     void deleteEvidenceById(Long evidenceId);
 }
