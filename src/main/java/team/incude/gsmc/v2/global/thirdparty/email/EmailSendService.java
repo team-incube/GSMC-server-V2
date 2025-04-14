@@ -15,8 +15,8 @@ import org.thymeleaf.context.Context;
 public class EmailSendService {
 
     private static final String EMAIL_SUBJECT = "gsmc 이메일 인증";
-    private JavaMailSender mailSender;
-    private TemplateEngine templateEngine;
+    private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
     @Async
     public void sendEmail(String to, String authCode) throws MessagingException {
