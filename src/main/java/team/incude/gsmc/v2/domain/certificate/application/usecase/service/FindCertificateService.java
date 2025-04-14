@@ -8,14 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incude.gsmc.v2.domain.certificate.application.usecase.FindCertificateUseCase;
-import team.incude.gsmc.v2.domain.certificate.domain.Certificate;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.GetCertificateDto;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificatesResponse;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class FindCertificateService implements FindCertificateService {
+public class FindCertificateService implements FindCertificateUseCase {
 
     private final CertificatePersistencePort certificatePersistencePort;
 
