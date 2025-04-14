@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
-import team.incude.gsmc.v2.domain.certificate.application.usecase.DeleteCurrentCertificateUseCase;
+import team.incude.gsmc.v2.domain.certificate.application.usecase.DeleteCertificateUseCase;
 import team.incude.gsmc.v2.domain.certificate.domain.Certificate;
 import team.incude.gsmc.v2.domain.certificate.exception.CertificateNotBelongToMemberException;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
@@ -24,7 +24,7 @@ import team.incude.gsmc.v2.global.util.ExtractFileKeyUtil;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DeleteCurrentCertificateService implements DeleteCurrentCertificateUseCase {
+public class DeleteCertificateService implements DeleteCertificateUseCase {
 
     private final ScorePersistencePort scorePersistencePort;
     private final CertificatePersistencePort certificatePersistencePort;
@@ -52,16 +52,25 @@ public class DeleteCurrentCertificateService implements DeleteCurrentCertificate
     public void execute(Long id) {
         String email = getAuthenticatedEmail();
         Member member = memberPersistencePort.findMemberByEmail(email);
+        deleteCertificate(member, id);
+    }
 
+    @Override
+    public void execute(String email, Long id) {
+        Member member = memberPersistencePort.findMemberByEmail(email);
+        deleteCertificate(member, id);
+    }
+
+    private void deleteCertificate(Member member, Long id) {
         Certificate certificate = certificatePersistencePort.findCertificateByIdWithLock(id);
         if (!certificate.getMember().getId().equals(member.getId())) {
             throw new CertificateNotBelongToMemberException();
         }
 
         OtherEvidence otherEvidence = certificate.getEvidence();
-        deleteFileFromS3(otherEvidence.getFileUri());
+        s3Port.deleteFile(ExtractFileKeyUtil.extractFileKey(otherEvidence.getFileUri()));
 
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(CATEGORY_NAME, email);
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(CATEGORY_NAME, member.getEmail());
         if (score.getValue() > 0) {
             score.minusValue(1);
             scorePersistencePort.saveScore(score);
@@ -72,9 +81,5 @@ public class DeleteCurrentCertificateService implements DeleteCurrentCertificate
         certificatePersistencePort.deleteCertificateById(certificate.getId());
         otherEvidencePersistencePort.deleteOtherEvidenceById(otherEvidence.getId().getId());
         evidencePersistencePort.deleteEvidenceById(otherEvidence.getId().getId());
-    }
-
-    private void deleteFileFromS3(String fileUri) {
-        s3Port.deleteFile(ExtractFileKeyUtil.extractFileKey(fileUri));
     }
 }

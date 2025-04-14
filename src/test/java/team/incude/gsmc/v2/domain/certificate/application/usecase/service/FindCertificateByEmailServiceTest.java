@@ -19,6 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+//TODO: Auth 구현 시 이 테스트의 완전한 변경 필요
 @ExtendWith(MockitoExtension.class)
 @DisplayName("이메일을 이용해서 자격증을 찾는 서비스 클래스의")
 class FindCertificateByEmailServiceTest {
@@ -27,7 +28,7 @@ class FindCertificateByEmailServiceTest {
     private CertificatePersistencePort certificatePersistencePort;
 
     @InjectMocks
-    private FindCertificateByEmailService findCertificateByEmailService;
+    private FindCertificateService findCertificateByEmailService;
 
     @Nested
     @DisplayName("execute 메서드는")
