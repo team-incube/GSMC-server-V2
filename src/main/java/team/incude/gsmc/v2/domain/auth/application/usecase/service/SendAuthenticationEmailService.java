@@ -47,6 +47,7 @@ public class SendAuthenticationEmailService implements SendAuthenticationEmailUs
                     .verified(false)
                     .ttl(ttl)
                     .build();
+            authenticationPersistencePort.saveAuthentication(newAuthentication);
         }
         AuthCode authCode = AuthCode.builder()
                 .email(email)
