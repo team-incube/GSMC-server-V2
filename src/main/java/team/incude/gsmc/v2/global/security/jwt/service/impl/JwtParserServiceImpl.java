@@ -29,6 +29,7 @@ public class JwtParserServiceImpl implements JwtParserService {
         refreshTokenKey = Keys.hmacShaKeyFor(refreshTokenSecret.getBytes());
     }
 
+    /*  수정해야함 !!! */
     @Override
     public Boolean validateAccessToken(String token) {
         try {
@@ -43,6 +44,7 @@ public class JwtParserServiceImpl implements JwtParserService {
     public Boolean validateRefreshToken(String token) {
         try {
             parseRefreshTokenClaims(token);
+
             return true;
         } catch (Exception e) {
             return false;
