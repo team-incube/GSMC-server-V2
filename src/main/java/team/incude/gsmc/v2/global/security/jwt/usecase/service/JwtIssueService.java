@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.service.impl;
+package team.incude.gsmc.v2.global.security.jwt.usecase.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.service.JwtIssueService;
-import team.incude.gsmc.v2.global.security.jwt.entity.RefreshTokenRedisEntity;
-import team.incude.gsmc.v2.global.security.jwt.repository.RefreshTokenRedisRepository;
+import team.incude.gsmc.v2.global.security.jwt.usecase.JwtIssueUseCase;
+import team.incude.gsmc.v2.global.security.jwt.persistence.entity.RefreshTokenRedisEntity;
+import team.incude.gsmc.v2.global.security.jwt.persistence.repository.RefreshTokenRedisRepository;
 import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
 
 import javax.crypto.SecretKey;
@@ -18,7 +18,7 @@ import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
-public class JwtIssueServieImpl implements JwtIssueService {
+public class JwtIssueService implements JwtIssueUseCase {
 
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     @Value("${jwt.access-token.secret}")
