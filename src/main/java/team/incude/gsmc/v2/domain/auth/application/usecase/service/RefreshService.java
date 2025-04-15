@@ -25,9 +25,9 @@ public class RefreshService implements RefreshUseCase {
         if (jwtParserService.validateRefreshToken(refreshToken)) {
             String email = jwtParserService.getEmailFromRefreshToken(refreshToken);
             Member member = memberPersistencePort.findMemberByEmail(email);
-            jwtRefreshManagementService.deleteRefreshToken(refreshToken);
             TokenDto newAccessToken = jwtIssueService.issueAccessToken(email, member.getRole());
             TokenDto newRefreshToken = jwtIssueService.issueRefreshToken(email);
+            jwtRefreshManagementService.deleteRefreshToken(refreshToken);
             return new AuthTokenResponse(
                     newAccessToken.token(),
                     newRefreshToken.token(),
