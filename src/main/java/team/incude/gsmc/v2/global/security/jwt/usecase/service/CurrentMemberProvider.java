@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.service;
+package team.incude.gsmc.v2.global.security.jwt.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
