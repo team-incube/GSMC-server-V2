@@ -26,6 +26,9 @@ public enum ErrorCode {
     // Member
     MEMBER_NOT_FOUND("Member Not Found", HttpStatus.NOT_FOUND.value()),
 
+    // Homeroom Teacher
+    HOMEROOM_TEACHER_DETAIL_NOT_FOUND("Homeroom Teacher Detail Not Found", HttpStatus.NOT_FOUND.value()),
+
     // Category
     CATEGORY_NOT_FOUND("Category Not Found", HttpStatus.NOT_FOUND.value()),
 
