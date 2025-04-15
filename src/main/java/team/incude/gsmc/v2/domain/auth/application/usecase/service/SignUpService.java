@@ -13,7 +13,8 @@ import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersisten
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-
+import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
+import team.incude.gsmc.v2.domain.member.persistence.mapper.StudentDetailMapper;
 
 @Service
 @Transactional
@@ -25,7 +26,7 @@ public class SignUpService implements SignUpUseCase {
     private final AuthenticationPersistencePort authenticationPersistencePort;
     private final StudentDetailPersistencePort studentDetailPersistencePort;
 
-    public void execute(String email, String password, String name) {
+    public void execute(String name, String email, String password) {
 //        Authentication authentication = authenticationPersistencePort.findAuthenticationByEmail(email);
 //        if (authentication == null || Boolean.FALSE.equals(authentication.getVerified())) {
 //            throw new MemberForbiddenException();
@@ -34,20 +35,20 @@ public class SignUpService implements SignUpUseCase {
             throw new MemberExistException();
         }
 
-        StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCode(parsingEmail(email));
+       StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCode(parsingEmail(email));
 
         Member member = Member.builder()
-                .name(name)
                 .email(email)
+                .name(name)
                 .password(passwordEncoder.encode(password))
                 .role(MemberRole.ROLE_STUDENT)
                 .build();
 
-        memberPersistencePort.saveMember(member);
+        Member savedMember = memberPersistencePort.saveMember(member);
 
         StudentDetail studentDetail = StudentDetail.builder()
                 .id(existedStudentDetail.getId())
-                .member(member)
+                .member(savedMember)
                 .grade(existedStudentDetail.getGrade())
                 .classNumber(existedStudentDetail.getClassNumber())
                 .number(existedStudentDetail.getNumber())
@@ -58,13 +59,19 @@ public class SignUpService implements SignUpUseCase {
         studentDetailPersistencePort.saveStudentDetail(studentDetail);
     }
 
-    private String parsingEmail(String email) {
+    private Integer parsingEmail(String email) {
 
         if (!email.startsWith("s") || !email.endsWith("@gsm.hs.kr")) {
             throw new EmailFormatInvalidException();
         }
 
         String studentId = email.substring(1, email.indexOf("@"));
-        return studentId;
+
+        try {
+            Integer studentCode = Integer.parseInt(studentId);
+            return studentCode;
+        } catch (NumberFormatException e) {
+            throw new EmailFormatInvalidException();
+        }
     }
 }
