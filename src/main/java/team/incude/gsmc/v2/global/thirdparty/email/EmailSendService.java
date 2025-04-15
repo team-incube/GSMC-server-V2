@@ -3,6 +3,7 @@ package team.incude.gsmc.v2.global.thirdparty.email;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -11,6 +12,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class EmailSendService {
 
@@ -19,16 +21,20 @@ public class EmailSendService {
     private final TemplateEngine templateEngine;
 
     @Async
-    public void sendEmail(String to, String authCode) throws MessagingException {
+    public void sendEmail(String to, String authCode) {
 
-        Context context = new Context();
-        context.setVariable("authCode", authCode);
-        String html = templateEngine.process("MailTemplate", context);
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setTo(to);
-        helper.setSubject(EMAIL_SUBJECT);
-        helper.setText(html, true);
-        mailSender.send(message);
+        try {
+            Context context = new Context();
+            context.setVariable("authCode", authCode);
+            String html = templateEngine.process("MailTemplate", context);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(EMAIL_SUBJECT);
+            helper.setText(html, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }

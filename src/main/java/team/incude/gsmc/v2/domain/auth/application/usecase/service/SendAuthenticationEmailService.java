@@ -54,10 +54,6 @@ public class SendAuthenticationEmailService implements SendAuthenticationEmailUs
                 .ttl(ttl)
                 .build();
         authCodePersistencePort.saveAuthCode(authCode);
-        try {
-            emailSendService.sendEmail(email, authCode.getAuthCode());
-        } catch (MessagingException e) {
-            log.error(e.getMessage(), e);
-        }
+        emailSendService.sendEmail(email, authCode.getAuthCode());
     }
 }
