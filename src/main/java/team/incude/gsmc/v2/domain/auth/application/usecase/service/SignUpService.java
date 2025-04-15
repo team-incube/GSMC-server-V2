@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.auth.application.port.AuthenticationPersistencePort;
 import team.incude.gsmc.v2.domain.auth.application.usecase.SignUpUseCase;
+import team.incude.gsmc.v2.domain.auth.domain.Authentication;
 import team.incude.gsmc.v2.domain.auth.exception.EmailFormatInvalidException;
 import team.incude.gsmc.v2.domain.auth.exception.MemberExistException;
+import team.incude.gsmc.v2.domain.auth.exception.MemberForbiddenException;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -27,10 +29,11 @@ public class SignUpService implements SignUpUseCase {
     private final StudentDetailPersistencePort studentDetailPersistencePort;
 
     public void execute(String name, String email, String password) {
-//        Authentication authentication = authenticationPersistencePort.findAuthenticationByEmail(email);
-//        if (authentication == null || Boolean.FALSE.equals(authentication.getVerified())) {
-//            throw new MemberForbiddenException();
-//        }
+
+        Authentication authentication = authenticationPersistencePort.findAuthenticationByEmail(email);
+        if (authentication == null || Boolean.FALSE.equals(authentication.getVerified())) {
+            throw new MemberForbiddenException();
+        }
         if (memberPersistencePort.existsMemberByEmail(email)) {
             throw new MemberExistException();
         }
