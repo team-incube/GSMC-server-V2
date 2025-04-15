@@ -9,7 +9,7 @@ public interface AuthCodeRedisRepository extends CrudRepository<AuthCodeRedisEnt
 
     AuthCodeRedisEntity findByAuthCode(String code);
 
-    Boolean existsByCode(String code);
+    Boolean existsByAuthCode(String code);
 
-    void deleteByCode(String code);
+    void deleteByAuthCode(String code);
 }
