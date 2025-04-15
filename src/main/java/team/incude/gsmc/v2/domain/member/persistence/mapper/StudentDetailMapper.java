@@ -16,7 +16,11 @@ public class StudentDetailMapper implements GenericMapper<StudentDetailJpaEntity
     public StudentDetailJpaEntity toEntity(StudentDetail studentDetail) {
         return StudentDetailJpaEntity.builder()
                 .id(studentDetail.getId())
-                .member(memberMapper.toEntity(studentDetail.getMember()))
+                .member(
+                        studentDetail.getMember() != null
+                        ? memberMapper.toEntity(studentDetail.getMember())
+                                : null
+                )
                 .grade(studentDetail.getGrade())
                 .classNumber(studentDetail.getClassNumber())
                 .number(studentDetail.getNumber())
@@ -29,7 +33,11 @@ public class StudentDetailMapper implements GenericMapper<StudentDetailJpaEntity
     public StudentDetail toDomain(StudentDetailJpaEntity studentDetailJpaEntity) {
         return StudentDetail.builder()
                 .id(studentDetailJpaEntity.getId())
-                .member(memberMapper.toDomain(studentDetailJpaEntity.getMember()))
+                .member(
+                        studentDetailJpaEntity.getMember() != null
+                        ? memberMapper.toDomain(studentDetailJpaEntity.getMember())
+                                : null
+                )
                 .grade(studentDetailJpaEntity.getGrade())
                 .classNumber(studentDetailJpaEntity.getClassNumber())
                 .number(studentDetailJpaEntity.getNumber())
