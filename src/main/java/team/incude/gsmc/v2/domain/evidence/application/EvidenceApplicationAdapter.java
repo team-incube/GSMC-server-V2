@@ -10,6 +10,8 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidenc
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
+import java.util.List;
+
 @Adapter(direction = PortDirection.INBOUND)
 @RequiredArgsConstructor
 public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
@@ -23,6 +25,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final CreateReadingEvidenceUseCase createReadingEvidenceUseCase;
     private final CreateOtherEvidenceUseCase createOtherEvidenceUseCase;
     private final UpdateReviewStatusUseCase updateReviewStatusUseCase;
+    private final FindEvidenceByEmailAndTitleAndTypeUseCase findEvidenceByEmailAndTitleAndTypeUseCase;
 
     @Override
     public GetEvidencesResponse findEvidenceByCurrentUser() {
@@ -77,5 +80,10 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     @Override
     public void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus) {
         updateReviewStatusUseCase.execute(evidenceId, reviewStatus);
+    }
+
+    @Override
+    public GetEvidencesResponse findEvidenceByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType) {
+        return findEvidenceByEmailAndTitleAndTypeUseCase.execute(email, title, evidenceType);
     }
 }

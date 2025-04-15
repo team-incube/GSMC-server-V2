@@ -30,4 +30,6 @@ public interface EvidenceApplicationPort {
     void createOtherEvidence(String categoryName, MultipartFile file);
 
     void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus);
+
+    GetEvidencesResponse findEvidenceByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType);
 }
