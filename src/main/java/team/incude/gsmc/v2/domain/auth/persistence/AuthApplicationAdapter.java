@@ -19,8 +19,8 @@ public class AuthApplicationAdapter implements AuthApplicationPort {
     private final SendAuthenticationEmailUseCase sendAuthenticationEmailUseCase;
 
     @Override
-    public void signUp(String email, String password, String name) {
-        signUpUseCase.execute(email, password, name);
+    public void signUp(String name, String email, String password) {
+        signUpUseCase.execute(name, email, password);
     }
 
     @Override
