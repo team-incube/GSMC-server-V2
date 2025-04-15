@@ -19,7 +19,7 @@ public class CurrentMemberProvider {
 
         if (principal instanceof CustomUserDetails) {
             String userId = ((CustomUserDetails) principal).getUsername();
-            return memberPersistencePort.findMemberById(Long.valueOf(userId));
+            return memberPersistencePort.findMemberByEmail(userId);
         } else {
             throw new MemberUnauthorizedException();
         }
