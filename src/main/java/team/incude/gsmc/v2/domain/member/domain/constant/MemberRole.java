@@ -4,7 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 public enum MemberRole implements GrantedAuthority {
     ROLE_ADMIN,
-    ROLE_TEACHER,
+    ROLE_HOMEROOM_TEACHER,
+    ROLE_MAISTER_PART_TEACHER,
     ROLE_STUDENT;
 
     @Override
