@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.service.impl;
+package team.incude.gsmc.v2.global.security.jwt.usecase.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -9,14 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.repository.RefreshTokenRedisRepository;
-import team.incude.gsmc.v2.global.security.jwt.service.JwtParserService;
+import team.incude.gsmc.v2.global.security.jwt.persistence.repository.RefreshTokenRedisRepository;
+import team.incude.gsmc.v2.global.security.jwt.usecase.JwtParserUseCase;
 
 import javax.crypto.SecretKey;
 
 @Service
 @RequiredArgsConstructor
-public class JwtParserServiceImpl implements JwtParserService {
+public class JwtParserService implements JwtParserUseCase {
     @Value("${jwt.access-token.secret}")
     private String acessTokenSecret;
     @Value("${jwt.refresh-token.secret}")
