@@ -9,21 +9,21 @@ import team.incude.gsmc.v2.domain.auth.presentation.data.response.AuthTokenRespo
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
-import team.incude.gsmc.v2.global.security.jwt.service.JwtIssueService;
+import team.incude.gsmc.v2.global.security.jwt.usecase.JwtIssueUseCase;
 
 @Service
 @RequiredArgsConstructor
 public class SignInService implements SignInUseCase {
 
-    private final JwtIssueService jwtIssueService;
+    private final JwtIssueUseCase jwtIssueUseCase;
     private final MemberPersistencePort memberPersistencePort;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public AuthTokenResponse execute(String email, String password) {
         Member member = memberPersistencePort.findMemberByEmail(email);
         if (bCryptPasswordEncoder.matches(password, member.getPassword())) {
-            TokenDto accessToken = jwtIssueService.issueAccessToken(member.getEmail(), member.getRole());
-            TokenDto refreshToken = jwtIssueService.issueRefreshToken(member.getEmail());
+            TokenDto accessToken = jwtIssueUseCase.issueAccessToken(member.getEmail(), member.getRole());
+            TokenDto refreshToken = jwtIssueUseCase.issueRefreshToken(member.getEmail());
             return new AuthTokenResponse(
                     accessToken.token(),
                     refreshToken.token(),
