@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
+import team.incude.gsmc.v2.global.security.jwt.repository.RefreshTokenRedisRepository;
 import team.incude.gsmc.v2.global.security.jwt.service.JwtParserService;
 
 import javax.crypto.SecretKey;
@@ -22,6 +23,7 @@ public class JwtParserServiceImpl implements JwtParserService {
     private String refreshTokenSecret;
     private SecretKey accessTokenKey;
     private SecretKey refreshTokenKey;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @PostConstruct
     public void init() {
@@ -29,7 +31,6 @@ public class JwtParserServiceImpl implements JwtParserService {
         refreshTokenKey = Keys.hmacShaKeyFor(refreshTokenSecret.getBytes());
     }
 
-    /*  수정해야함 !!! */
     @Override
     public Boolean validateAccessToken(String token) {
         try {
@@ -44,8 +45,7 @@ public class JwtParserServiceImpl implements JwtParserService {
     public Boolean validateRefreshToken(String token) {
         try {
             parseRefreshTokenClaims(token);
-
-            return true;
+            return refreshTokenRedisRepository.existsById(token);
         } catch (Exception e) {
             return false;
         }
