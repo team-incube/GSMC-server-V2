@@ -13,7 +13,7 @@ public interface ReadingEvidencePersistencePort {
 
     ReadingEvidence saveReadingEvidence(ReadingEvidence readingEvidence);
 
-    List<ReadingEvidence> findReadingEvidenceByEmailAndTitle(String email, String title, EvidenceType evidenceType);
+    List<ReadingEvidence> findReadingEvidenceByEmailAndTitleAndTypeAndGradeAndClassNumber(String email, String title, EvidenceType evidenceType, Integer grade, Integer classNumber);
 
     void deleteReadingEvidenceById(Long evidenceId);
 

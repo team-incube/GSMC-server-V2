@@ -16,6 +16,7 @@ import java.util.List;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QReadingEvidenceJpaEntity.readingEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -46,16 +47,19 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     @Override
-    public List<ReadingEvidence> findReadingEvidenceByEmailAndTitle(String email, String title, EvidenceType evidenceType) {
+    public List<ReadingEvidence> findReadingEvidenceByEmailAndTitleAndTypeAndGradeAndClassNumber(String email, String title, EvidenceType evidenceType, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
                 .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
                 .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id)).fetchJoin()
                 .where(
                         memberEmailEq(email),
                         titleEq(title),
-                        evidenceTypeEq(evidenceType)
+                        evidenceTypeEq(evidenceType),
+                        gradeEq(grade),
+                        classNumberEq(classNumber)
                 )
                 .fetch()
                 .stream()
@@ -96,5 +100,15 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
         if (evidenceType == null) return null;
         return evidenceJpaEntity.evidenceType.eq(evidenceType);
+    }
+
+    private BooleanExpression gradeEq(Integer grade) {
+        if (grade == null) return null;
+        return studentDetailJpaEntity.grade.eq(grade);
+    }
+
+    private BooleanExpression classNumberEq(Integer classNumber) {
+        if (classNumber == null) return null;
+        return studentDetailJpaEntity.classNumber.eq(classNumber);
     }
 }
