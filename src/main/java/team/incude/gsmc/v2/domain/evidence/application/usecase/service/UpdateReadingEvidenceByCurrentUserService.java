@@ -2,12 +2,12 @@ package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.UpdateReadingEvidenceByCurrentUserUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
-import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
 
@@ -21,6 +21,7 @@ public class UpdateReadingEvidenceByCurrentUserService implements UpdateReadingE
     private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
 
     @Override
+    @Transactional
     public void execute(Long evidenceId, String title, String author, String content, int page) {
         Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
         validateNotExistsReading(evidenceId);
@@ -41,7 +42,7 @@ public class UpdateReadingEvidenceByCurrentUserService implements UpdateReadingE
                 .id(evidence.getId())
                 .score(evidence.getScore())
                 .reviewStatus(ReviewStatus.PENDING)
-                .evidenceType(EvidenceType.READING)
+                .evidenceType(evidence.getEvidenceType())
                 .createdAt(evidence.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
                 .build();
