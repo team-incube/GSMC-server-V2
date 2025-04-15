@@ -34,7 +34,7 @@ aws:
 mail:
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  username: ${EMAIL_USERNAME:wangjajihooon@gmail.com}
-  password: ${EMAIL_PASSWORD:glaqmpwiqtuwalps}
+  username: ${EMAIL_USERNAME}
+  password: ${EMAIL_PASSWORD}
   ttl: 300
   attempt-limits: 5
