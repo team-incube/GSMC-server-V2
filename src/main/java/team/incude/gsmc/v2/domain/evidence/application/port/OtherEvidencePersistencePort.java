@@ -13,7 +13,7 @@ public interface OtherEvidencePersistencePort {
 
     List<OtherEvidence> findOtherEvidenceByEmail(String email);
 
-    List<OtherEvidence> findOtherEvidenceByEmailAndType(String email, EvidenceType evidenceType);
+    List<OtherEvidence> findOtherEvidenceByEmailAndTypeAndGradeAndClassNumber(String email, EvidenceType evidenceType, Integer grade, Integer classNumber);
 
     void deleteOtherEvidenceById(Long evidenceId);
 

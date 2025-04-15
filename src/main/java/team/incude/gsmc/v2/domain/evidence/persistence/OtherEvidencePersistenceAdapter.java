@@ -17,6 +17,7 @@ import java.util.List;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QOtherEvidenceJpaEntity.otherEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
@@ -27,7 +28,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private final OtherEvidenceJpaRepository otherEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final OtherEvidenceMapper otherEvidenceMapper;
-    private final MemberMapper memberMapper;
 
     @Override
     public OtherEvidence saveOtherEvidence(OtherEvidence otherEvidence) {
@@ -50,15 +50,18 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public List<OtherEvidence> findOtherEvidenceByEmailAndType(String email, EvidenceType evidenceType) {
+    public List<OtherEvidence> findOtherEvidenceByEmailAndTypeAndGradeAndClassNumber(String email, EvidenceType evidenceType, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .leftJoin(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
                 .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id)).fetchJoin()
                 .where(
                         memberEmailEq(email),
-                        evidenceTypeEq(evidenceType)
+                        evidenceTypeEq(evidenceType),
+                        gradeEq(grade),
+                        classNumberEq(classNumber)
                 )
                 .fetch()
                 .stream()
@@ -88,5 +91,15 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
         if (evidenceType == null) return null;
         return evidenceJpaEntity.evidenceType.eq(evidenceType);
+    }
+
+    private BooleanExpression gradeEq(Integer grade) {
+        if (grade == null) return null;
+        return studentDetailJpaEntity.grade.eq(grade);
+    }
+
+    private BooleanExpression classNumberEq(Integer classNumber) {
+        if (classNumber == null) return null;
+        return studentDetailJpaEntity.classNumber.eq(classNumber);
     }
 }
