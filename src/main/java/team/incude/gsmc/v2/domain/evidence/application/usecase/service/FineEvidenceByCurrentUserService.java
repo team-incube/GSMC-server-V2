@@ -1,8 +1,8 @@
 package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
@@ -30,13 +30,14 @@ public class FineEvidenceByCurrentUserService implements FindEvidenceUseCase {
     private final CurrentMemberProvider currentMemberProvider;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public GetEvidencesResponse execute() {
         Member member = currentMemberProvider.getCurrentUser();
         return findEvidence(member.getEmail());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GetEvidencesResponse execute(String email) {
         return findEvidence(email);
     }
