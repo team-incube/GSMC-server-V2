@@ -30,8 +30,13 @@ public record GetScoreSimulateRequest(
         Integer humanitiesActivitiesSelfDirectedActivities,
         Integer humanitiesActivitiesNewrrowS_S,
         Boolean foreignLangAttendanceToeicAcademyStatus,
-        String foreignLangTest,
-        Integer foreignLangTestScore
-        //TODO: 외국어 점수 과목 세분화 필요
+        Integer foreignLangToeicScore,
+        Integer foreignLangToeflScore,
+        Integer foreignLangTepsScore,
+        Integer foreignLangToeicSpeakingLevel,
+        Integer foreignLangOpicGrade,
+        Integer foreignLangJptScore,
+        Integer foreignLangCptScore,
+        Integer foreignLangHskScore
 ) {
 }
