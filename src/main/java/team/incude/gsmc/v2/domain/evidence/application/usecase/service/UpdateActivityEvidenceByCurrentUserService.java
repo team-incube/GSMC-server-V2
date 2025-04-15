@@ -49,7 +49,7 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
                 .id(evidence)
                 .title(title)
                 .content(content)
-                .imageUrl(parseImageUrl(file))
+                .imageUrl(uploadFile(file))
                 .build();
     }
 
@@ -64,7 +64,7 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
                 .build();
     }
 
-    private String parseImageUrl(MultipartFile file) {
+    private String uploadFile(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;
 
         try {
