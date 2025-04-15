@@ -22,7 +22,7 @@ public class AuthCodePersistenceAdapter implements AuthCodePersistencePort {
 
     @Override
     public Boolean existsAuthCodeByCode(String code) {
-        return authCodeRedisRepository.existsByCode(code);
+        return authCodeRedisRepository.existsByAuthCode(code);
     }
 
     @Override
@@ -32,6 +32,6 @@ public class AuthCodePersistenceAdapter implements AuthCodePersistencePort {
 
     @Override
     public void deleteAuthCodeByCode(String code) {
-        authCodeRedisRepository.deleteByCode(code);
+        authCodeRedisRepository.deleteByAuthCode(code);
     }
 }
