@@ -1,9 +1,9 @@
-package team.incude.gsmc.v2.global.security.jwt.service;
+package team.incude.gsmc.v2.global.security.jwt.usecase;
 
 import jakarta.servlet.http.HttpServletRequest;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
 
-public interface JwtParserService {
+public interface JwtParserUseCase {
     Boolean validateAccessToken(String token);
     Boolean validateRefreshToken(String token);
     String getEmailFromAccessToken(String token);
