@@ -11,4 +11,6 @@ public interface MemberPersistencePort {
     Member saveMember(Member member);
 
     Member findMemberByEmail(String email);
+
+    Member findMemberById(Long memberId);
 }
