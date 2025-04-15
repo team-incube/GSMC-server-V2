@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team.incude.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
 import team.incude.gsmc.v2.domain.score.presentation.data.request.GetScoreSimulateRequest;
+import team.incude.gsmc.v2.domain.score.presentation.data.request.PatchScoreRequest;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
 
@@ -28,13 +29,15 @@ public class ScoreWebAdapter {
     }
 
     @PatchMapping("/current")
-    public ResponseEntity<Void> updateCurrentScore(@Valid @RequestBody String score) {
-        return null;
+    public ResponseEntity<Void> updateCurrentScore(@Valid @RequestBody PatchScoreRequest request) {
+        scoreApplicationPort.updateCurrentScore(request.categoryName(), request.value());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping("/{email}")
-    public ResponseEntity<Void> updateScoreByEmail(@PathVariable(value = "email") String email,@Valid @RequestBody String score) {
-        return null;
+    public ResponseEntity<Void> updateScoreByEmail(@PathVariable(value = "email") String email, @Valid @RequestBody PatchScoreRequest request) {
+        scoreApplicationPort.updateScoreByEmail(email, request.categoryName(), request.value());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/simulate")
