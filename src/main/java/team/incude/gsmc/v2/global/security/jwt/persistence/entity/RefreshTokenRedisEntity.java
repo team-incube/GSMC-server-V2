@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.entity;
+package team.incude.gsmc.v2.global.security.jwt.persistence.entity;
 
 import lombok.Builder;
 import lombok.Getter;
