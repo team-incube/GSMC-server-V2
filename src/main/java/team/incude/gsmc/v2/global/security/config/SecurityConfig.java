@@ -9,20 +9,15 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import team.incude.gsmc.v2.global.security.jwt.filter.JwtAuthenticationFilter;
-import team.incude.gsmc.v2.global.security.jwt.service.JwtParserService;
-
-import java.util.Arrays;
+import team.incude.gsmc.v2.global.security.jwt.auth.filter.JwtAuthenticationFilter;
+import team.incude.gsmc.v2.global.security.jwt.usecase.JwtParserUseCase;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtParserService jwtParserService;
+    private final JwtParserUseCase jwtParserUseCase;
     private final DomainAuthorizationConfig domainAuthorizationConfig;
     private final CorsConfig corsConfig;
 
@@ -32,7 +27,7 @@ public class SecurityConfig {
         http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtParserService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtParserUseCase), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
