@@ -61,6 +61,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         saveCertificate(name, member, acquisitionDate, otherEvidence);
     }
 
+    // TODO: 이메일을 SecurityContext에 넣는 부분을 리팩토링해야함
     private String getAuthenticatedEmail() {
         setSecurityContext("s24058@gsm.hs.kr");
         return SecurityContextHolder.getContext().getAuthentication().getName();
@@ -134,6 +135,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         certificatePersistencePort.saveCertificate(certificate);
     }
 
+    // TODO: 이메일을 SecurityContext에 넣는 부분을 리팩토링해야함
     private void setSecurityContext(String email) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, "");
         SecurityContextHolder.clearContext();
