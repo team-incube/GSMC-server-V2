@@ -18,6 +18,7 @@ import java.util.List;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QActivityEvidenceJpaEntity.activityEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
@@ -28,7 +29,6 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private final ActivityEvidenceJpaRepository activityEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ActivityEvidenceMapper activityEvidenceMapper;
-    private final MemberMapper memberMapper;
 
     @Override
     public List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType) {
@@ -41,6 +41,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 .where(
                         memberEmailEq(email),
                         evidenceTypeEq(evidenceType)
+
                 )
                 .fetch()
                 .stream()
@@ -49,23 +50,25 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByEmailAndTypeAndTitle(String email, EvidenceType evidenceType, String title) {
+    public List<ActivityEvidence> findActivityEvidenceByEmailAndTypeAndTitleAndGradeAndClassNumber(String email, EvidenceType evidenceType, String title, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
                 .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id)).fetchJoin()
                 .where(
                         memberEmailEq(email),
                         evidenceTypeEq(evidenceType),
-                        titleEq(title)
+                        titleEq(title),
+                        gradeEq(grade),
+                        classNumberEq(classNumber)
                 )
                 .fetch()
                 .stream()
                 .map(activityEvidenceMapper::toDomain)
                 .toList();
     }
-
 
     @Override
     public ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence) {
@@ -108,5 +111,15 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private BooleanExpression titleEq(String title) {
         if (title == null) return null;
         return activityEvidenceJpaEntity.title.eq(title);
+    }
+
+    private BooleanExpression gradeEq(Integer grade) {
+        if (grade == null) return null;
+        return studentDetailJpaEntity.grade.eq(grade);
+    }
+
+    private BooleanExpression classNumberEq(Integer classNumber) {
+        if (classNumber == null) return null;
+        return studentDetailJpaEntity.classNumber.eq(classNumber);
     }
 }
