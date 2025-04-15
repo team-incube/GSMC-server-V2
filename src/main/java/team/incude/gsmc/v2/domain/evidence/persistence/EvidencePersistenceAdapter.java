@@ -15,7 +15,6 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 public class EvidencePersistenceAdapter implements EvidencePersistencePort {
 
     private final EvidenceJpaRepository evidenceJpaRepository;
-    private final JPAQueryFactory jpaQueryFactory;
     private final EvidenceMapper evidenceMapper;
 
     @Override
