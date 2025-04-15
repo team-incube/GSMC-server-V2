@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.filter;
+package team.incude.gsmc.v2.global.security.jwt.auth.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.service.JwtParserService;
+import team.incude.gsmc.v2.global.security.jwt.usecase.JwtParserUseCase;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,19 +21,19 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
-    private final JwtParserService jwtParserService;
+    private final JwtParserUseCase jwtParserUseCase;
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
-        String token = jwtParserService.resolveToken(request);
+        String token = jwtParserUseCase.resolveToken(request);
         String uri = request.getRequestURI();
         if (uri.startsWith("/api/v2/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
-        if (token != null && jwtParserService.validateAccessToken(token)) {
-            String email = jwtParserService.getEmailFromAccessToken(token);
-            MemberRole roles = jwtParserService.getRolesFromAccessToken(token);
+        if (token != null && jwtParserUseCase.validateAccessToken(token)) {
+            String email = jwtParserUseCase.getEmailFromAccessToken(token);
+            MemberRole roles = jwtParserUseCase.getRolesFromAccessToken(token);
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roles.name()));
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
