@@ -14,7 +14,6 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
-import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QActivityEvidenceJpaEntity.activityEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
@@ -50,14 +49,23 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public ActivityEvidence findActivityEvidenceById(Long id) {
-        return Optional.ofNullable(jpaQueryFactory
+    public List<ActivityEvidence> findActivityEvidenceByEmailAndTypeAndTitle(String email, EvidenceType evidenceType, String title) {
+        return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .where(evidenceJpaEntity.id.eq(id))
-                .fetchOne()
-        ).map(activityEvidenceMapper::toDomain).orElseThrow(ActivityEvidenceNotFoundException::new);
+                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .where(
+                        memberEmailEq(email),
+                        evidenceTypeEq(evidenceType),
+                        titleEq(title)
+                )
+                .fetch()
+                .stream()
+                .map(activityEvidenceMapper::toDomain)
+                .toList();
     }
+
 
     @Override
     public ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence) {
@@ -95,5 +103,10 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
         if (evidenceType == null) return null;
         return evidenceJpaEntity.evidenceType.eq(evidenceType);
+    }
+
+    private BooleanExpression titleEq(String title) {
+        if (title == null) return null;
+        return activityEvidenceJpaEntity.title.eq(title);
     }
 }

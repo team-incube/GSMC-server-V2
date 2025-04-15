@@ -5,19 +5,17 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
-import team.incude.gsmc.v2.domain.evidence.exception.EvidenceNotFoundException;
+import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
-import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QReadingEvidenceJpaEntity.readingEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
-import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -43,38 +41,28 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     @Override
-    public ReadingEvidence findReadingEvidenceByEvidenceId(Long evidenceId) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .selectFrom(readingEvidenceJpaEntity)
-                        .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                        .where(evidenceJpaEntity.id.eq(evidenceId))
-                        .fetchOne()
-        ).map(readingEvidenceMapper::toDomain).orElseThrow(EvidenceNotFoundException::new);
-    }
-
-    @Override
     public ReadingEvidence saveReadingEvidence(ReadingEvidence readingEvidence) {
         return readingEvidenceMapper.toDomain(readingEvidenceJpaRepository.save(readingEvidenceMapper.toEntity(readingEvidence)));
     }
 
     @Override
-    public List<ReadingEvidence> findReadingEvidenceByEmailAndTitle(String email, String title) {
+    public List<ReadingEvidence> findReadingEvidenceByEmailAndTitle(String email, String title, EvidenceType evidenceType) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
                 .leftJoin(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
                 .leftJoin(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
-                .leftJoin(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
                 .where(
                         memberEmailEq(email),
-                        readingEvidenceJpaEntity.title.eq(title)
+                        titleEq(title),
+                        evidenceTypeEq(evidenceType)
                 )
                 .fetch()
                 .stream()
                 .map(readingEvidenceMapper::toDomain)
                 .toList();
     }
+
 
     @Override
     public void deleteReadingEvidenceById(Long evidenceId) {
@@ -98,5 +86,15 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private BooleanExpression memberEmailEq(String email) {
         if (email == null) return null;
         return memberJpaEntity.email.eq(email);
+    }
+
+    private BooleanExpression titleEq(String title) {
+        if (title == null) return null;
+        return readingEvidenceJpaEntity.title.eq(title);
+    }
+
+    private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
+        if (evidenceType == null) return null;
+        return evidenceJpaEntity.evidenceType.eq(evidenceType);
     }
 }
