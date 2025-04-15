@@ -27,7 +27,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
 
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
     private final ScorePersistencePort scorePersistencePort;
-ㅊ    private final S3Port s3Port;
+    private final S3Port s3Port;
     private final CurrentMemberProvider currentMemberProvider;
 
     @Override
