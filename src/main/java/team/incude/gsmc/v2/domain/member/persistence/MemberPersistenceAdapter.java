@@ -46,4 +46,14 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
     public Member saveMember(Member member) {
         return memberMapper.toDomain(memberJpaRepository.save(memberMapper.toEntity(member)));
     }
+
+    @Override
+    public Member findMemberById(Long memberId) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(memberJpaEntity)
+                        .where(memberJpaEntity.id.eq(memberId))
+                        .fetchOne()
+        ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
+    }
 }
