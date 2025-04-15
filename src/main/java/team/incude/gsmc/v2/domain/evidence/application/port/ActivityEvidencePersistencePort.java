@@ -11,7 +11,7 @@ import java.util.List;
 public interface ActivityEvidencePersistencePort {
     List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType);
 
-    ActivityEvidence findActivityEvidenceById(Long id);
+    List<ActivityEvidence> findActivityEvidenceByEmailAndTypeAndTitle(String evidenceType, String title);
 
     ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence);
 

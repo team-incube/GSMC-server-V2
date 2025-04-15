@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
-import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
+import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ActivityEvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
@@ -56,7 +56,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .where(evidenceJpaEntity.id.eq(id))
                 .fetchOne()
-        ).map(activityEvidenceMapper::toDomain).orElseThrow(ActivityEvidenceNotFountException::new);
+        ).map(activityEvidenceMapper::toDomain).orElseThrow(ActivityEvidenceNotFoundException::new);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 .execute();
 
         if (deletedCount == 0) {
-            throw new ActivityEvidenceNotFountException();
+            throw new ActivityEvidenceNotFoundException();
         }
     }
 

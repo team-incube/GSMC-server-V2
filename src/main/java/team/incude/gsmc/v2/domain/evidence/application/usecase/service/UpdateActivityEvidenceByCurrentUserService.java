@@ -12,7 +12,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
+import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFoundException;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
 
     private void validateNotExistsActivity(Long evidenceId) {
         if (activityEvidencePersistencePort.existsActivityEvidenceByEvidenceId(evidenceId)) {
-            throw new ActivityEvidenceNotFountException();
+            throw new ActivityEvidenceNotFoundException();
         }
     }
 
