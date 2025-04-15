@@ -16,7 +16,7 @@ public class StudentDetailJpaEntity {
     private Long id;
 
     @JoinColumn(name = "member_id")
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     private MemberJpaEntity member;
 
     @Column(name = "grade", nullable = false)
@@ -32,10 +32,10 @@ public class StudentDetailJpaEntity {
     private Integer totalScore;
 
     @Column(name = "student_code", unique = true, nullable = false)
-    private String studentCode;
+    private Integer studentCode;
 
     @Builder
-    public StudentDetailJpaEntity(Long id, MemberJpaEntity member, Integer grade, Integer classNumber, Integer number, Integer totalScore, String studentCode) {
+    public StudentDetailJpaEntity(Long id, MemberJpaEntity member, Integer grade, Integer classNumber, Integer number, Integer totalScore, Integer studentCode) {
         this.id = id;
         this.member = member;
         this.grade = grade;

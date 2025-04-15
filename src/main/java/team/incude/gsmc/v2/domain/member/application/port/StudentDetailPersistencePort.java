@@ -6,7 +6,7 @@ import team.incude.gsmc.v2.global.annotation.port.Port;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface StudentDetailPersistencePort {
-    StudentDetail findStudentDetailByStudentCode(String studentCode);
+    StudentDetail findStudentDetailByStudentCode(Integer studentCode);
 
     StudentDetail saveStudentDetail(StudentDetail studentDetail);
 }
