@@ -25,7 +25,7 @@ public class AuthWebAdapter {
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        authApplicationPort.signUp(signUpRequest.email(), signUpRequest.password(), signUpRequest.name());
+        authApplicationPort.signUp(signUpRequest.name(), signUpRequest.email(), signUpRequest.password());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
