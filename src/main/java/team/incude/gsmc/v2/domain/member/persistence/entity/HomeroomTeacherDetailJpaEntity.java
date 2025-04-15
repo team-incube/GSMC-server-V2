@@ -16,7 +16,7 @@ public class HomeroomTeacherDetailJpaEntity {
     private Long id;
 
     @JoinColumn(name = "member_id")
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     private MemberJpaEntity member;
 
     @Column(name = "grade", nullable = false)
