@@ -40,6 +40,10 @@ jobs:
                   value: ${{ secrets.AWS_REGION }}
                 - name: AWS_S3_BUCKET
                   value: ${{ secrets.AWS_S3_BUCKET }}
+                - name: EMAIL_USERNAME
+                  value: ${{ secrets.EMAIL_USERNAME }}
+                - name: EMAIL_PASSWORD
+                  value: ${{ secrets.EMAIL_PASSWORD }}
               buildenv: []
             context:
               git:
