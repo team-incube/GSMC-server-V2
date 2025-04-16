@@ -31,4 +31,29 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
                         .fetchOne()
         ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
     }
+
+    @Override
+    public Boolean existsMemberByEmail(String email) {
+        var result = jpaQueryFactory
+                .selectOne()
+                .from(memberJpaEntity)
+                .where(memberJpaEntity.email.eq(email))
+                .fetchFirst();
+        return result != null;
+    }
+
+    @Override
+    public Member saveMember(Member member) {
+        return memberMapper.toDomain(memberJpaRepository.save(memberMapper.toEntity(member)));
+    }
+
+    @Override
+    public Member findMemberById(Long memberId) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(memberJpaEntity)
+                        .where(memberJpaEntity.id.eq(memberId))
+                        .fetchOne()
+        ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
+    }
 }
