@@ -9,9 +9,9 @@ import team.incude.gsmc.v2.global.annotation.port.Port;
 
 @Port(direction = PortDirection.INBOUND)
 public interface EvidenceApplicationPort {
-    GetEvidencesResponse findEvidenceByCurrentUserByType(EvidenceType type);
+    GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType type);
 
-    GetEvidencesResponse findEvidenceByEmail(String email);
+    GetEvidencesResponse findEvidenceByEmailAndType(String email, EvidenceType type);
 
     void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
 

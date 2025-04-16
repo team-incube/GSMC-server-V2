@@ -15,7 +15,7 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
 
     private final DeleteEvidenceUseCase deleteEvidenceUseCase;
-    private final FindEvidenceByCurrentUserAndTypeUseCase findEvidenceUseCase;
+    private final FindEvidenceByCurrentUserAndTypeUseCase findEvidenceByCurrentUserAndTypeUseCase;
     private final UpdateActivityEvidenceByCurrentUserUseCase updateActivityEvidenceByCurrentUserUseCase;
     private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
     private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
@@ -23,16 +23,16 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final CreateReadingEvidenceUseCase createReadingEvidenceUseCase;
     private final CreateOtherEvidenceUseCase createOtherEvidenceUseCase;
     private final UpdateReviewStatusUseCase updateReviewStatusUseCase;
-    private final FindEvidenceByFilteringByEmailAndTitleAndTypeUseCase findEvidenceByEmailAndTitleAndTypeUseCase;
+    private final FindEvidenceByFilteringByEmailAndTitleAndTypeUseCase findEvidenceByFilteringByEmailAndTitleAndTypeUseCase;
 
     @Override
-    public GetEvidencesResponse findEvidenceByCurrentUser(EvidenceType type) {
-        return findEvidenceUseCase.execute();
+    public GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType type) {
+        return findEvidenceByCurrentUserAndTypeUseCase.execute(type);
     }
 
     @Override
-    public GetEvidencesResponse findEvidenceByEmail(String email) {
-        return findEvidenceUseCase.execute(email);
+    public GetEvidencesResponse findEvidenceByEmailAndType(String email, EvidenceType type) {
+        return findEvidenceByFilteringByEmailAndTitleAndTypeUseCase.execute(email, type);
     }
 
     @Override
@@ -82,6 +82,6 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
 
     @Override
     public GetEvidencesResponse findEvidenceByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType) {
-        return findEvidenceByEmailAndTitleAndTypeUseCase.execute(email, title, evidenceType);
+        return findEvidenceByFilteringByEmailAndTitleAndTypeUseCase.execute(email, title, evidenceType);
     }
 }
