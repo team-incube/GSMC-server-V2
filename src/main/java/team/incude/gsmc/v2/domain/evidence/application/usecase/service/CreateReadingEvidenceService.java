@@ -12,7 +12,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
-import team.incude.gsmc.v2.global.security.jwt.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 
 import java.time.LocalDateTime;
 

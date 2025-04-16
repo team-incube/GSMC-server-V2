@@ -19,7 +19,7 @@ import team.incude.gsmc.v2.domain.member.application.port.TeacherDetailPersisten
 import team.incude.gsmc.v2.domain.member.domain.HomeroomTeacherDetail;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 
 import java.util.List;
 
