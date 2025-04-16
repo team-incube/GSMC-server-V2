@@ -10,6 +10,7 @@ import team.incude.gsmc.v2.domain.score.persistence.repository.CategoryJpaReposi
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
+import java.util.List;
 import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
@@ -34,7 +35,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     }
 
     @Override
-    public void saveCategory(Category category) {
-        categoryJpaRepository.save(categoryMapper.toEntity(category));
+    public List<Category> findAllCategory() {
+        return categoryJpaRepository.findAll().stream().map(categoryMapper::toDomain).toList();
     }
 }

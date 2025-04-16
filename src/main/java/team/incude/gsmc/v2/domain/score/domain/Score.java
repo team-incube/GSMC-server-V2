@@ -11,7 +11,6 @@ public class Score {
     private Member member;
     private Category category;
     private Integer value;
-    private Integer semester;
 
     public void plusValue(Integer value) {
         this.value += value;

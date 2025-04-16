@@ -27,15 +27,11 @@ public class ScoreJpaEntity {
     @Column(name = "value", nullable = false)
     private Integer value;
 
-    @Column(name = "semester")
-    private Integer semester;
-
     @Builder
-    public ScoreJpaEntity(Long id, MemberJpaEntity member, CategoryJpaEntity category, Integer value, Integer semester) {
+    public ScoreJpaEntity(Long id, MemberJpaEntity member, CategoryJpaEntity category, Integer value) {
         this.id = id;
         this.member = member;
         this.category = category;
         this.value = value;
-        this.semester = semester;
     }
 }
