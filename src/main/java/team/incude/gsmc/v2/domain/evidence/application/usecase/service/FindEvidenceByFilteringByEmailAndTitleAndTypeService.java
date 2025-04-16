@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.usecase.FindEvidenceByEmailAndTitleAndTypeUseCase;
+import team.incude.gsmc.v2.domain.evidence.application.usecase.FindEvidenceByFilteringByEmailAndTitleAndTypeUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
@@ -25,7 +25,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FindEvidenceByEmailAndTitleAndTypeService implements FindEvidenceByEmailAndTitleAndTypeUseCase {
+public class FindEvidenceByFilteringByEmailAndTitleAndTypeService implements FindEvidenceByFilteringByEmailAndTitleAndTypeUseCase {
 
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
     private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
@@ -36,17 +36,24 @@ public class FindEvidenceByEmailAndTitleAndTypeService implements FindEvidenceBy
     @Override
     @Transactional(readOnly = true)
     public GetEvidencesResponse execute(String email, String title, EvidenceType evidenceType) {
+        return findEvidenceByFilteringByEmailAndTitleAndType(email, title, evidenceType);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetEvidencesResponse execute(String email, EvidenceType evidenceType) {
+        return findEvidenceByFilteringByEmailAndTitleAndType(email, null, evidenceType);
+    }
+
+    private GetEvidencesResponse findEvidenceByFilteringByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType) {
         Member member = currentMemberProvider.getCurrentUser();
         Integer grade = null;
         Integer classNumber = null;
 
-        if (member.getRole().equals(MemberRole.ROLE_MAISTER_PART_TEACHER)) {
-            grade = null;
-            classNumber = null;
-        } else if (member.getRole().equals(MemberRole.ROLE_HOMEROOM_TEACHER)) {
-            HomeroomTeacherDetail homeroomTeacherDetail = teacherDetailPersistencePort.findTeacherDetailByEmail(member.getEmail());
-            grade = homeroomTeacherDetail.getGrade();
-            classNumber = homeroomTeacherDetail.getClassNumber();
+        if (member.getRole().equals(MemberRole.ROLE_HOMEROOM_TEACHER)) {
+            HomeroomTeacherDetail detail = teacherDetailPersistencePort.findTeacherDetailByEmail(member.getEmail());
+            grade = detail.getGrade();
+            classNumber = detail.getClassNumber();
         }
 
         List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByEmailAndTypeAndTitleAndGradeAndClassNumber(email, evidenceType, title, grade, classNumber);

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.usecase.FindEvidenceUseCase;
+import team.incude.gsmc.v2.domain.evidence.application.usecase.FindEvidenceByCurrentUserAndTypeUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
@@ -22,7 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FineEvidenceByCurrentUserService implements FindEvidenceUseCase {
+public class FineEvidenceByCurrentUserService implements FindEvidenceByCurrentUserAndTypeUseCase {
 
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
     private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
@@ -31,20 +31,16 @@ public class FineEvidenceByCurrentUserService implements FindEvidenceUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public GetEvidencesResponse execute() {
+    public GetEvidencesResponse execute(EvidenceType type) {
         Member member = currentMemberProvider.getCurrentUser();
-        return findEvidence(member.getEmail());
+        return findEvidence(member.getEmail(), type);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public GetEvidencesResponse execute(String email) {
-        return findEvidence(email);
-    }
+    private GetEvidencesResponse findEvidence(String email, EvidenceType type) {
+        List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByEmailAndEvidenceType(email, type);
 
-    private GetEvidencesResponse findEvidence(String email) {
-        List<ActivityEvidence> majorEvidences = activityEvidencePersistencePort.findActivityEvidenceByEmailAndEvidenceType(email, EvidenceType.MAJOR);
-        List<ActivityEvidence> humanitiesEvidences = activityEvidencePersistencePort.findActivityEvidenceByEmailAndEvidenceType(email, EvidenceType.HUMANITIES);
+        List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, EvidenceType.MAJOR);
+        List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, EvidenceType.HUMANITIES);
         List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByEmail(email);
         List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByEmail(email);
 
@@ -54,6 +50,12 @@ public class FineEvidenceByCurrentUserService implements FindEvidenceUseCase {
         List<GetReadingEvidenceDto> readingEvidenceDtos = createReadingEvidenceDtos(readingEvidences);
 
         return new GetEvidencesResponse(majorEvidenceDtos, humanitiesEvidenceDtos, readingEvidenceDtos, otherEvidenceDtos);
+    }
+
+    private List<ActivityEvidence> filterByType(List<ActivityEvidence> evidences, EvidenceType type) {
+        return evidences.stream()
+                .filter(e -> e.getId().getEvidenceType().equals(type))
+                .toList();
     }
 
     private List<GetActivityEvidenceDto> createActivityEvidenceDtos(List<ActivityEvidence> evidences) {
