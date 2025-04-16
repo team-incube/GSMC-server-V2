@@ -36,5 +36,5 @@ mail:
   port: 587
   username: ${EMAIL_USERNAME}
   password: ${EMAIL_PASSWORD}
-  ttl: 300
+  ttl: ${EMAIL_TTL:300}
   attempt-limits: 5
