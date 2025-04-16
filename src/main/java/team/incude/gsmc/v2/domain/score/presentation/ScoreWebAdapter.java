@@ -31,17 +31,58 @@ public class ScoreWebAdapter {
     @PatchMapping("/current")
     public ResponseEntity<Void> updateCurrentScore(@Valid @RequestBody PatchScoreRequest request) {
         scoreApplicationPort.updateCurrentScore(request.categoryName(), request.value());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{email}")
     public ResponseEntity<Void> updateScoreByEmail(@PathVariable(value = "email") String email, @Valid @RequestBody PatchScoreRequest request) {
         scoreApplicationPort.updateScoreByEmail(email, request.categoryName(), request.value());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/simulate")
     ResponseEntity<GetScoreSimulateResponse> simulateScore(@Valid @RequestBody GetScoreSimulateRequest request) {
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.simulateScore(
+                request.majorAwardCareerOutSchoolOfficial(),
+                request.majorAwardCareerOutSchoolUnofficial(),
+                request.majorAwardCareerOutSchoolHackathon(),
+                request.majorAwardCareerInSchoolGsmfest(),
+                request.majorAwardCareerInSchoolSchoolHackathon(),
+                request.majorAwardCareerInSchoolPresentation(),
+                request.majorCertificateNum(),
+                request.majorTopcitScore(),
+                request.majorClubAttendanceSemester1(),
+                request.majorClubAttendanceSemester2(),
+                request.majorOutSchoolAttendanceOfficialContest(),
+                request.majorOutSchoolAttendanceUnofficialContest(),
+                request.majorOutSchoolAttendanceHackathon(),
+                request.majorOutSchoolAttendanceSeminar(),
+                request.majorInSchoolAttendanceGsmfest(),
+                request.majorInSchoolAttendanceHackathon(),
+                request.majorInSchoolAttendanceClubPresentation(),
+                request.majorInSchoolAttendanceSeminar(),
+                request.majorInSchoolAttendanceAfterSchool(),
+                request.humanitiesAwardCareerHumanityInSchool(),
+                request.humanitiesAwardCareerHumanityOutSchool(),
+                request.humanitiesReadingReadAThonTurtle(),
+                request.humanitiesReadingReadAThonCrocodile(),
+                request.humanitiesReadingReadAThonRabbitOver(),
+                request.humanitiesServiceActivity(),
+                request.humanitiesServiceClubSemester1(),
+                request.humanitiesServiceClubSemester2(),
+                request.humanitiesCertificateChineseCharacter(),
+                request.humanitiesCertificateKoreanHistory(),
+                request.humanitiesActivitiesSelfDirectedActivities(),
+                request.humanitiesActivitiesNewrrowS_S(),
+                request.foreignLangAttendanceToeicAcademyStatus(),
+                request.foreignLangToeicScore(),
+                request.foreignLangToeflScore(),
+                request.foreignLangTepsScore(),
+                request.foreignLangToeicSpeakingLevel(),
+                request.foreignLangOpicGrade(),
+                request.foreignLangJptScore(),
+                request.foreignLangCptScore(),
+                request.foreignLangHskScore()
+        ));
     }
 }
