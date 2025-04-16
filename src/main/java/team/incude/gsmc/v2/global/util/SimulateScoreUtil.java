@@ -48,7 +48,7 @@ public class SimulateScoreUtil {
             Integer foreignLangJptScore,
             Integer foreignLangCptScore,
             Integer foreignLangHskScore,
-            Map<String, Integer> categoryWeightMap
+            Map<String, Float> categoryWeightMap
     ) {
         return majorScore(
                 majorAwardCareerOutSchoolOfficial,
@@ -131,16 +131,16 @@ public class SimulateScoreUtil {
             Integer majorInSchoolAttendanceClubPresentation,
             Integer majorInSchoolAttendanceSeminar,
             Integer majorInSchoolAttendanceAfterSchool,
-            Integer majorAwardCareerWeight,
-            Integer majorCertificateNumWeight,
-            Integer majorTopcitScoreWeight,
-            Integer majorClubAttendanceWeight,
-            Integer majorOutSchoolAttendanceActivityWeight,
-            Integer majorInSchoolAttendanceActivityWeight,
-            Integer majorInSchoolAttendanceSeminarWeight,
-            Integer majorInSchoolAttendanceAfterSchoolWeight
+            Float majorAwardCareerWeight,
+            Float majorCertificateNumWeight,
+            Float majorTopcitScoreWeight,
+            Float majorClubAttendanceWeight,
+            Float majorOutSchoolAttendanceActivityWeight,
+            Float majorInSchoolAttendanceActivityWeight,
+            Float majorInSchoolAttendanceSeminarWeight,
+            Float majorInSchoolAttendanceAfterSchoolWeight
     ) {
-        Integer score = 0;
+        Float score = 0f;
         Integer majorAwardCareerScore =
                 majorAwardCareerOutSchoolOfficial +
                         majorAwardCareerOutSchoolUnofficial +
@@ -167,7 +167,7 @@ public class SimulateScoreUtil {
                         majorInSchoolAttendanceClubPresentation * majorInSchoolAttendanceActivityWeight;
         score += majorInSchoolAttendanceSeminar > 4 ? 4 * majorInSchoolAttendanceSeminarWeight : majorInSchoolAttendanceSeminar * majorInSchoolAttendanceSeminarWeight;
         score += majorInSchoolAttendanceAfterSchool > 2 ? 2 * majorInSchoolAttendanceAfterSchoolWeight : majorInSchoolAttendanceAfterSchool * majorInSchoolAttendanceAfterSchoolWeight;
-        return score;
+        return score.intValue();
     }
 
     private Integer humanitiesScore(
@@ -182,18 +182,18 @@ public class SimulateScoreUtil {
             Integer humanitiesCertificateKoreanHistory,
             Integer humanitiesActivitiesSelfDirectedActivities,
             Integer humanitiesActivitiesNewrrowS_S,
-            Integer humanitiesAwardCareerWeight,
-            Integer humanitiesReadingReadAThonTurtleWeight,
-            Integer humanitiesReadingReadAThonCrocodileWeight,
-            Integer humanitiesReadingReadAThonRabbitOverWeight,
-            Integer humanitiesServiceActivityWeight,
-            Integer humanitiesServiceClubWeight,
-            Integer humanitiesCertificateChineseCharacterWeight,
-            Integer humanitiesCertificateKoreanHistoryWeight,
-            Integer humanitiesActivitiesSelfDirectedActivitiesWeight,
-            Integer humanitiesActivitiesNewrrowS_SWeight
+            Float humanitiesAwardCareerWeight,
+            Float humanitiesReadingReadAThonTurtleWeight,
+            Float humanitiesReadingReadAThonCrocodileWeight,
+            Float humanitiesReadingReadAThonRabbitOverWeight,
+            Float humanitiesServiceActivityWeight,
+            Float humanitiesServiceClubWeight,
+            Float humanitiesCertificateChineseCharacterWeight,
+            Float humanitiesCertificateKoreanHistoryWeight,
+            Float humanitiesActivitiesSelfDirectedActivitiesWeight,
+            Float humanitiesActivitiesNewrrowS_SWeight
     ) {
-        Integer score = 0;
+        Float score = 0f;
         Integer humanitiesAwardCareerScore =
                 humanitiesAwardCareerHumanityInSchool +
                         humanitiesAwardCareerHumanityOutSchool;
@@ -207,7 +207,7 @@ public class SimulateScoreUtil {
         score += humanitiesCertificateKoreanHistory > 0 ? humanitiesCertificateKoreanHistoryWeight : 0;
         score += Math.min(humanitiesActivitiesNewrrowS_S * humanitiesActivitiesNewrrowS_SWeight, 200);
         score += humanitiesActivitiesSelfDirectedActivities > 8 ? 8 * humanitiesActivitiesSelfDirectedActivitiesWeight : humanitiesActivitiesSelfDirectedActivities * humanitiesActivitiesSelfDirectedActivitiesWeight;
-        return score;
+        return score.intValue();
     }
 
     private Integer foreignLangScore(
