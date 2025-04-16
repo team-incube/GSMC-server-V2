@@ -67,6 +67,7 @@ public class ScoreWebAdapter {
                 request.humanitiesReadingReadAThonTurtle(),
                 request.humanitiesReadingReadAThonCrocodile(),
                 request.humanitiesReadingReadAThonRabbitOver(),
+                request.humanitiesReading(),
                 request.humanitiesServiceActivity(),
                 request.humanitiesServiceClubSemester1(),
                 request.humanitiesServiceClubSemester2(),

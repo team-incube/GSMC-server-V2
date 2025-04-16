@@ -25,6 +25,7 @@ public record GetScoreSimulateRequest(
         Boolean humanitiesReadingReadAThonTurtle,
         Boolean humanitiesReadingReadAThonCrocodile,
         Boolean humanitiesReadingReadAThonRabbitOver,
+        Integer humanitiesReading,
         Integer humanitiesServiceActivity,
         Integer humanitiesServiceClubSemester1,
         Integer humanitiesServiceClubSemester2,
