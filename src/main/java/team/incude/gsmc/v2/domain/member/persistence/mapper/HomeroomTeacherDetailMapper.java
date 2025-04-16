@@ -16,7 +16,11 @@ public class HomeroomTeacherDetailMapper implements GenericMapper<HomeroomTeache
     public HomeroomTeacherDetailJpaEntity toEntity(HomeroomTeacherDetail homeroomTeacherDetail) {
         return HomeroomTeacherDetailJpaEntity.builder()
                 .id(homeroomTeacherDetail.getId())
-                .member(memberMapper.toEntity(homeroomTeacherDetail.getMember()))
+                .member(
+                        homeroomTeacherDetail.getMember() != null
+                        ? memberMapper.toEntity(homeroomTeacherDetail.getMember())
+                                : null
+                )
                 .grade(homeroomTeacherDetail.getGrade())
                 .classNumber(homeroomTeacherDetail.getClassNumber())
                 .build();
@@ -26,7 +30,11 @@ public class HomeroomTeacherDetailMapper implements GenericMapper<HomeroomTeache
     public HomeroomTeacherDetail toDomain(HomeroomTeacherDetailJpaEntity homeroomTeacherDetailJpaEntity) {
         return HomeroomTeacherDetail.builder()
                 .id(homeroomTeacherDetailJpaEntity.getId())
-                .member(memberMapper.toDomain(homeroomTeacherDetailJpaEntity.getMember()))
+                .member(
+                        homeroomTeacherDetailJpaEntity.getMember() != null
+                        ? memberMapper.toDomain(homeroomTeacherDetailJpaEntity.getMember())
+                                : null
+                )
                 .grade(homeroomTeacherDetailJpaEntity.getGrade())
                 .classNumber(homeroomTeacherDetailJpaEntity.getClassNumber())
                 .build();

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gsmc 이메일 인증</title>
+    <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css" rel="stylesheet"/>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'SUIT', sans-serif;
+            background-color: #F8F5FF;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .title {
+            color: #7F58FF;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .description {
+            color: #5A5A5A;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .auth-code {
+            font-size: 28px;
+            font-weight: 700;
+            color: #7F58FF;
+            margin: 20px 0;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .description,
+            .footer {
+                font-size: 14px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo"></div>
+    <h1 class="title">Gsmc 인증번호 발송</h1>
+    <p class="description">
+        인증번호 발송 안내 메일입니다
+        아래 인증번호를 입력 후 이메일 검증을 완료하시길 바랍니다.
+    </p>
+    <div class="auth-code" th:text="${authCode}"></div>
+    <div class="footer">본 메일은 발신 전용으로 회신되지 않습니다.</div>
+</div>
+</body>
+</html>
