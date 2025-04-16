@@ -74,7 +74,7 @@ public class ScoreWebAdapter {
                 request.humanitiesCertificateChineseCharacter(),
                 request.humanitiesCertificateKoreanHistory(),
                 request.humanitiesActivitiesSelfDirectedActivities(),
-                request.humanitiesActivitiesNewrrowS_S(),
+                request.humanitiesActivitiesNewrrow_S(),
                 request.foreignLangAttendanceToeicAcademyStatus(),
                 request.foreignLangToeicScore(),
                 request.foreignLangToeflScore(),

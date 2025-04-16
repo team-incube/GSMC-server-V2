@@ -73,9 +73,9 @@ public class SimulateScoreUtil {
                 categoryWeightMap.get("majorAwardCareerOutSchoolOfficial"),
                 categoryWeightMap.get("majorCertificateNum"),
                 categoryWeightMap.get("majorTopcitScore"),
-                categoryWeightMap.get("majorClubAttendance"),
-                categoryWeightMap.get("majorOutSchoolAttendanceActivity"),
-                categoryWeightMap.get("majorInSchoolAttendanceActivity"),
+                categoryWeightMap.get("majorClubAttendanceSemester1"),
+                categoryWeightMap.get("majorOutSchoolAttendanceHackathon"),
+                categoryWeightMap.get("majorInSchoolAttendanceHackathon"),
                 categoryWeightMap.get("majorInSchoolAttendanceSeminar"),
                 categoryWeightMap.get("majorInSchoolAttendanceAfterSchool")
         ) + humanitiesScore(
@@ -91,17 +91,17 @@ public class SimulateScoreUtil {
                 humanitiesCertificateKoreanHistory,
                 humanitiesActivitiesSelfDirectedActivities,
                 humanitiesActivitiesNewrrowS_S,
-                categoryWeightMap.get("humanitiesAwardCareer"),
+                categoryWeightMap.get("humanitiesAwardCareerHumanityInSchool"),
                 categoryWeightMap.get("humanitiesReadingReadAThonTurtle"),
                 categoryWeightMap.get("humanitiesReadingReadAThonCrocodile"),
                 categoryWeightMap.get("humanitiesReadingReadAThonRabbitOver"),
                 categoryWeightMap.get("humanitiesReading"),
                 categoryWeightMap.get("humanitiesServiceActivity"),
-                categoryWeightMap.get("humanitiesServiceClub"),
+                categoryWeightMap.get("humanitiesServiceClubSemester1"),
                 categoryWeightMap.get("humanitiesCertificateChineseCharacter"),
                 categoryWeightMap.get("humanitiesCertificateKoreanHistory"),
                 categoryWeightMap.get("humanitiesActivitiesSelfDirectedActivities"),
-                categoryWeightMap.get("humanitiesActivitiesNewrrowS_S")
+                categoryWeightMap.get("humanitiesActivitiesNewrrowS")
         ) + foreignLangScore(
                 foreignLangAttendanceToeicAcademyStatus,
                 foreignLangToeicScore,
@@ -185,7 +185,7 @@ public class SimulateScoreUtil {
             Integer humanitiesCertificateChineseCharacter,
             Integer humanitiesCertificateKoreanHistory,
             Integer humanitiesActivitiesSelfDirectedActivities,
-            Integer humanitiesActivitiesNewrrowS_S,
+            Integer humanitiesActivitiesNewrrow_S,
             Float humanitiesAwardCareerWeight,
             Float humanitiesReadingReadAThonTurtleWeight,
             Float humanitiesReadingReadAThonCrocodileWeight,
@@ -196,7 +196,7 @@ public class SimulateScoreUtil {
             Float humanitiesCertificateChineseCharacterWeight,
             Float humanitiesCertificateKoreanHistoryWeight,
             Float humanitiesActivitiesSelfDirectedActivitiesWeight,
-            Float humanitiesActivitiesNewrrowS_SWeight
+            Float humanitiesActivitiesNewrrow_SWeight
     ) {
         Float score = 0f;
         Integer humanitiesAwardCareerScore =
@@ -206,11 +206,12 @@ public class SimulateScoreUtil {
         score += humanitiesReadingReadAThonRabbitOver ? humanitiesReadingReadAThonRabbitOverWeight :
                 humanitiesReadingReadAThonCrocodile ? humanitiesReadingReadAThonCrocodileWeight :
                         humanitiesReadingReadAThonTurtle ? humanitiesReadingReadAThonTurtleWeight : 0;
+        score += humanitiesReading > 10 ? 10 * humanitiesReadingWeight : humanitiesReading * humanitiesReadingWeight;
         score += humanitiesServiceActivity > 40 ? 40 * humanitiesServiceActivityWeight : humanitiesServiceActivity * humanitiesServiceActivityWeight;
         score += humanitiesServiceClub > 2 ? 2 * humanitiesServiceClubWeight : humanitiesServiceClub * humanitiesServiceClubWeight;
         score += humanitiesCertificateChineseCharacter > 0 ? humanitiesCertificateChineseCharacterWeight : 0;
         score += humanitiesCertificateKoreanHistory > 0 ? humanitiesCertificateKoreanHistoryWeight : 0;
-        score += Math.min(humanitiesActivitiesNewrrowS_S * humanitiesActivitiesNewrrowS_SWeight, 200);
+        score += Math.min(humanitiesActivitiesNewrrow_S * humanitiesActivitiesNewrrow_SWeight, 200);
         score += humanitiesActivitiesSelfDirectedActivities > 8 ? 8 * humanitiesActivitiesSelfDirectedActivitiesWeight : humanitiesActivitiesSelfDirectedActivities * humanitiesActivitiesSelfDirectedActivitiesWeight;
         return score.intValue();
     }
