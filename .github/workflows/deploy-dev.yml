@@ -1,0 +1,47 @@
+name: Deploy to Dev Server
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: ${{ secrets.CLOUDTYPE_USERNAME }}/gsmc-server-v2
+          stage: main
+          yaml: |
+            name: gsmc-server-v2
+            app: java@21
+            options:
+              ports: "8080"
+              env:
+                - name: SPRING_PROFILES_ACTIVE
+                  value: ${{ secrets.SPRING_PROFILES_ACTIVE }}
+                - name: JPA_DDL_AUTO
+                  value: ${{ secrets.JPA_DDL_AUTO }}
+                - name: SERVER_PORT
+                  value: ${{ secrets.SERVER_PORT }}
+                - name: AWS_ACCESS_KEY_ID
+                  value: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                - name: AWS_SECRET_ACCESS_KEY
+                  value: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                - name: AWS_REGION
+                  value: ${{ secrets.AWS_REGION }}
+                - name: AWS_S3_BUCKET
+                  value: ${{ secrets.AWS_S3_BUCKET }}
+              buildenv: []
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
