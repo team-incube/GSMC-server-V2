@@ -10,14 +10,12 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidenc
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
-import java.util.List;
-
 @Adapter(direction = PortDirection.INBOUND)
 @RequiredArgsConstructor
 public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
 
     private final DeleteEvidenceUseCase deleteEvidenceUseCase;
-    private final FindEvidenceUseCase findEvidenceUseCase;
+    private final FindEvidenceByCurrentUserAndTypeUseCase findEvidenceUseCase;
     private final UpdateActivityEvidenceByCurrentUserUseCase updateActivityEvidenceByCurrentUserUseCase;
     private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
     private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
@@ -25,10 +23,10 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final CreateReadingEvidenceUseCase createReadingEvidenceUseCase;
     private final CreateOtherEvidenceUseCase createOtherEvidenceUseCase;
     private final UpdateReviewStatusUseCase updateReviewStatusUseCase;
-    private final FindEvidenceByEmailAndTitleAndTypeUseCase findEvidenceByEmailAndTitleAndTypeUseCase;
+    private final FindEvidenceByFilteringByEmailAndTitleAndTypeUseCase findEvidenceByEmailAndTitleAndTypeUseCase;
 
     @Override
-    public GetEvidencesResponse findEvidenceByCurrentUser() {
+    public GetEvidencesResponse findEvidenceByCurrentUser(EvidenceType type) {
         return findEvidenceUseCase.execute();
     }
 
