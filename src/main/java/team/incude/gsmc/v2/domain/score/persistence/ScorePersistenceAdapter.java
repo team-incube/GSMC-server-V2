@@ -10,6 +10,7 @@ import team.incude.gsmc.v2.domain.score.persistence.repository.ScoreJpaRepositor
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
+import java.util.List;
 import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
@@ -55,6 +56,21 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
                         .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne()
         ).map(scoreMapper::toDomain).orElse(null);
+    }
+
+    @Override
+    public List<Score> findScoreByMemberEmail(String email) {
+        return jpaQueryFactory
+                .selectFrom(scoreJpaEntity)
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.category, categoryJpaEntity)
+                .fetchJoin()
+                .where(memberJpaEntity.email.eq(email))
+                .fetch()
+                .stream()
+                .map(scoreMapper::toDomain)
+                .toList();
     }
 
     @Override

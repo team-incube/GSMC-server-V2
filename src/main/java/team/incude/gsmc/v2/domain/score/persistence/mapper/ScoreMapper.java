@@ -21,7 +21,6 @@ public class ScoreMapper implements GenericMapper<ScoreJpaEntity, Score> {
                 .member(memberMapper.toEntity(score.getMember()))
                 .category(categoryMapper.toEntity(score.getCategory()))
                 .value(score.getValue())
-                .semester(score.getSemester())
                 .build();
     }
 
@@ -32,7 +31,6 @@ public class ScoreMapper implements GenericMapper<ScoreJpaEntity, Score> {
                 .member(memberMapper.toDomain(scoreJpaEntity.getMember()))
                 .category(categoryMapper.toDomain(scoreJpaEntity.getCategory()))
                 .value(scoreJpaEntity.getValue())
-                .semester(scoreJpaEntity.getSemester())
                 .build();
     }
 }
