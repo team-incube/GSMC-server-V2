@@ -2,11 +2,13 @@ package team.incude.gsmc.v2.domain.score.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.application.usecase.FindScoreUseCase;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.presentation.data.GetScoreDto;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 
 import java.util.List;
 
@@ -15,10 +17,12 @@ import java.util.List;
 public class FindScoreService implements FindScoreUseCase {
 
     private final ScorePersistencePort scorePersistencePort;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
+    private final CurrentMemberProvider currentMemberProvider;
 
     @Override
     public GetScoreResponse execute() {
-        return findScore("");
+        return findScore(currentMemberProvider.getCurrentUser().getEmail());
     }
 
     @Override
@@ -29,7 +33,7 @@ public class FindScoreService implements FindScoreUseCase {
     private GetScoreResponse findScore(String email) {
         List<Score> scores = scorePersistencePort.findScoreByMemberEmail(email);
         return new GetScoreResponse(
-                -1,
+                studentDetailPersistencePort.findTotalScoreByMemberEmail(email),
                 scores.stream()
                         .map(score -> new GetScoreDto(
                                 score.getCategory().getName(),
