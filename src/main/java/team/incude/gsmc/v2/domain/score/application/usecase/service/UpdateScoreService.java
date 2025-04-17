@@ -10,6 +10,7 @@ import team.incude.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 @Service
@@ -19,10 +20,11 @@ public class UpdateScoreService implements UpdateScoreUseCase {
     private final ScorePersistencePort scorePersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final MemberPersistencePort memberPersistencePort;
+    private final CurrentMemberProvider currentMemberProvider;
 
     @Override
     public void execute(String categoryName, Integer value) {
-        updateScore("", categoryName, value);
+        updateScore(currentMemberProvider.getCurrentUser().getEmail(), categoryName, value);
     }
 
     @Override
