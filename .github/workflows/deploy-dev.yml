@@ -2,13 +2,17 @@ name: Deploy to Dev Server
 on:
   push:
     branches:
-      - main
+      - develop
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Writing application-deploy.yml
+        run:
+          touch ./src/main/resources/application-deploy.yml
+          echo "${{ secrets.APPLICATION_DEPLOY_YAML }}" > ./src/main/resources/application-prod.yml
       - name: Connect deploy key
         uses: cloudtype-github-actions/connect@v1
         with:
@@ -25,7 +29,7 @@ jobs:
             app: java@21
             options:
               ports: "8080"
-              env:
+              env:  
                 - name: SPRING_PROFILES_ACTIVE
                   value: ${{ secrets.SPRING_PROFILES_ACTIVE }}
                 - name: JPA_DDL_AUTO
@@ -40,6 +44,22 @@ jobs:
                   value: ${{ secrets.AWS_REGION }}
                 - name: AWS_S3_BUCKET
                   value: ${{ secrets.AWS_S3_BUCKET }}
+                - name: JWT_ACCESS_TOKEN_SECRET
+                  value: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
+                - name: JWT_ACCESS_TOKEN_EXPIRATION
+                  value: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}
+                - name: JWT_REFRESH_TOKEN_SECRET
+                  value: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
+                - name: JWT_REFRESH_TOKEN_EXPIRATION
+                  value: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}
+                - name: EMAIL_HOST
+                  value: ${{ secrets.EMAIL_HOST }}
+                - name: EMAIL_USERNAME
+                  value: ${{ secrets.EMAIL_USERNAME }}
+                - name: EMAIL_PASSWORD
+                  value: ${{ secrets.EMAIL_PASSWORD }}
+                - name: EMAIL_TTL
+                  value: ${{ secrets.EMAIL_TTL }}
               buildenv: []
             context:
               git:
