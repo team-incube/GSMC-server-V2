@@ -13,7 +13,6 @@ import team.incude.gsmc.v2.global.util.SnakeKebabToCamelCaseConverterUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SimulateScoreService implements SimulateScoreUseCase {
@@ -28,7 +27,6 @@ public class SimulateScoreService implements SimulateScoreUseCase {
                         .weight(categoryEntity.getWeight())
                         .build()
         ).toList();
-        log.info("category : {}", category.getFirst().getName());
         return new GetScoreSimulateResponse(SimulateScoreUtil.simulateScore(
                 majorAwardCareerOutSchoolOfficial,
                 majorAwardCareerOutSchoolUnofficial,
