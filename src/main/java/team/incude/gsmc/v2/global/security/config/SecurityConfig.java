@@ -20,19 +20,19 @@ public class SecurityConfig {
 
     private final JwtParserUseCase jwtParserUseCase;
     private final DomainAuthorizationConfig domainAuthorizationConfig;
-    private final CorsConfigurationSource corsConfigurationSource;
+    private final WebMvcConfig webMvcConfig;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         domainAuthorizationConfig.configureAuthorization(http);
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtParserUseCase), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .cors(cors -> cors.configurationSource(corsConfigurationSource));
+                );
 
         return http.build();
     }
