@@ -22,13 +22,13 @@ public class CategoryJpaEntity {
     private Integer maximumValue;
 
     @Column(name = "weight", nullable = false)
-    private Integer weight;
+    private Float weight;
 
     @Column(name = "is_evidence_required", nullable = false)
     private Boolean isEvidenceRequired;
 
     @Builder
-    public CategoryJpaEntity(Long id, String name, Integer maximumValue, Integer weight, Boolean isEvidenceRequired) {
+    public CategoryJpaEntity(Long id, String name, Integer maximumValue, Float weight, Boolean isEvidenceRequired) {
         this.id = id;
         this.name = name;
         this.maximumValue = maximumValue;

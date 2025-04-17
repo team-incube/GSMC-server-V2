@@ -33,6 +33,17 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     @Override
+    public Integer findTotalScoreByMemberEmail(String email) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .select(studentDetailJpaEntity.totalScore)
+                        .from(studentDetailJpaEntity)
+                        .where(studentDetailJpaEntity.member.email.eq(email))
+                        .fetchOne()
+        ).orElseThrow(MemberInvalidException::new);
+    }
+
+    @Override
     public StudentDetail saveStudentDetail(StudentDetail studentDetail) {
         return studentDetailMapper.toDomain(studentDetailJpaRepository.save(studentDetailMapper.toEntity(studentDetail)));
     }

@@ -9,7 +9,9 @@ import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.RequiredEvidenceCategoryException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 @Service
@@ -19,10 +21,11 @@ public class UpdateScoreService implements UpdateScoreUseCase {
     private final ScorePersistencePort scorePersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final MemberPersistencePort memberPersistencePort;
+    private final CurrentMemberProvider currentMemberProvider;
 
     @Override
     public void execute(String categoryName, Integer value) {
-        updateScore("", categoryName, value);
+        updateScore(currentMemberProvider.getCurrentUser().getEmail(), categoryName, value);
     }
 
     @Override
@@ -32,13 +35,16 @@ public class UpdateScoreService implements UpdateScoreUseCase {
 
     private void updateScore(String email, String categoryName, Integer value) {
         Category category = categoryPersistencePort.findCategoryByName(categoryName);
-        if(ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())){
+        if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
             throw new ScoreLimitExceededException();
+        }
+        if (category.getIsEvidenceRequired()) {
+            throw new RequiredEvidenceCategoryException();
         }
         Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, email);
         if (score == null) {
             Member member = memberPersistencePort.findMemberByEmail(email);
-            score = createNewScore(category,member);
+            score = createNewScore(category, member);
         } else {
             score = Score.builder()
                     .id(score.getId())
