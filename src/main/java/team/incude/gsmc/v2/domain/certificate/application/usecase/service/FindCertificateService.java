@@ -10,6 +10,7 @@ import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersis
 import team.incude.gsmc.v2.domain.certificate.application.usecase.FindCertificateUseCase;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.GetCertificateDto;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificatesResponse;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 
 @Service
 @RequiredArgsConstructor
@@ -17,24 +18,11 @@ import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCert
 public class FindCertificateService implements FindCertificateUseCase {
 
     private final CertificatePersistencePort certificatePersistencePort;
-
-    // TODO: auth 구현 전 임시 코드
-    private void setSecurityContext(String email) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, "");
-        SecurityContextHolder.clearContext();
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    // TODO: auth 구현 전 임시 코드
-    private String getAuthenticatedEmail() {
-        setSecurityContext("s24058@gsm.hs.kr");
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
+    private final CurrentMemberProvider currentMemberProvider;
 
     @Override
     public GetCertificatesResponse execute() {
-        String email = getAuthenticatedEmail();
-        return findCertificate(email);
+        return findCertificate(currentMemberProvider.getCurrentUser().getEmail());
     }
 
     @Override
