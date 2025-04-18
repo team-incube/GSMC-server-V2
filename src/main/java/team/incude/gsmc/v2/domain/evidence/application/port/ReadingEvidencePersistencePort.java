@@ -10,7 +10,6 @@ import java.util.List;
 public interface ReadingEvidencePersistencePort {
     List<ReadingEvidence> findReadingEvidenceByEmail(String email);
 
-
     ReadingEvidence saveReadingEvidence(ReadingEvidence readingEvidence);
 
     List<ReadingEvidence> findReadingEvidenceByEmailAndTitleAndTypeAndGradeAndClassNumber(String email, String title, EvidenceType evidenceType, Integer grade, Integer classNumber);
