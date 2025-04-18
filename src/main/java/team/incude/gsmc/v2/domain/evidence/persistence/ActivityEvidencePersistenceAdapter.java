@@ -18,6 +18,9 @@ import java.util.List;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QActivityEvidenceJpaEntity.activityEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
+import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -27,17 +30,18 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private final ActivityEvidenceJpaRepository activityEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ActivityEvidenceMapper activityEvidenceMapper;
-    private final MemberMapper memberMapper;
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByMemberAndEvidenceType(Member member, EvidenceType evidenceType) {
+    public List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
-                .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
                 .where(
-                        scoreJpaEntity.member.eq(memberMapper.toEntity(member)),
-                        evidenceJpaEntity.evidenceType.eq(evidenceType)
+                        memberEmailEq(email),
+                        evidenceTypeEq(evidenceType)
                 )
                 .fetch()
                 .stream()
@@ -46,15 +50,19 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByMemberAndTypeAndTitle(Member member, EvidenceType evidenceType, String title) {
+    public List<ActivityEvidence> findActivityEvidenceByEmailAndTypeAndTitleAndGradeAndClassNumber(String email, EvidenceType evidenceType, String title, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
-                .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
                 .where(
-                        memberEq(member),
+                        memberEmailEq(email),
                         evidenceTypeEq(evidenceType),
-                        titleEq(title)
+                        titleEq(title),
+                        gradeEq(grade),
+                        classNumberEq(classNumber)
                 )
                 .fetch()
                 .stream()
@@ -90,9 +98,9 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
         return result != null;
     }
 
-    private BooleanExpression memberEq(Member member) {
-        if (member == null) return null;
-        return scoreJpaEntity.member.eq(memberMapper.toEntity(member));
+    private BooleanExpression memberEmailEq(String email) {
+        if (email == null) return null;
+        return memberJpaEntity.email.eq(email);
     }
 
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
@@ -103,5 +111,15 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private BooleanExpression titleEq(String title) {
         if (title == null || title.isBlank()) return null;
         return activityEvidenceJpaEntity.title.eq(title);
+    }
+
+    private BooleanExpression gradeEq(Integer grade) {
+        if (grade == null) return null;
+        return studentDetailJpaEntity.grade.eq(grade);
+    }
+
+    private BooleanExpression classNumberEq(Integer classNumber) {
+        if (classNumber == null) return null;
+        return studentDetailJpaEntity.classNumber.eq(classNumber);
     }
 }
