@@ -82,8 +82,7 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
         Integer result = jpaQueryFactory
                 .selectOne()
                 .from(readingEvidenceJpaEntity)
-                .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .where(evidenceJpaEntity.id.eq(evidenceId))
+                .where(readingEvidenceJpaEntity.id.eq(evidenceId))
                 .fetchFirst();
         return result != null;
     }
