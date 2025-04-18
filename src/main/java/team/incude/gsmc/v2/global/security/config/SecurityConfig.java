@@ -20,7 +20,6 @@ public class SecurityConfig {
 
     private final JwtParserUseCase jwtParserUseCase;
     private final DomainAuthorizationConfig domainAuthorizationConfig;
-    private final WebMvcConfig webMvcConfig;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
