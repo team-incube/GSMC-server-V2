@@ -7,13 +7,11 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidenc
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
 
-import java.util.List;
-
 @Port(direction = PortDirection.INBOUND)
 public interface EvidenceApplicationPort {
-    List<GetEvidencesResponse> findEvidenceByCurrentUserAndType(EvidenceType evidenceType);
+    GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType);
 
-    List<GetEvidencesResponse> findEvidenceByEmailAndType(String email, EvidenceType evidenceType);
+    GetEvidencesResponse findEvidenceByEmailAndType(String email, EvidenceType evidenceType);
 
     GetEvidencesResponse findEvidenceByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType);
 
