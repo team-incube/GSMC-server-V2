@@ -1,9 +1,6 @@
 package team.incude.gsmc.v2.domain.certificate.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +13,6 @@ import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
@@ -38,7 +34,6 @@ public class CreateCertificateService implements CreateCertificateUseCase {
 
     private final CertificatePersistencePort certificatePersistencePort;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
-    private final MemberPersistencePort memberPersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final ScorePersistencePort scorePersistencePort;
     private final S3Port s3Port;
