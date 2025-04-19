@@ -50,15 +50,15 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     @Override
-    public List<ReadingEvidence> findReadingEvidenceByEmailAndTitleAndTypeAndStatusAndGradeAndClassNumber(String email, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<ReadingEvidence> findReadingEvidenceByStudentCodeAndTitleAndTypeAndStatusAndGradeAndClassNumber(Integer studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
                 .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id)).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.studentCode.eq(studentCode))
+                .join(studentDetailJpaEntity.member, memberJpaEntity).fetchJoin()
                 .where(
-                        memberEmailEq(email),
+                        studentCodeEq(studentCode),
                         titleEq(title),
                         evidenceTypeEq(evidenceType),
                         statusEq(status),
@@ -92,6 +92,11 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private BooleanExpression memberEmailEq(String email) {
         if (email == null) return null;
         return memberJpaEntity.email.eq(email);
+    }
+
+    private BooleanExpression studentCodeEq(Integer studentCode) {
+        if (studentCode == null) return null;
+        return studentDetailJpaEntity.studentCode.eq(studentCode);
     }
 
     private BooleanExpression titleEq(String title) {

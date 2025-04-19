@@ -19,8 +19,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final CreateReadingEvidenceUseCase createReadingEvidenceUseCase;
     private final DeleteEvidenceUseCase deleteEvidenceUseCase;
     private final FindEvidenceByCurrentUserAndTypeUseCase findEvidenceByCurrentUserAndTypeUseCase;
-    private final FindEvidenceByFilteringByEmailAndTitleAndTypeUseCase findEvidenceByFilteringByEmailAndTitleAndTypeUseCase;
-    private final FindEvidenceByEmailAndFilteringTypeAndStatusUseCase findEvidenceByEmailAndFilteringTypeAndStatusUseCase;
+    private final FindEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase findEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase;
+    private final FindEvidenceByStudentCodeAndFilteringTypeAndStatusUseCase findEvidenceByStudentCodeAndFilteringTypeAndStatusUseCase;
     private final UpdateActivityEvidenceByCurrentUserUseCase updateActivityEvidenceByCurrentUserUseCase;
     private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
     private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
@@ -32,13 +32,13 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public GetEvidencesResponse findEvidenceByEmailAndTypeAndStatus(String email, EvidenceType evidenceType, ReviewStatus status) {
-        return findEvidenceByEmailAndFilteringTypeAndStatusUseCase.execute(email, evidenceType, status);
+    public GetEvidencesResponse findEvidenceByStudentCodeAndTypeAndStatus(Integer studentCode, EvidenceType evidenceType, ReviewStatus status) {
+        return findEvidenceByStudentCodeAndFilteringTypeAndStatusUseCase.execute(studentCode, evidenceType, status);
     }
 
     @Override
-    public GetEvidencesResponse findEvidenceByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType) {
-        return findEvidenceByFilteringByEmailAndTitleAndTypeUseCase.execute(email, title, evidenceType);
+    public GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(Integer studentCode, String title, EvidenceType evidenceType) {
+        return findEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase.execute(studentCode, title, evidenceType);
     }
 
     @Override
