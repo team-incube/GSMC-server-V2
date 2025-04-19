@@ -12,4 +12,6 @@ public interface AuthApplicationPort {
     void verifyEmail(String code);
 
     void sendAuthenticationEmail(String email);
+
+    void changePassword(String email, String password);
 }
