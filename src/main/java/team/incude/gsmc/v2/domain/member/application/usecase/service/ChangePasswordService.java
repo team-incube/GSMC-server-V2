@@ -21,8 +21,7 @@ public class ChangePasswordService implements ChangePasswordUseCase {
 
     public void execute(String email, String newPassword) {
         Member member = memberPersistencePort.findMemberByEmail(email);
-        if (!authenticationPersistencePort.existsAuthenticationByEmail(member.getEmail())
-        || !authenticationPersistencePort.findAuthenticationByEmail(member.getEmail()).getVerified()) {
+        if (!authenticationPersistencePort.findAuthenticationByEmail(member.getEmail()).getVerified()) {
             throw new MemberForbiddenException();
         }
 
