@@ -12,5 +12,5 @@ public class StudentDetail {
     private Integer classNumber;
     private Integer number;
     private Integer totalScore;
-    private Integer studentCode;
+    private String studentCode;
 }

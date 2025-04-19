@@ -22,8 +22,8 @@ public class CalculateTotalScoreService implements CalculateTotalScoreUseCase {
     private final CategoryPersistencePort categoryPersistencePort;
 
     @Override
-    public void execute(String email) {
-        List<Score> scores = scorePersistencePort.findScoreByMemberEmail(email);
+    public void execute(String studentCode) {
+        List<Score> scores = scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode);
         List<Category> categories = categoryPersistencePort.findAllCategory().stream().sorted().toList();
         Map<String, Float> categoryWeights = categories.stream().map(
                 category -> Map.entry(category.getName(), category.getWeight())
