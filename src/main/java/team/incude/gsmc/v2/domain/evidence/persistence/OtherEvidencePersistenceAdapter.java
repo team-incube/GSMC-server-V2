@@ -88,7 +88,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
         return memberJpaEntity.email.eq(email);
     }
 
-    private BooleanExpression studentCodeEq(Integer studentCode) {
+    private BooleanExpression studentCodeEq(String studentCode) {
         if (studentCode == null) return null;
         return studentDetailJpaEntity.studentCode.eq(studentCode);
     }
