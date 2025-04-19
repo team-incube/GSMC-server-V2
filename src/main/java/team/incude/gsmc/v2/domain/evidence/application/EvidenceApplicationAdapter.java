@@ -32,12 +32,12 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public GetEvidencesResponse findEvidenceByStudentCodeAndTypeAndStatus(Integer studentCode, EvidenceType evidenceType, ReviewStatus status) {
+    public GetEvidencesResponse findEvidenceByStudentCodeAndTypeAndStatus(String studentCode, EvidenceType evidenceType, ReviewStatus status) {
         return findEvidenceByStudentCodeAndFilteringTypeAndStatusUseCase.execute(studentCode, evidenceType, status);
     }
 
     @Override
-    public GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(Integer studentCode, String title, EvidenceType evidenceType) {
+    public GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(String studentCode, String title, EvidenceType evidenceType) {
         return findEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase.execute(studentCode, title, evidenceType);
     }
 
