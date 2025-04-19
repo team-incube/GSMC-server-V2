@@ -20,6 +20,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final DeleteEvidenceUseCase deleteEvidenceUseCase;
     private final FindEvidenceByCurrentUserAndTypeUseCase findEvidenceByCurrentUserAndTypeUseCase;
     private final FindEvidenceByFilteringByEmailAndTitleAndTypeUseCase findEvidenceByFilteringByEmailAndTitleAndTypeUseCase;
+    private final FindEvidenceByEmailAndFilteringTypeAndStatusUseCase findEvidenceByEmailAndFilteringTypeAndStatusUseCase;
     private final UpdateActivityEvidenceByCurrentUserUseCase updateActivityEvidenceByCurrentUserUseCase;
     private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
     private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
@@ -31,8 +32,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public GetEvidencesResponse findEvidenceByEmailAndType(String email, EvidenceType evidenceType) {
-        return findEvidenceByFilteringByEmailAndTitleAndTypeUseCase.execute(email, evidenceType);
+    public GetEvidencesResponse findEvidenceByEmailAndTypeAndStatus(String email, EvidenceType evidenceType, ReviewStatus status) {
+        return findEvidenceByEmailAndFilteringTypeAndStatusUseCase.execute(email, evidenceType, status);
     }
 
     @Override

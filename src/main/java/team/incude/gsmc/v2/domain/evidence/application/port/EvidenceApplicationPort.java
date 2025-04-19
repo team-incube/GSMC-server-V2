@@ -11,7 +11,7 @@ import team.incude.gsmc.v2.global.annotation.port.Port;
 public interface EvidenceApplicationPort {
     GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType);
 
-    GetEvidencesResponse findEvidenceByEmailAndType(String email, EvidenceType evidenceType);
+    GetEvidencesResponse findEvidenceByEmailAndTypeAndStatus(String email, EvidenceType evidenceType, ReviewStatus status);
 
     GetEvidencesResponse findEvidenceByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType);
 
