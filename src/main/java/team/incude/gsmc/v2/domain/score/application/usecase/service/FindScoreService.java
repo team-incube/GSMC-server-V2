@@ -1,7 +1,9 @@
 package team.incude.gsmc.v2.domain.score.application.usecase.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.application.usecase.FindScoreUseCase;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FindScoreService implements FindScoreUseCase {
 
     private final ScorePersistencePort scorePersistencePort;
