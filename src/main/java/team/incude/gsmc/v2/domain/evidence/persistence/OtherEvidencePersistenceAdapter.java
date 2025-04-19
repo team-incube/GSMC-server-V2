@@ -35,16 +35,16 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public List<OtherEvidence> findOtherEvidenceByEmailAndTypeAndStatusAndGradeAndClassNumber(String email, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<OtherEvidence> findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(Integer studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.studentCode.eq(studentCode)).fetchJoin()
+                .join(studentDetailJpaEntity.member, memberJpaEntity).fetchJoin()
                 .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id)).fetchJoin()
                 .where(
-                        memberEmailEq(email),
+                        studentCodeEq(studentCode),
                         evidenceTypeEq(evidenceType),
                         statusEq(status),
                         gradeEq(grade),
@@ -87,6 +87,12 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
         if (email == null) return null;
         return memberJpaEntity.email.eq(email);
     }
+
+    private BooleanExpression studentCodeEq(Integer studentCode) {
+        if (studentCode == null) return null;
+        return studentDetailJpaEntity.studentCode.eq(studentCode);
+    }
+
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
         if (evidenceType == null) return null;
         return evidenceJpaEntity.evidenceType.eq(evidenceType);
