@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
+import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.OtherEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.OtherEvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -34,7 +35,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public List<OtherEvidence> findOtherEvidenceByEmailAndTypeAndGradeAndClassNumber(String email, EvidenceType evidenceType, Integer grade, Integer classNumber) {
+    public List<OtherEvidence> findOtherEvidenceByEmailAndTypeAndStatusAndGradeAndClassNumber(String email, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
@@ -45,6 +46,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .where(
                         memberEmailEq(email),
                         evidenceTypeEq(evidenceType),
+                        statusEq(status),
                         gradeEq(grade),
                         classNumberEq(classNumber)
                 ).fetch()
@@ -88,6 +90,11 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
         if (evidenceType == null) return null;
         return evidenceJpaEntity.evidenceType.eq(evidenceType);
+    }
+
+    private BooleanExpression statusEq(ReviewStatus status) {
+        if (status == null) return null;
+        return evidenceJpaEntity.reviewStatus.eq(status);
     }
 
     private BooleanExpression gradeEq(Integer grade) {

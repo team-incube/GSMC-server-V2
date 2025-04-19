@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.evidence.application.port;
 
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
+import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
 
@@ -13,7 +14,7 @@ public interface OtherEvidencePersistencePort {
 
     List<OtherEvidence> findOtherEvidenceByEmail(String email);
 
-    List<OtherEvidence> findOtherEvidenceByEmailAndTypeAndGradeAndClassNumber(String email, EvidenceType evidenceType, Integer grade, Integer classNumber);
+    List<OtherEvidence> findOtherEvidenceByEmailAndTypeAndStatusAndGradeAndClassNumber(String email, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber);
 
     void deleteOtherEvidenceById(Long evidenceId);
 
