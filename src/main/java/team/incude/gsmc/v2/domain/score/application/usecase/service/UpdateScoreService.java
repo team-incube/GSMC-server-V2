@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.score.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
@@ -16,6 +17,7 @@ import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UpdateScoreService implements UpdateScoreUseCase {
 
     private final ScorePersistencePort scorePersistencePort;

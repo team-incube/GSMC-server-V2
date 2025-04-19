@@ -1,9 +1,12 @@
 package team.incude.gsmc.v2.domain.score.application.usecase.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.application.usecase.CalculateTotalScoreUseCase;
+import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.global.util.SimulateScoreUtil;
 
@@ -12,15 +15,18 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CalculateTotalScoreService implements CalculateTotalScoreUseCase {
 
     private final ScorePersistencePort scorePersistencePort;
+    private final CategoryPersistencePort categoryPersistencePort;
 
     @Override
     public void execute(String email) {
         List<Score> scores = scorePersistencePort.findScoreByMemberEmail(email);
-        Map<String, Float> categoryWeights = scores.stream().map(
-                score -> Map.entry(score.getCategory().getName(), score.getCategory().getWeight())
+        List<Category> categories = categoryPersistencePort.findAllCategory().stream().sorted().toList();
+        Map<String, Float> categoryWeights = categories.stream().map(
+                category -> Map.entry(category.getName(), category.getWeight())
         ).reduce(
                 Map.of(),
                 (acc, entry) -> {
