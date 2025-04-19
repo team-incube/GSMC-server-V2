@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.score.application;
 
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
+import team.incude.gsmc.v2.domain.score.application.usecase.CalculateTotalScoreUseCase;
 import team.incude.gsmc.v2.domain.score.application.usecase.FindScoreUseCase;
 import team.incude.gsmc.v2.domain.score.application.usecase.SimulateScoreUseCase;
 import team.incude.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
@@ -18,6 +19,7 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     private final FindScoreUseCase findScoreUseCase;
     private final UpdateScoreUseCase updateScoreUseCase;
     private final SimulateScoreUseCase simulateScoreUseCase;
+    private final CalculateTotalScoreUseCase calculateTotalScoreUseCase;
 
     @Override
     public GetScoreResponse findCurrentScore() {
@@ -126,5 +128,10 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
                 foreignLangCptScore,
                 foreignLangHskScore
         );
+    }
+
+    @Override
+    public void calculateTotalScore(String studentCode) {
+        calculateTotalScoreUseCase.execute(studentCode);
     }
 }
