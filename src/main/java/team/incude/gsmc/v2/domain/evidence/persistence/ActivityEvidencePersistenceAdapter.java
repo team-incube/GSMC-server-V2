@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
+import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ActivityEvidenceJpaRepository;
@@ -48,7 +49,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByEmailAndTypeAndTitleAndGradeAndClassNumber(String email, EvidenceType evidenceType, String title, Integer grade, Integer classNumber) {
+    public List<ActivityEvidence> findActivityEvidenceByEmailAndTypeAndTitleAndStatusAndGradeAndClassNumber(String email, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
@@ -59,6 +60,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                         memberEmailEq(email),
                         evidenceTypeEq(evidenceType),
                         titleEq(title),
+                        statusEq(status),
                         gradeEq(grade),
                         classNumberEq(classNumber)
                 )
@@ -109,6 +111,11 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private BooleanExpression titleEq(String title) {
         if (title == null || title.isBlank()) return null;
         return activityEvidenceJpaEntity.title.eq(title);
+    }
+
+    private BooleanExpression statusEq(ReviewStatus status) {
+        if (status == null) return null;
+        return evidenceJpaEntity.reviewStatus.eq(status);
     }
 
     private BooleanExpression gradeEq(Integer grade) {
