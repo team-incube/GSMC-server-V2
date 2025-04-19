@@ -3,6 +3,6 @@ package team.incude.gsmc.v2.domain.evidence.application.usecase;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
 
-public interface FindEvidenceByFilteringByEmailAndTitleAndTypeUseCase {
-    GetEvidencesResponse execute(String email, String title, EvidenceType evidenceType);
+public interface FindEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase {
+    GetEvidencesResponse execute(Integer studentCode, String title, EvidenceType evidenceType);
 }
