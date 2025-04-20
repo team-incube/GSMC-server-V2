@@ -29,19 +29,7 @@ public class UpdateScoreService {
 
 == 내부 동작 흐름
 
-[plantuml, format="svg"]
-----
-@startuml
-actor "Service" as S
-participant "ScoreUpdatedEventPublisher" as P
-participant "ScoreUpdateEventHandler" as H
-participant "CalculateTotalScoreService" as C
-
-S -> P : publish(studentCode)
-P -> H : ScoreUpdatedEvent 전달 (Spring Event)
-H -> C : calculateTotalScore(studentCode)
-@enduml
-----
+image::https://uml.planttext.com/plantuml/svg/TP0z3W8X48LxJZ6nsYsyW8NPX9XGag07G21AWa1Ws1FOUGaFuCtq4B9euMPZE-zxFvaXeqnOBev8XI71IfWqMcLM83C84gjebOtIOvLKIEOGjKIZTwFnoClHsNmsgT7yBzrW9hrsNvJDKIgTAgw2-u3IDUFl34g8WFKME6mWVYgxZ4NNK1gqwGcVL5RLnK9utQ_FsmCw4PFr9sZ7dh39GAj1BPldqOFnkdxd3G00[종합 점수 계산 흐름도]
 
 - `publish()` 호출 시 이벤트가 전파됩니다.
 - 스프링 이벤트 시스템을 통해 `ScoreUpdateEventHandler`가 자동으로 실행됩니다.
