@@ -12,6 +12,8 @@ import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.RequiredEvidenceCategoryException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
+import team.incude.gsmc.v2.global.annotation.aspect.CalculateTotalScoreStudentCode;
+import team.incude.gsmc.v2.global.annotation.aspect.TriggerCalculateTotalScore;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
@@ -31,11 +33,12 @@ public class UpdateScoreService implements UpdateScoreUseCase {
     }
 
     @Override
-    public void execute(String email, String categoryName, Integer value) {
-        updateScore(email, categoryName, value);
+    public void execute(String studentCode, String categoryName, Integer value) {
+        updateScore(studentCode, categoryName, value);
     }
 
-    private void updateScore(String email, String categoryName, Integer value) {
+    @TriggerCalculateTotalScore
+    private void updateScore(@CalculateTotalScoreStudentCode String studentCode, String categoryName, Integer value) {
         Category category = categoryPersistencePort.findCategoryByName(categoryName);
         if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
             throw new ScoreLimitExceededException();
@@ -43,9 +46,9 @@ public class UpdateScoreService implements UpdateScoreUseCase {
         if (category.getIsEvidenceRequired()) {
             throw new RequiredEvidenceCategoryException();
         }
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, email);
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode);
         if (score == null) {
-            Member member = memberPersistencePort.findMemberByEmail(email);
+            Member member = memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode);
             score = createNewScore(category, member);
         } else {
             score = Score.builder()
