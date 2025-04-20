@@ -62,6 +62,24 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     }
 
     @Override
+    public Score findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(String name, String studentCode) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(scoreJpaEntity)
+                        .join(scoreJpaEntity.category, categoryJpaEntity)
+                        .join(scoreJpaEntity.member, memberJpaEntity)
+                        .join(studentDetailJpaEntity)
+                        .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
+                        .where(
+                                categoryJpaEntity.name.eq(name),
+                                studentDetailJpaEntity.studentCode.eq(studentCode)
+                        )
+                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                        .fetchOne()
+        ).map(scoreMapper::toDomain).orElse(null);
+    }
+
+    @Override
     @Deprecated(since = "StudentCode 값 사용으로 인하여 리팩터링 후 삭제될 예정입니다")
     public List<Score> findScoreByMemberEmail(String email) {
         return jpaQueryFactory
@@ -81,10 +99,9 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     public List<Score> findScoreByStudentDetailStudentCode(String studentCode) {
         return jpaQueryFactory
                 .selectFrom(scoreJpaEntity)
-                .join(scoreJpaEntity.member, studentDetailJpaEntity.member)
-                .fetchJoin()
-                .join(scoreJpaEntity.category, categoryJpaEntity)
-                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
                 .where(studentDetailJpaEntity.studentCode.eq(studentCode))
                 .fetch()
                 .stream()

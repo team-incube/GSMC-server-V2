@@ -13,6 +13,7 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
 @RequiredArgsConstructor
@@ -28,6 +29,17 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
                 jpaQueryFactory
                         .selectFrom(memberJpaEntity)
                         .where(memberJpaEntity.email.eq(email))
+                        .fetchOne()
+        ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
+    }
+
+    @Override
+    public Member findMemberByStudentDetailStudentCode(String studentCode) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .select(studentDetailJpaEntity.member)
+                        .from(studentDetailJpaEntity)
+                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
                         .fetchOne()
         ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
     }

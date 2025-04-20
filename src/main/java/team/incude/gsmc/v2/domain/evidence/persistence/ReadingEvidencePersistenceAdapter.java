@@ -50,7 +50,7 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     @Override
-    public List<ReadingEvidence> findReadingEvidenceByStudentCodeAndTitleAndTypeAndStatusAndGradeAndClassNumber(Integer studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<ReadingEvidence> findReadingEvidenceByStudentCodeAndTitleAndTypeAndStatusAndGradeAndClassNumber(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
                 .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
@@ -94,7 +94,7 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
         return memberJpaEntity.email.eq(email);
     }
 
-    private BooleanExpression studentCodeEq(Integer studentCode) {
+    private BooleanExpression studentCodeEq(String studentCode) {
         if (studentCode == null) return null;
         return studentDetailJpaEntity.studentCode.eq(studentCode);
     }

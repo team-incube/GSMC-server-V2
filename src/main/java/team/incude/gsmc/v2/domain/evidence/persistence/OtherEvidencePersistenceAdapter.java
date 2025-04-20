@@ -35,7 +35,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public List<OtherEvidence> findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(Integer studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<OtherEvidence> findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
@@ -88,7 +88,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
         return memberJpaEntity.email.eq(email);
     }
 
-    private BooleanExpression studentCodeEq(Integer studentCode) {
+    private BooleanExpression studentCodeEq(String studentCode) {
         if (studentCode == null) return null;
         return studentDetailJpaEntity.studentCode.eq(studentCode);
     }

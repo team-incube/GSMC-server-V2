@@ -2,10 +2,10 @@ package team.incude.gsmc.v2.domain.score.application;
 
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
+import team.incude.gsmc.v2.domain.score.application.usecase.CalculateTotalScoreUseCase;
 import team.incude.gsmc.v2.domain.score.application.usecase.FindScoreUseCase;
 import team.incude.gsmc.v2.domain.score.application.usecase.SimulateScoreUseCase;
 import team.incude.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
-import team.incude.gsmc.v2.domain.score.presentation.data.request.GetScoreSimulateRequest;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -18,6 +18,7 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     private final FindScoreUseCase findScoreUseCase;
     private final UpdateScoreUseCase updateScoreUseCase;
     private final SimulateScoreUseCase simulateScoreUseCase;
+    private final CalculateTotalScoreUseCase calculateTotalScoreUseCase;
 
     @Override
     public GetScoreResponse findCurrentScore() {
@@ -25,8 +26,8 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     }
 
     @Override
-    public GetScoreResponse findScoreByEmail(String email) {
-        return findScoreUseCase.execute(email);
+    public GetScoreResponse findScoreByStudentCode(String stduentCode) {
+        return findScoreUseCase.execute(stduentCode);
     }
 
     @Override
@@ -35,8 +36,8 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     }
 
     @Override
-    public void updateScoreByEmail(String email, String categoryName, Integer value) {
-        updateScoreUseCase.execute(email, categoryName, value);
+    public void updateScoreByStudentCode(String studentCode, String categoryName, Integer value) {
+        updateScoreUseCase.execute(studentCode, categoryName, value);
     }
 
     @Override
@@ -126,5 +127,10 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
                 foreignLangCptScore,
                 foreignLangHskScore
         );
+    }
+
+    @Override
+    public void calculateTotalScore(String studentCode) {
+        calculateTotalScoreUseCase.execute(studentCode);
     }
 }
