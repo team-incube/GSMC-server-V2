@@ -5,11 +5,10 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import team.incude.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
-import team.incude.gsmc.v2.global.annotation.aspect.CalculateTotalScoreStduentCode;
+import team.incude.gsmc.v2.global.annotation.aspect.CalculateTotalScoreStudentCode;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -34,7 +33,7 @@ public class TotalScoreCalculateAspect {
         String studentCode = null;
         for (int i = 0; i < paramAnns.length; i++) {
             for (Annotation ann : paramAnns[i]) {
-                if (ann instanceof CalculateTotalScoreStduentCode) {
+                if (ann instanceof CalculateTotalScoreStudentCode) {
                     studentCode = (String) args[i];
                     break;
                 }
