@@ -12,6 +12,7 @@ import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.RequiredEvidenceCategoryException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
+import team.incude.gsmc.v2.global.annotation.aspect.CalculateTotalScoreStduentCode;
 import team.incude.gsmc.v2.global.annotation.aspect.TriggerCalculateTotalScore;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
@@ -37,7 +38,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
     }
 
     @TriggerCalculateTotalScore
-    private void updateScore(String studentCode, String categoryName, Integer value) {
+    private void updateScore(@CalculateTotalScoreStduentCode String studentCode, String categoryName, Integer value) {
         Category category = categoryPersistencePort.findCategoryByName(categoryName);
         if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
             throw new ScoreLimitExceededException();
