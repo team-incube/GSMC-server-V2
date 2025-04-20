@@ -40,8 +40,8 @@ public class SimulateScoreUtil {
             Integer humanitiesServiceClubSemester2,
             Boolean humanitiesCertificateChineseCharacter,
             Boolean humanitiesCertificateKoreanHistory,
+            Integer humanitiesActivitiesNewrrow_S,
             Integer humanitiesActivitiesSelfDirectedActivities,
-            Integer humanitiesActivitiesNewrrowS_S,
             Boolean foreignLangAttendanceToeicAcademyStatus,
             Integer foreignLangToeicScore,
             Integer foreignLangToeflScore,
@@ -87,7 +87,7 @@ public class SimulateScoreUtil {
                 humanitiesCertificateChineseCharacter,
                 humanitiesCertificateKoreanHistory,
                 humanitiesActivitiesSelfDirectedActivities,
-                humanitiesActivitiesNewrrowS_S,
+                humanitiesActivitiesNewrrow_S,
                 categoryWeightMap
         );
 
