@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aspectj>
+    <weaver options="-verbose -showWeaveInfo">
+        <include within="team.incude.gsmc.v2..*"/>
+    </weaver>
+
+    <aspects>
+        <aspect name="team.incude.gsmc.v2.aspect.score.TotalScoreCalculateAspect    "/>
+    </aspects>
+</aspectj>
