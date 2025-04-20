@@ -6,7 +6,6 @@ import team.incude.gsmc.v2.domain.score.application.usecase.CalculateTotalScoreU
 import team.incude.gsmc.v2.domain.score.application.usecase.FindScoreUseCase;
 import team.incude.gsmc.v2.domain.score.application.usecase.SimulateScoreUseCase;
 import team.incude.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
-import team.incude.gsmc.v2.domain.score.presentation.data.request.GetScoreSimulateRequest;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -27,8 +26,8 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     }
 
     @Override
-    public GetScoreResponse findScoreByEmail(String email) {
-        return findScoreUseCase.execute(email);
+    public GetScoreResponse findScoreByStudentCode(String stduentCode) {
+        return findScoreUseCase.execute(stduentCode);
     }
 
     @Override
@@ -37,8 +36,8 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     }
 
     @Override
-    public void updateScoreByEmail(String email, String categoryName, Integer value) {
-        updateScoreUseCase.execute(email, categoryName, value);
+    public void updateScoreByStudentCode(String studentCode, String categoryName, Integer value) {
+        updateScoreUseCase.execute(studentCode, categoryName, value);
     }
 
     @Override

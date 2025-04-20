@@ -23,9 +23,9 @@ public class ScoreWebAdapter {
         return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.findCurrentScore());
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<GetScoreResponse> getScoreByEmail(@PathVariable(value = "email") String email) {
-        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.findScoreByEmail(email));
+    @GetMapping("/{studentCode}")
+    public ResponseEntity<GetScoreResponse> getScoreByEmail(@PathVariable(value = "studentCode") String email) {
+        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.findScoreByStudentCode(email));
     }
 
     @PatchMapping("/current")
@@ -34,9 +34,9 @@ public class ScoreWebAdapter {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PatchMapping("/{email}")
-    public ResponseEntity<Void> updateScoreByEmail(@PathVariable(value = "email") String email, @Valid @RequestBody PatchScoreRequest request) {
-        scoreApplicationPort.updateScoreByEmail(email, request.categoryName(), request.value());
+    @PatchMapping("/{studentCode}")
+    public ResponseEntity<Void> updateScoreByEmail(@PathVariable(value = "studentCode") String studentCode, @Valid @RequestBody PatchScoreRequest request) {
+        scoreApplicationPort.updateScoreByStudentCode(studentCode, request.categoryName(), request.value());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

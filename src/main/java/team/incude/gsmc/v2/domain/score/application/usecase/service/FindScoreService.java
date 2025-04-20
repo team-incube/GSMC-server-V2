@@ -29,14 +29,14 @@ public class FindScoreService implements FindScoreUseCase {
     }
 
     @Override
-    public GetScoreResponse execute(String email) {
-        return findScore(email);
+    public GetScoreResponse execute(String studentCode) {
+        return findScore(studentCode);
     }
 
-    private GetScoreResponse findScore(String email) {
-        List<Score> scores = scorePersistencePort.findScoreByMemberEmail(email);
+    private GetScoreResponse findScore(String studentCode) {
+        List<Score> scores = scorePersistencePort.findScoreByMemberEmail(studentCode);
         return new GetScoreResponse(
-                studentDetailPersistencePort.findTotalScoreByMemberEmail(email),
+                studentDetailPersistencePort.findTotalScoreByMemberEmail(studentCode),
                 scores.stream()
                         .map(score -> new GetScoreDto(
                                 score.getCategory().getName(),
