@@ -38,7 +38,7 @@ public class SignUpService implements SignUpUseCase {
             throw new MemberExistException();
         }
 
-       StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCode(parsingEmail(email));
+        StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCode(parsingEmail(email));
 
         Member member = Member.builder()
                 .email(email)
