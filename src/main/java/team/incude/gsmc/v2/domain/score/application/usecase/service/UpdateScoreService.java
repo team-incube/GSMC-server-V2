@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.domain.score.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
@@ -12,8 +13,7 @@ import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.RequiredEvidenceCategoryException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
-import team.incude.gsmc.v2.global.annotation.aspect.CalculateTotalScoreStudentCode;
-import team.incude.gsmc.v2.global.annotation.aspect.TriggerCalculateTotalScore;
+import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
@@ -26,6 +26,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
     private final CategoryPersistencePort categoryPersistencePort;
     private final MemberPersistencePort memberPersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public void execute(String categoryName, Integer value) {
@@ -37,8 +38,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
         updateScore(studentCode, categoryName, value);
     }
 
-    @TriggerCalculateTotalScore
-    private void updateScore(@CalculateTotalScoreStudentCode String studentCode, String categoryName, Integer value) {
+    protected void updateScore(String studentCode, String categoryName, Integer value) {
         Category category = categoryPersistencePort.findCategoryByName(categoryName);
         if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
             throw new ScoreLimitExceededException();
@@ -59,6 +59,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
                     .build();
         }
         scorePersistencePort.saveScore(score);
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentCode));
     }
 
     private Score createNewScore(Category category, Member member) {
