@@ -6,11 +6,10 @@ import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
+import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ActivityEvidenceJpaRepository;
-import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
@@ -18,6 +17,9 @@ import java.util.List;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QActivityEvidenceJpaEntity.activityEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
+import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -27,17 +29,18 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private final ActivityEvidenceJpaRepository activityEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ActivityEvidenceMapper activityEvidenceMapper;
-    private final MemberMapper memberMapper;
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByMemberAndEvidenceType(Member member, EvidenceType evidenceType) {
+    public List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
-                .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
                 .where(
-                        scoreJpaEntity.member.eq(memberMapper.toEntity(member)),
-                        evidenceJpaEntity.evidenceType.eq(evidenceType)
+                        memberEmailEq(email),
+                        evidenceTypeEq(evidenceType)
                 )
                 .fetch()
                 .stream()
@@ -46,15 +49,19 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByMemberAndTypeAndTitle(Member member, EvidenceType evidenceType, String title) {
+    public List<ActivityEvidence> findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
-                .leftJoin(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .leftJoin(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.studentCode.eq(studentCode)).fetchJoin()
                 .where(
-                        memberEq(member),
+                        studentCodeEq(studentCode),
                         evidenceTypeEq(evidenceType),
-                        titleEq(title)
+                        titleEq(title),
+                        statusEq(status),
+                        gradeEq(grade),
+                        classNumberEq(classNumber)
                 )
                 .fetch()
                 .stream()
@@ -90,9 +97,14 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
         return result != null;
     }
 
-    private BooleanExpression memberEq(Member member) {
-        if (member == null) return null;
-        return scoreJpaEntity.member.eq(memberMapper.toEntity(member));
+    private BooleanExpression memberEmailEq(String email) {
+        if (email == null) return null;
+        return memberJpaEntity.email.eq(email);
+    }
+
+    private BooleanExpression studentCodeEq(String studentCode) {
+        if (studentCode == null) return null;
+        return studentDetailJpaEntity.studentCode.eq(studentCode);
     }
 
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
@@ -103,5 +115,20 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private BooleanExpression titleEq(String title) {
         if (title == null || title.isBlank()) return null;
         return activityEvidenceJpaEntity.title.eq(title);
+    }
+
+    private BooleanExpression statusEq(ReviewStatus status) {
+        if (status == null) return null;
+        return evidenceJpaEntity.reviewStatus.eq(status);
+    }
+
+    private BooleanExpression gradeEq(Integer grade) {
+        if (grade == null) return null;
+        return studentDetailJpaEntity.grade.eq(grade);
+    }
+
+    private BooleanExpression classNumberEq(Integer classNumber) {
+        if (classNumber == null) return null;
+        return studentDetailJpaEntity.classNumber.eq(classNumber);
     }
 }

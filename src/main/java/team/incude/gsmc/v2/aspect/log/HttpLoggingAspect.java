@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.log;
+package team.incude.gsmc.v2.aspect.log;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
