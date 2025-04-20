@@ -1,6 +1,6 @@
 package team.incude.gsmc.v2.aspect.score;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,10 +16,10 @@ import java.util.Date;
 
 @Aspect
 @Component
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class TotalScoreCalculateAspect {
 
-    private static final long FIXED_DELAY_MS = 5_000;
+    private static final long FIXED_DELAY_MS = 3_000;
 
     private final TaskScheduler taskScheduler;
     private final ScoreApplicationPort scoreApplicationPort;
