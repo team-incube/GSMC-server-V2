@@ -37,7 +37,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
     }
 
     @TriggerCalculateTotalScore
-    private void updateScore(String email, String categoryName, Integer value) {
+    private void updateScore(String studentCode, String categoryName, Integer value) {
         Category category = categoryPersistencePort.findCategoryByName(categoryName);
         if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
             throw new ScoreLimitExceededException();
@@ -45,9 +45,9 @@ public class UpdateScoreService implements UpdateScoreUseCase {
         if (category.getIsEvidenceRequired()) {
             throw new RequiredEvidenceCategoryException();
         }
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, email);
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode);
         if (score == null) {
-            Member member = memberPersistencePort.findMemberByEmail(email);
+            Member member = memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode);
             score = createNewScore(category, member);
         } else {
             score = Score.builder()
