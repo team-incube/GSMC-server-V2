@@ -18,13 +18,13 @@ public class UpdateScoreService {
 
     public void execute(String studentCode, String categoryName, int value) {
         // 점수 수정 로직...
-        applicationEventPublisher.publish(studentCode);
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentCode));
     }
 }
 ----
 
 - `studentCode`는 종합 점수를 계산할 학생의 코드입니다.
-- DI로 `ScoreUpdatedEventPublisher`를 주입받아 사용하세요.
+- DI로 `ApplicationEventPublisher`를 주입받아 사용하세요.
 - 이벤트는 Spring의 `ApplicationEventPublisher`를 통해 내부적으로 발행됩니다.
 
 == 내부 동작 흐름
