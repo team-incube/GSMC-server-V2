@@ -62,17 +62,17 @@ public class SignUpService implements SignUpUseCase {
         studentDetailPersistencePort.saveStudentDetail(studentDetail);
     }
 
-    private Integer parsingEmail(String email) {
+    private String parsingEmail(String email) {
 
         if (!email.startsWith("s") || !email.endsWith("@gsm.hs.kr")) {
             throw new EmailFormatInvalidException();
         }
 
         String studentId = email.substring(1, email.indexOf("@"));
-
         try {
-            Integer studentCode = Integer.parseInt(studentId);
-            return studentCode;
+            //Integer studentCode = Integer.parseInt(studentId);
+            //return studentCode;
+            return studentId;
         } catch (NumberFormatException e) {
             throw new EmailFormatInvalidException();
         }

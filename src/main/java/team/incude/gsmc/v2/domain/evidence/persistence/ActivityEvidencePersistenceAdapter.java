@@ -49,7 +49,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(Integer studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<ActivityEvidence> findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
@@ -102,7 +102,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
         return memberJpaEntity.email.eq(email);
     }
 
-    private BooleanExpression studentCodeEq(Integer studentCode) {
+    private BooleanExpression studentCodeEq(String studentCode) {
         if (studentCode == null) return null;
         return studentDetailJpaEntity.studentCode.eq(studentCode);
     }

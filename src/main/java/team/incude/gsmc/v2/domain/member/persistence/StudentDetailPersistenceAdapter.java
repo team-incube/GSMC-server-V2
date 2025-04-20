@@ -22,8 +22,7 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     private final StudentDetailMapper studentDetailMapper;
     private final JPAQueryFactory jpaQueryFactory;
 
-    @Override
-    public StudentDetail findStudentDetailByStudentCode(Integer studentCode) {
+    public StudentDetail findStudentDetailByStudentCode(String studentCode) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(studentDetailJpaEntity)
