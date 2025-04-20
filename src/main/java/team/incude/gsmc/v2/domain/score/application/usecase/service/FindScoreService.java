@@ -34,9 +34,9 @@ public class FindScoreService implements FindScoreUseCase {
     }
 
     private GetScoreResponse findScore(String studentCode) {
-        List<Score> scores = scorePersistencePort.findScoreByMemberEmail(studentCode);
+        List<Score> scores = scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode);
         return new GetScoreResponse(
-                studentDetailPersistencePort.findTotalScoreByMemberEmail(studentCode),
+                studentDetailPersistencePort.findTotalScoreByStudentCode(studentCode),
                 scores.stream()
                         .map(score -> new GetScoreDto(
                                 score.getCategory().getName(),

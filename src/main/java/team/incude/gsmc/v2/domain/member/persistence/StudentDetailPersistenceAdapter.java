@@ -33,12 +33,24 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     @Override
+    @Deprecated(forRemoval = true,since = "StudentCode로 전환으로 인한 메서드 제거 예정")
     public Integer findTotalScoreByMemberEmail(String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .select(studentDetailJpaEntity.totalScore)
                         .from(studentDetailJpaEntity)
                         .where(studentDetailJpaEntity.member.email.eq(email))
+                        .fetchOne()
+        ).orElseThrow(MemberInvalidException::new);
+    }
+
+    @Override
+    public Integer findTotalScoreByStudentCode(String studentCode) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .select(studentDetailJpaEntity.totalScore)
+                        .from(studentDetailJpaEntity)
+                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
                         .fetchOne()
         ).orElseThrow(MemberInvalidException::new);
     }

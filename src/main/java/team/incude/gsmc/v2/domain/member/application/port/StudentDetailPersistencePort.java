@@ -10,5 +10,7 @@ public interface StudentDetailPersistencePort {
 
     Integer findTotalScoreByMemberEmail(String email);
 
+    Integer findTotalScoreByStudentCode(String studentCode);
+
     StudentDetail saveStudentDetail(StudentDetail studentDetail);
 }
