@@ -5,5 +5,5 @@ import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCert
 public interface FindCertificateUseCase {
     GetCertificatesResponse execute();
 
-    GetCertificatesResponse execute(String email);
+    GetCertificatesResponse execute(String studentCode);
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public interface CertificateApplicationPort {
     GetCertificatesResponse findCurrentCertificate();
 
-    GetCertificatesResponse findCertificateByEmail(String email);
+    GetCertificatesResponse findCertificateByStudentCode(String studentCode);
 
     void createCertificate(String name, LocalDate acquisitionDate, MultipartFile file);
 
@@ -19,5 +19,5 @@ public interface CertificateApplicationPort {
 
     void deleteCurrentCertificate(Long id);
 
-    void deleteCertificateByEmailAndId(String email, Long id);
+    void deleteCertificateByStudentCodeAndId(String studentCode, Long id);
 }
