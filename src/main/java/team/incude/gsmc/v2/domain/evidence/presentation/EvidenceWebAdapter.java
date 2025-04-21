@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationPort;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
@@ -45,8 +46,10 @@ public class EvidenceWebAdapter {
     }
 
     @PostMapping("/current/activity")
-    public ResponseEntity<Void> createActivityEvidence(@RequestBody CreateActivityEvidenceRequest request) {
-        evidenceApplicationPort.createActivityEvidence(request.categoryName(), request.title(), request.content(), request.file(), request.activityType());
+    public ResponseEntity<Void> createActivityEvidence(
+            @RequestBody CreateActivityEvidenceRequest request,
+            @RequestParam(name = "file", required = false) MultipartFile file) {
+        evidenceApplicationPort.createActivityEvidence(request.categoryName(), request.title(), request.content(), file, request.activityType());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -57,30 +60,36 @@ public class EvidenceWebAdapter {
     }
 
     @PostMapping("/current/other")
-    public ResponseEntity<Void> createOtherEvidence(@RequestBody CreateOtherEvidenceRequest request) {
-        evidenceApplicationPort.createOtherEvidence(request.categoryName(), request.file());
+    public ResponseEntity<Void> createOtherEvidence(
+            @RequestBody CreateOtherEvidenceRequest request,
+            @RequestParam(name = "file", required = false) MultipartFile file) {
+        evidenceApplicationPort.createOtherEvidence(request.categoryName(), file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/current/scoring")
-    public ResponseEntity<Void> createOtherScoringEvidence(@RequestBody CreateOtherScoringEvidenceRequest request) {
-        evidenceApplicationPort.createOtherScoringEvidence(request.categoryName(), request.file(), request.value());
+    public ResponseEntity<Void> createOtherScoringEvidence(
+            @RequestBody CreateOtherScoringEvidenceRequest request,
+            @RequestParam(name = "file", required = false) MultipartFile file) {
+        evidenceApplicationPort.createOtherScoringEvidence(request.categoryName(), file, request.value());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("/major/{evidenceId}")
     public ResponseEntity<Void> patchMajorEvidence(
             @PathVariable Long evidenceId,
-            @RequestBody PatchActivityEvidenceRequest request) {
-        evidenceApplicationPort.updateMajorEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file());
+            @RequestBody PatchActivityEvidenceRequest request,
+            @RequestParam(name = "file", required = false) MultipartFile file) {
+        evidenceApplicationPort.updateMajorEvidenceByCurrentUser(evidenceId, request.title(), request.content(), file);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/humanities/{evidenceId}")
     public ResponseEntity<Void> patchHumanityEvidence(
             @PathVariable Long evidenceId,
-            @RequestBody PatchActivityEvidenceRequest request) {
-        evidenceApplicationPort.updateHumanitiesEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file());
+            @RequestBody PatchActivityEvidenceRequest request,
+            @RequestParam(name = "file", required = false) MultipartFile file) {
+        evidenceApplicationPort.updateHumanitiesEvidenceByCurrentUser(evidenceId, request.title(), request.content(), file);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -95,16 +104,17 @@ public class EvidenceWebAdapter {
     @PatchMapping("/other/{evidenceId}")
     public ResponseEntity<Void> patchOtherEvidence(
             @PathVariable Long evidenceId,
-            @RequestBody PatchOtherEvidenceRequest request) {
-        evidenceApplicationPort.updateOtherEvidenceByCurrentUser(evidenceId, request.file());
+            @RequestParam(name = "file", required = false) MultipartFile file) {
+        evidenceApplicationPort.updateOtherEvidenceByCurrentUser(evidenceId, file);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/scoring/{evidenceId}")
     public ResponseEntity<Void> patchScoringEvidence(
             @PathVariable Long evidenceId,
-            @RequestBody PatchOtherScoringEvidenceRequest request) {
-        evidenceApplicationPort.updateOtherScoringEvidenceByCurrentUser(evidenceId, request.file(), request.value());
+            @RequestBody PatchOtherScoringEvidenceRequest request,
+            @RequestParam(name = "file", required = false) MultipartFile file) {
+        evidenceApplicationPort.updateOtherScoringEvidenceByCurrentUser(evidenceId, file, request.value());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
