@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
@@ -26,6 +27,7 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
 
     @Override
+    @Transactional
     public void execute(Long evidenceId, String title, String content, MultipartFile file, EvidenceType evidenceType) {
         Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
 
