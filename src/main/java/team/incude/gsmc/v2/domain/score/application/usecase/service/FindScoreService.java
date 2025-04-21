@@ -25,7 +25,7 @@ public class FindScoreService implements FindScoreUseCase {
 
     @Override
     public GetScoreResponse execute() {
-        return findScore(currentMemberProvider.getCurrentUser().getEmail());
+        return findScore(studentDetailPersistencePort.findStudentDetailByMemberEmail(currentMemberProvider.getCurrentUser().getEmail()).getStudentCode());
     }
 
     @Override
