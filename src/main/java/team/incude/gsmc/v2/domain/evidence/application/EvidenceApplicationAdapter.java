@@ -25,8 +25,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
     private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
     private final UpdateReviewStatusUseCase updateReviewStatusUseCase;
-    private final CreateOtherScoringUseCase createOtherScoringUseCase;
-    private final UpdateOtherScoringUseCase updateOtherScoringUseCase;
+    private final CreateOtherScoringEvidenceUseCase createOtherScoringUseCase;
+    private final UpdateOtherScoringEvidenceByCurrentUserUseCase updateOtherScoringUseCase;
 
 
     @Override
