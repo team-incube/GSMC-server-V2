@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
 
     @Override
+    @Transactional
     public void execute(String categoryName, MultipartFile file, int value) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());

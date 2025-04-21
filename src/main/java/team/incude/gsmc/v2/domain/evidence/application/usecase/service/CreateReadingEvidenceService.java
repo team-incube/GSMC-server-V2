@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
     private final static String HUMANITIES_READING = "HUMANITIES-READING";
 
     @Override
+    @Transactional
     public void execute(String title, String author, int page, String content) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
