@@ -15,4 +15,6 @@ public interface MemberPersistencePort {
     Member findMemberByStudentDetailStudentCode(String studentCode);
 
     Member findMemberById(Long memberId);
+
+    void updateMemberPassword(Long memberId, String newPassword);
 }
