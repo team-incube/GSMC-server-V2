@@ -47,6 +47,8 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         Evidence evidence = createEvidence(score);
         String fileUrl = uploadFile(file);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUrl);
+
+        scorePersistencePort.saveScore(score);
         otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
