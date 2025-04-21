@@ -23,7 +23,6 @@ import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedExcepti
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -73,11 +72,9 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     }
 
     private String uploadFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) return null;
-
         try {
             return s3Port.uploadFile(
-                    UUID.randomUUID().toString(),
+                    file.getOriginalFilename(),
                     file.getInputStream()
             ).join();
         } catch (IOException e) {

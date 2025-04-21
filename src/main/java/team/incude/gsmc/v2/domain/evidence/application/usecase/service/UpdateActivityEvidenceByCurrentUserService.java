@@ -59,11 +59,9 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
     }
 
     private String uploadFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) return null;
-
         try {
             return s3Port.uploadFile(
-                    UUID.randomUUID().toString(),
+                    file.getOriginalFilename(),
                     file.getInputStream()
             ).join();
         } catch (IOException e) {
