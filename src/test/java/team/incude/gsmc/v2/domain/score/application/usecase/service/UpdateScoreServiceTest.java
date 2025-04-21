@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("UpdateScoreService 클래스의")
+@DisplayName("인증제 점수 갱신 서비스 클래스의")
 class UpdateScoreServiceTest {
 
     @Mock
