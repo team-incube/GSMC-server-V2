@@ -25,7 +25,7 @@ public class CertificateApplicationAdapter implements CertificateApplicationPort
     }
 
     @Override
-    public GetCertificatesResponse findCertificateByEmail(String email) {
+    public GetCertificatesResponse findCertificateByStudentCode(String email) {
         return findCertificateUseCase.execute(email);
     }
 
@@ -45,7 +45,7 @@ public class CertificateApplicationAdapter implements CertificateApplicationPort
     }
 
     @Override
-    public void deleteCertificateByEmailAndId(String email, Long id) {
+    public void deleteCertificateByStudentCodeAndId(String email, Long id) {
         deleteCertificateUseCase.execute(email, id);
     }
 }

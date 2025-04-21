@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.certificate.persistence.entity.QCertificateJpaEntity.certificateJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
 @RequiredArgsConstructor
@@ -39,6 +40,7 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
     }
 
     @Override
+    @Deprecated
     public List<Certificate> findCertificateByMemberEmail(String email) {
         return jpaQueryFactory
                 .select(Projections.constructor(
@@ -51,6 +53,27 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
                 .from(certificateJpaEntity)
                 .join(certificateJpaEntity.member, memberJpaEntity)
                 .where(memberJpaEntity.email.eq(email))
+                .fetch()
+                .stream()
+                .map(certificateMapper::fromProjection)
+                .toList();
+    }
+
+    @Override
+    public List<Certificate> findCertificateByStudentDetailStudentCode(String studentCode) {
+        return jpaQueryFactory
+                .select(Projections.constructor(
+                        CertificateProjection.class,
+                        certificateJpaEntity.id,
+                        certificateJpaEntity.name,
+                        certificateJpaEntity.acquisitionDate,
+                        certificateJpaEntity.evidence.fileUri
+                ))
+                .from(certificateJpaEntity)
+                .join(certificateJpaEntity.member, memberJpaEntity)
+                .join(studentDetailJpaEntity)
+                .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
+                .where(studentDetailJpaEntity.studentCode.eq(studentCode))
                 .fetch()
                 .stream()
                 .map(certificateMapper::fromProjection)

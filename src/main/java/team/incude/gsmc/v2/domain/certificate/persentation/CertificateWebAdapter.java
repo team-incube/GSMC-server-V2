@@ -22,9 +22,9 @@ public class CertificateWebAdapter {
         return ResponseEntity.status(HttpStatus.OK).body(certificateApplicationPort.findCurrentCertificate());
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<GetCertificatesResponse> getCertificates(@PathVariable String email) {
-        return ResponseEntity.status(HttpStatus.OK).body(certificateApplicationPort.findCertificateByEmail(email));
+    @GetMapping("/{studentCode}")
+    public ResponseEntity<GetCertificatesResponse> getCertificates(@PathVariable(value = "studentCode") String studentCode) {
+        return ResponseEntity.status(HttpStatus.OK).body(certificateApplicationPort.findCertificateByStudentCode(studentCode));
     }
 
     @PostMapping
@@ -48,9 +48,12 @@ public class CertificateWebAdapter {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("/{email}/{certificateId}")
-    public ResponseEntity<Void> deleteCertificates(@PathVariable String email, @PathVariable Long certificateId) {
-        certificateApplicationPort.deleteCertificateByEmailAndId(email, certificateId);
+    @DeleteMapping("/{studentCode}/{certificateId}")
+    public ResponseEntity<Void> deleteCertificates(
+            @PathVariable(value = "studentCode") String studentCode,
+            @PathVariable(value = "certificateId") Long certificateId
+    ){
+        certificateApplicationPort.deleteCertificateByStudentCodeAndId(studentCode, certificateId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

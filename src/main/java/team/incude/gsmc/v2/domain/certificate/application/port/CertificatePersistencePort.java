@@ -12,6 +12,8 @@ public interface CertificatePersistencePort {
 
     List<Certificate> findCertificateByMemberEmail(String email);
 
+    List<Certificate> findCertificateByStudentDetailStudentCode(String studentCode);
+
     Certificate saveCertificate(Certificate certificate);
 
     void deleteCertificateById(Long id);
