@@ -1,15 +1,13 @@
 package team.incude.gsmc.v2.domain.certificate.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incude.gsmc.v2.domain.certificate.application.usecase.FindCertificateUseCase;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.GetCertificateDto;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificatesResponse;
+import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 
 @Service
@@ -18,20 +16,21 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProv
 public class FindCertificateService implements FindCertificateUseCase {
 
     private final CertificatePersistencePort certificatePersistencePort;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
 
     @Override
     public GetCertificatesResponse execute() {
-        return findCertificate(currentMemberProvider.getCurrentUser().getEmail());
+        return findCertificate(studentDetailPersistencePort.findStudentDetailByMemberEmail(currentMemberProvider.getCurrentUser().getEmail()).getStudentCode());
     }
 
     @Override
-    public GetCertificatesResponse execute(String email) {
-        return findCertificate(email);
+    public GetCertificatesResponse execute(String studentCode) {
+        return findCertificate(studentCode);
     }
 
-    private GetCertificatesResponse findCertificate(String email) {
-        return new GetCertificatesResponse(certificatePersistencePort.findCertificateByMemberEmail(email)
+    private GetCertificatesResponse findCertificate(String studentCode) {
+        return new GetCertificatesResponse(certificatePersistencePort.findCertificateByStudentDetailStudentCode(studentCode)
                 .stream()
                 .map(certificate -> new GetCertificateDto(
                         certificate.getId(),

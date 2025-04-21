@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.global.thirdparty.aws.s3.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
@@ -27,6 +28,7 @@ public class FileUploadService implements FileUploadUseCase {
     private String region;
 
     @Override
+    @Async
     public CompletableFuture<String> execute(String fileName, InputStream fileInputStream) {
         String uniqueFileName = UUID.randomUUID() + "/" + fileName;
         try {
