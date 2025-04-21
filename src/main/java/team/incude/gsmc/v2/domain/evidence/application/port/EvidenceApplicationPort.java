@@ -35,5 +35,5 @@ public interface EvidenceApplicationPort {
 
     void createOtherScoringEvidence(String categoryName, MultipartFile file, int value);
 
-    void updateOtherScoringEvidence(Long evidenceId, MultipartFile file, int value);
+    void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value);
 }

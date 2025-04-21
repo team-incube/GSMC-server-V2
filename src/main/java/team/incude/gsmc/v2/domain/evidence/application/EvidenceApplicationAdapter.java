@@ -95,7 +95,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public void updateOtherScoringEvidence(Long evidenceId, MultipartFile file, int value) {
+    public void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value) {
         updateOtherScoringUseCase.execute(evidenceId, file, value);
     }
 }
