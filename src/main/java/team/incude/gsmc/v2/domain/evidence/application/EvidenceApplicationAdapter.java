@@ -25,6 +25,9 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
     private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
     private final UpdateReviewStatusUseCase updateReviewStatusUseCase;
+    private final CreateOtherScoringUseCase createOtherScoringUseCase;
+    private final UpdateOtherScoringUseCase updateOtherScoringUseCase;
+
 
     @Override
     public GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType) {
@@ -84,5 +87,15 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     @Override
     public void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus) {
         updateReviewStatusUseCase.execute(evidenceId, reviewStatus);
+    }
+
+    @Override
+    public void createOtherScoringEvidence(String categoryName, MultipartFile file, int value) {
+        createOtherScoringEvidence(categoryName, file, value);
+    }
+
+    @Override
+    public void updateOtherScoringEvidence(Long evidenceId, MultipartFile file, int value) {
+        updateOtherScoringEvidence(evidenceId, file, value);
     }
 }

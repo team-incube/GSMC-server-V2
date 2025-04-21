@@ -32,4 +32,8 @@ public interface EvidenceApplicationPort {
     void createOtherEvidence(String categoryName, MultipartFile file);
 
     void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus);
+
+    void createOtherScoringEvidence(String categoryName, MultipartFile file, int value);
+
+    void updateOtherScoringEvidence(Long evidenceId, MultipartFile file, int value);
 }
