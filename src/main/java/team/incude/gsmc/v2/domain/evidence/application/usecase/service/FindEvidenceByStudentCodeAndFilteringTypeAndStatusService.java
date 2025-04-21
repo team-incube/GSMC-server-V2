@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
@@ -27,6 +28,7 @@ public class FindEvidenceByStudentCodeAndFilteringTypeAndStatusService implement
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
 
     @Override
+    @Transactional(readOnly = true)
     public GetEvidencesResponse execute(String studentCode, EvidenceType type, ReviewStatus status) {
         List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(studentCode, type, null, status, null, null);
 
