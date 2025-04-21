@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
+import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
@@ -38,19 +39,18 @@ class FindScoreServiceTest {
     private FindScoreService findScoreService;
 
     @Nested
-    @DisplayName("execute(String email) 메서드는")
-    class Describe_executeWithEmail {
+    @DisplayName("execute(String studentCode) 메서드는")
+    class Describe_executeWithStudentCode {
 
         @Nested
-        @DisplayName("유효한 이메일이 주어졌을 때")
-        class Context_with_valid_email {
+        @DisplayName("유효한 studentCode가 주어졌을 때")
+        class Context_with_valid_studentCode {
 
             @Test
-            @DisplayName("사용자의 점수 목록과 총점을 반환한다")
+            @DisplayName("해당 사용자의 점수 목록과 총점을 반환한다")
             void it_returns_scores_and_total_score() {
                 // given
-                String email = "test@example.com";
-
+                String studentCode = "24058";
                 List<Score> scores = List.of(
                         Score.builder()
                                 .category(Category.builder().name("MAJOR-CERTIFICATE-NUM").build())
@@ -61,12 +61,11 @@ class FindScoreServiceTest {
                                 .value(2)
                                 .build()
                 );
-
-                when(scorePersistencePort.findScoreByMemberEmail(email)).thenReturn(scores);
-                when(studentDetailPersistencePort.findTotalScoreByMemberEmail(email)).thenReturn(95);
+                when(scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode)).thenReturn(scores);
+                when(studentDetailPersistencePort.findTotalScoreByStudentCode(studentCode)).thenReturn(95);
 
                 // when
-                GetScoreResponse response = findScoreService.execute(email);
+                GetScoreResponse response = findScoreService.execute(studentCode);
 
                 // then
                 assertThat(response.totalScore()).isEqualTo(95);
@@ -83,7 +82,7 @@ class FindScoreServiceTest {
 
     @Nested
     @DisplayName("execute() 메서드는")
-    class Describe_executeWithoutEmail {
+    class Describe_executeWithoutStudentCode {
 
         @Nested
         @DisplayName("현재 로그인된 사용자가 존재할 때")
@@ -93,12 +92,17 @@ class FindScoreServiceTest {
             @DisplayName("해당 사용자의 점수 목록과 총점을 반환한다")
             void it_returns_scores_and_total_score_of_current_user() {
                 // given
+                String studentCode = "24058";
                 String email = "current@gsm.hs.kr";
                 Member member = Member.builder().email(email).build();
-
+                StudentDetail studentDetail = StudentDetail.builder()
+                        .studentCode(studentCode)
+                        .member(member)
+                        .build();
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(scorePersistencePort.findScoreByMemberEmail(email)).thenReturn(List.of());
-                when(studentDetailPersistencePort.findTotalScoreByMemberEmail(email)).thenReturn(0);
+                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(email)).thenReturn(studentDetail);
+                when(scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode)).thenReturn(List.of());
+                when(studentDetailPersistencePort.findTotalScoreByStudentCode(studentCode)).thenReturn(0);
 
                 // when
                 GetScoreResponse response = findScoreService.execute();
