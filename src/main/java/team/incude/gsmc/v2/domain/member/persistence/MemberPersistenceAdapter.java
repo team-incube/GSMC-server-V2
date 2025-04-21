@@ -68,4 +68,13 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
                         .fetchOne()
         ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
     }
+
+    @Override
+    public void updateMemberPassword(Long memberId, String newPassword) {
+        jpaQueryFactory
+                .update(memberJpaEntity)
+                .set(memberJpaEntity.password, newPassword)
+                .where(memberJpaEntity.id.eq(memberId))
+                .execute();
+    }
 }
