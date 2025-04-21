@@ -91,11 +91,11 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
 
     @Override
     public void createOtherScoringEvidence(String categoryName, MultipartFile file, int value) {
-        createOtherScoringEvidence(categoryName, file, value);
+        createOtherScoringUseCase.execute(categoryName, file, value);
     }
 
     @Override
     public void updateOtherScoringEvidence(Long evidenceId, MultipartFile file, int value) {
-        updateOtherScoringEvidence(evidenceId, file, value);
+        updateOtherScoringUseCase.execute(evidenceId, file, value);
     }
 }
