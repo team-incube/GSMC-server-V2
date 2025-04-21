@@ -22,11 +22,24 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     private final StudentDetailMapper studentDetailMapper;
     private final JPAQueryFactory jpaQueryFactory;
 
+    @Override
     public StudentDetail findStudentDetailByStudentCode(String studentCode) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(studentDetailJpaEntity)
                         .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .fetchOne()
+        ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
+    }
+
+    @Override
+    public StudentDetail findStudentDetailByMemberEmail(String email) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(studentDetailJpaEntity)
+                        .join(studentDetailJpaEntity.member)
+                        .fetchJoin()
+                        .where(studentDetailJpaEntity.member.email.eq(email))
                         .fetchOne()
         ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
     }

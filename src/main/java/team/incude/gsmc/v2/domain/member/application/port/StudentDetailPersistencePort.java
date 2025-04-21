@@ -8,6 +8,8 @@ import team.incude.gsmc.v2.global.annotation.port.Port;
 public interface StudentDetailPersistencePort {
     StudentDetail findStudentDetailByStudentCode(String studentCode);
 
+    StudentDetail findStudentDetailByMemberEmail(String email);
+
     Integer findTotalScoreByMemberEmail(String email);
 
     Integer findTotalScoreByStudentCode(String studentCode);
