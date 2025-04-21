@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,9 +12,12 @@ import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
+import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
+import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 
@@ -27,14 +31,16 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
 
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
     private final ScorePersistencePort scorePersistencePort;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final S3Port s3Port;
     private final CurrentMemberProvider currentMemberProvider;
-
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
     public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
         Member member = currentMemberProvider.getCurrentUser();
+        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
 
         score.plusValue(1);
@@ -44,6 +50,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
 
         scorePersistencePort.saveScore(score);
         activityEvidencePersistencePort.saveActivityEvidence(activityEvidence);
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
 
     private Evidence createEvidence(Score score, EvidenceType activityType) {
