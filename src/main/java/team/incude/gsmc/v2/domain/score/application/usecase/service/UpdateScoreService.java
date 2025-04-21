@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
+import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
@@ -25,12 +26,13 @@ public class UpdateScoreService implements UpdateScoreUseCase {
     private final ScorePersistencePort scorePersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final MemberPersistencePort memberPersistencePort;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public void execute(String categoryName, Integer value) {
-        updateScore(currentMemberProvider.getCurrentUser().getEmail(), categoryName, value);
+        updateScore(studentDetailPersistencePort.findStudentDetailByMemberEmail(currentMemberProvider.getCurrentUser().getEmail()).getStudentCode(), categoryName, value);
     }
 
     @Override
