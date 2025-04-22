@@ -107,7 +107,7 @@ public class CalculateTotalScoreService implements CalculateTotalScoreUseCase {
                                                 Category::getName,
                                                 Category::getWeight
                                         ))
-                        ))
+                        ).getT4())
                         .build()
         );
     }
