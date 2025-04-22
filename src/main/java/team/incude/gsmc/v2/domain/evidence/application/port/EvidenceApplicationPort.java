@@ -11,9 +11,9 @@ import team.incude.gsmc.v2.global.annotation.port.Port;
 public interface EvidenceApplicationPort {
     GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType);
 
-    GetEvidencesResponse findEvidenceByStudentCodeAndTypeAndStatus(Integer studentCode, EvidenceType evidenceType, ReviewStatus status);
+    GetEvidencesResponse findEvidenceByStudentCodeAndTypeAndStatus(String studentCode, EvidenceType evidenceType, ReviewStatus status);
 
-    GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(Integer studentCode, String title, EvidenceType evidenceType);
+    GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(String  studentCode, String title, EvidenceType evidenceType);
 
     void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
 
@@ -32,4 +32,8 @@ public interface EvidenceApplicationPort {
     void createOtherEvidence(String categoryName, MultipartFile file);
 
     void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus);
+
+    void createOtherScoringEvidence(String categoryName, MultipartFile file, int value);
+
+    void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value);
 }

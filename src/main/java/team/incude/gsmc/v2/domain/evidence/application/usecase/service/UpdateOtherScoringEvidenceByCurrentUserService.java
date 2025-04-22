@@ -5,12 +5,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
-import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateActivityEvidenceUseCase;
-import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
+import team.incude.gsmc.v2.domain.evidence.application.usecase.UpdateOtherScoringEvidenceByCurrentUserUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
-import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
+import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -22,52 +22,63 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProv
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CreateActivityEvidenceService implements CreateActivityEvidenceUseCase {
+public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOtherScoringEvidenceByCurrentUserUseCase {
 
-    private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
+    private final EvidencePersistencePort evidencePersistencePort;
     private final ScorePersistencePort scorePersistencePort;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final S3Port s3Port;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
+    private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
-    public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
+    public void execute(Long evidenceId, MultipartFile file, int value) {
+        Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
+        Score score = evidence.getScore();
 
-        score.plusValue(1);
+        Evidence newEvidence = createEvidence(evidence);
+        String fileUrl = uploadFile(file);
+        Score newScore = createScore(score, member, value);
+        OtherEvidence newOtherEvidence = createOtherEvidence(newEvidence, fileUrl);
 
-        Evidence evidence = createEvidence(score, activityType);
-        ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file);
+        scorePersistencePort.saveScore(newScore);
+        otherEvidencePersistencePort.saveOtherEvidence(newOtherEvidence);
 
-        scorePersistencePort.saveScore(score);
-        activityEvidencePersistencePort.saveActivityEvidence(activityEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
 
-    private Evidence createEvidence(Score score, EvidenceType activityType) {
+    private Evidence createEvidence(Evidence evidence) {
         return Evidence.builder()
-                .score(score)
+                .id(evidence.getId())
+                .score(evidence.getScore())
                 .reviewStatus(ReviewStatus.PENDING)
-                .evidenceType(activityType)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .evidenceType(evidence.getEvidenceType())
+                .createdAt(evidence.getCreatedAt())
+                .updatedAt(evidence.getUpdatedAt())
                 .build();
     }
 
-    private ActivityEvidence createActivityEvidence(Evidence evidence, String title, String content, MultipartFile file) {
-        return ActivityEvidence.builder()
+    private Score createScore(Score score, Member member, int value) {
+        return Score.builder()
+                .id(score.getId())
+                .member(member)
+                .value(value)
+                .category(score.getCategory())
+                .build();
+    }
+
+    private OtherEvidence createOtherEvidence(Evidence evidence, String fileUrl) {
+        return OtherEvidence.builder()
                 .id(evidence)
-                .title(title)
-                .content(content)
-                .imageUrl(uploadFile(file))
+                .fileUri(fileUrl)
                 .build();
     }
 

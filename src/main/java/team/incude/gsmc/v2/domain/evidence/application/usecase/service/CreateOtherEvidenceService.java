@@ -5,11 +5,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
-import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateActivityEvidenceUseCase;
-import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
+import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateOtherEvidenceUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
+import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
@@ -26,48 +26,46 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class CreateActivityEvidenceService implements CreateActivityEvidenceUseCase {
+public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
 
-    private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
-    private final ScorePersistencePort scorePersistencePort;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final S3Port s3Port;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
+    private final OtherEvidencePersistencePort otherEvidencePersistencePort;
+    private final ScorePersistencePort scorePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
-    public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
+    public void execute(String categoryName, MultipartFile file) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
-
         score.plusValue(1);
 
-        Evidence evidence = createEvidence(score, activityType);
-        ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file);
+        Evidence evidence = createEvidence(score);
+        String fileUrl = uploadFile(file);
+        OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUrl);
 
         scorePersistencePort.saveScore(score);
-        activityEvidencePersistencePort.saveActivityEvidence(activityEvidence);
+        otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
 
-    private Evidence createEvidence(Score score, EvidenceType activityType) {
+    private Evidence createEvidence(Score score) {
         return Evidence.builder()
                 .score(score)
                 .reviewStatus(ReviewStatus.PENDING)
-                .evidenceType(activityType)
+                .evidenceType(EvidenceType.READ_A_THON)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
 
-    private ActivityEvidence createActivityEvidence(Evidence evidence, String title, String content, MultipartFile file) {
-        return ActivityEvidence.builder()
+    private OtherEvidence createOtherEvidence(Evidence evidence, String fileUrl) {
+        return OtherEvidence.builder()
                 .id(evidence)
-                .title(title)
-                .content(content)
-                .imageUrl(uploadFile(file))
+                .fileUri(fileUrl)
                 .build();
     }
 
