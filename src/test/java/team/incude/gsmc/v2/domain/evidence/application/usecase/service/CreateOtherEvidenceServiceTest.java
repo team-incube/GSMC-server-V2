@@ -101,6 +101,7 @@ public class CreateOtherEvidenceServiceTest {
 
             // then
             verify(scorePersistencePort).saveScore(Mockito.any(Score.class));
+            verify(scorePersistencePort).saveScore(argThat(savedScore -> savedScore.getValue() == 3));
             verify(otherEvidencePersistencePort).saveOtherEvidence(Mockito.any(OtherEvidence.class));
             verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                     event instanceof ScoreUpdatedEvent &&
