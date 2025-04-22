@@ -11,4 +11,5 @@ public class Category {
     private Integer maximumValue;
     private Float weight;
     private Boolean isEvidenceRequired;
+    private String koreanName;
 }
