@@ -1,6 +1,5 @@
 package team.incude.gsmc.v2.domain.sheet.application.usecase.service;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -8,6 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.util.function.Tuple4;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
@@ -15,25 +15,19 @@ import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.sheet.application.usecase.GetSheetUseCase;
+import team.incude.gsmc.v2.domain.sheet.domain.InMemoryMultipartFile;
+import team.incude.gsmc.v2.domain.sheet.domain.constant.CategoryArea;
+import team.incude.gsmc.v2.global.util.SimulateScoreUtil;
+import team.incude.gsmc.v2.global.util.SnakeKebabToCamelCaseConverterUtil;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * 학급별 XLSX 생성 서비스 – 전공/인문·인성/외국어 **3개 시트**를 생성한다.
- * <p>
- * 1. 카테고리를 Area(MAJOR/HUMANITIES/FOREIGN_LANG) 별로 그룹화<br>
- * 2. 각 시트마다 <code>[번호 | 이름 | 카테고리별 점수 … | 모든 영역 합계 | 반 순위]</code><br>
- * 3. 두 줄짜리 헤더(1단계: 상위 그룹, 2단계: 개별 카테고리) 작성<br>
- * 4. 학생별 점수를 매핑하여 행 추가<br>
- * 5. Auto‑size & 스타일 적용 후 in‑memory MultipartFile 반환
- */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class GetSheetService implements GetSheetUseCase {
 
     private final ScorePersistencePort scorePort;
@@ -41,36 +35,29 @@ public class GetSheetService implements GetSheetUseCase {
     private final StudentDetailPersistencePort studentPort;
 
     @Override
-    @Transactional(readOnly = true)
     public MultipartFile execute(Integer grade, Integer classNumber) {
-        // --- 1. 메타데이터 준비 ---------------------------------------------------
-        List<Category> allCategories = categoryPort.findAllCategory();
-        Map<Area, List<Category>> categoriesByArea = allCategories.stream()
-                .collect(Collectors.groupingBy(this::resolveArea, LinkedHashMap::new, Collectors.toList()));
-
+        List<Category> allCats = categoryPort.findAllCategory();
         List<StudentDetail> students = new ArrayList<>(
                 studentPort.findStudentDetailsByGradeAndClassNumber(grade, classNumber)
         );
-        // 학생번호 정렬
         students.sort(Comparator.comparingInt(StudentDetail::getNumber));
 
         try (XSSFWorkbook wb = new XSSFWorkbook()) {
             CellStyle headerStyle = createHeaderStyle(wb);
-            CellStyle sectionStyle = createSectionHeaderStyle(wb);
+            CellStyle sectionStyle = createSectionStyle(wb);
 
-            // --- 2. Area 별 시트 ---------------------------------------------------
-            for (Area area : Area.values()) {
-                List<Category> categories = categoriesByArea.getOrDefault(area, List.of());
-                createAreaSheet(wb, area, categories, students, headerStyle, sectionStyle);
+            for (CategoryArea categoryArea : CategoryArea.values()) {
+                List<Category> cats = allCats.stream()
+                        .filter(c -> resolveArea(c) == categoryArea)
+                        .collect(Collectors.toList());
+                buildSheet(wb, categoryArea.getDisplayName(), allCats, cats, students, headerStyle, sectionStyle);
             }
 
-            // --- 3. Workbook → MultipartFile 변환 ---------------------------------
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             wb.write(baos);
-            String filename = grade + "-" + classNumber + "-scores.xlsx";
             return new InMemoryMultipartFile(
                     "file",
-                    filename,
+                    grade + "-" + classNumber + "-scores.xlsx",
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     baos.toByteArray()
             );
@@ -79,203 +66,204 @@ public class GetSheetService implements GetSheetUseCase {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Sheet 생성 로직
-    // -------------------------------------------------------------------------
-    private void createAreaSheet(Workbook wb,
-                                 Area area,
-                                 List<Category> categories,
-                                 List<StudentDetail> students,
-                                 CellStyle headerStyle,
-                                 CellStyle sectionStyle) {
-        Sheet sheet = wb.createSheet(area.getDisplayName());
+    private void buildSheet(Workbook wb,
+                            String title,
+                            List<Category> allCats,
+                            List<Category> cats,
+                            List<StudentDetail> students,
+                            CellStyle headerStyle,
+                            CellStyle sectionStyle) {
+        Sheet sheet = wb.createSheet(title);
+        sheet.createFreezePane(2, 1);
 
-        /* --------------------------- 헤더 --------------------------- */
-        // 2단계 헤더를 위해 row 0, row 1 생성
-        Row groupRow = sheet.createRow(0);
-        Row headerRow = sheet.createRow(1);
-
-        int colIdx = 0;
-        // 번호, 이름 고정 컬럼
-        createHeaderCell(groupRow, colIdx, "", headerStyle);
-        createHeaderCell(headerRow, colIdx++, "번호", headerStyle);
-        createHeaderCell(groupRow, colIdx, "", headerStyle);
-        createHeaderCell(headerRow, colIdx++, "이름", headerStyle);
-
-        // 카테고리 → Grouping(상위) → 개별 헤더(하위)
-        Map<String, List<Category>> grouped = categories.stream()
-                .collect(Collectors.groupingBy(this::extractGroupName, LinkedHashMap::new, Collectors.toList()));
-
-        for (Map.Entry<String, List<Category>> entry : grouped.entrySet()) {
-            String groupName = entry.getKey();
-            List<Category> cates = entry.getValue();
-            int startCol = colIdx;
-            for (Category c : cates) {
-                createHeaderCell(headerRow, colIdx++, c.getName(), headerStyle);
+        Map<String, Integer> rankMap = new HashMap<>();
+        List<StudentDetail> sorted = new ArrayList<>(students);
+        sorted.sort(Comparator.comparingInt(StudentDetail::getTotalScore));
+        int prevScore = Integer.MIN_VALUE;
+        int rank = 0;
+        for (StudentDetail sd : sorted) {
+            int score = sd.getTotalScore();
+            if (score != prevScore) {
+                rank++;
+                prevScore = score;
             }
-            // 병합 (상위 그룹 헤더) – 1열만 있을 때는 병합 안 함
-            if (cates.size() > 1) {
-                sheet.addMergedRegion(new CellRangeAddress(0, 0, startCol, startCol + cates.size() - 1));
-            }
-            createHeaderCell(groupRow, startCol, groupName, sectionStyle);
+            rankMap.put(sd.getStudentCode(), rank);
         }
 
-        // 총합, 순위
-        createHeaderCell(groupRow, colIdx, "", headerStyle);
-        createHeaderCell(headerRow, colIdx++, "모든 영역 합계", headerStyle);
-        createHeaderCell(groupRow, colIdx, "", headerStyle);
-        createHeaderCell(headerRow, colIdx, "반 순위", headerStyle);
+        List<String> labels = cats.stream().map(Category::getKoreanName).collect(Collectors.toList());
+        List<String[]> splitLabels = labels.stream().map(s -> s.split("-", -1)).collect(Collectors.toList());
+        int depth = splitLabels.stream().mapToInt(arr -> arr.length).max().orElse(1);
 
-        /* --------------------------- 데이터 --------------------------- */
-        int rowIdx = 2;
-        for (StudentDetail student : students) {
-            Row row = sheet.createRow(rowIdx++);
-            int dataCol = 0;
-            row.createCell(dataCol++).setCellValue(student.getNumber());
-            row.createCell(dataCol++).setCellValue(student.getMember().getName());
+        Row[] hdr = new Row[depth];
+        for (int i = 0; i < depth; i++) hdr[i] = sheet.createRow(i);
+        sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, 0, 0));
+        sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, 1, 1));
+        Cell numCell = hdr[depth - 1].createCell(0);
+        numCell.setCellValue("번호");
+        numCell.setCellStyle(headerStyle);
+        Cell nameCell = hdr[depth - 1].createCell(1);
+        nameCell.setCellValue("이름");
+        nameCell.setCellStyle(headerStyle);
 
-            List<Score> scoreList = scorePort.findScoreByStudentDetailStudentCode(student.getStudentCode());
-            Map<String, Score> scoreMap = scoreList.stream()
-                    .collect(Collectors.toMap(s -> s.getCategory().getName(), Function.identity()));
-
-            int total = student.getTotalScore();
-            for (Category c : categories) {
-                int point = Optional.ofNullable(scoreMap.get(c.getName()))
-                        .map(Score::getValue)
-                        .orElse(0);
-                row.createCell(dataCol++).setCellValue(point);
+        int col = 2;
+        for (int idx = 0; idx < cats.size(); idx++) {
+            String[] parts = splitLabels.get(idx);
+            for (int lvl = 0; lvl < depth; lvl++) {
+                String txt = lvl < parts.length ? parts[lvl] : "";
+                Cell c = hdr[lvl].createCell(col);
+                c.setCellValue(txt);
+                c.setCellStyle(lvl == 0 ? sectionStyle : headerStyle);
             }
-            row.createCell(dataCol++).setCellValue(total);
-            // 순위는 컨트롤러/DB 에서 계산하거나, 빈칸으로 두고 사용자가 입력하도록 두는 등 정책 결정 필요
-            row.createCell(dataCol).setCellValue(1); // placeholder
+            col++;
         }
 
-        // Auto‑size
-        for (int i = 0; i < colIdx + 1; i++) {
-            sheet.autoSizeColumn(i);
+        for (int lvl = 0; lvl < depth; lvl++) {
+            int start = 2;
+            String prev = hdr[lvl].getCell(2).getStringCellValue();
+            for (int x = 3; x < col; x++) {
+                String cur = hdr[lvl].getCell(x).getStringCellValue();
+                if (!Objects.equals(cur, prev)) {
+                    if (!prev.isEmpty() && x - 1 > start)
+                        sheet.addMergedRegion(new CellRangeAddress(lvl, lvl, start, x - 1));
+                    prev = cur;
+                    start = x;
+                }
+            }
+            if (!prev.isEmpty() && col - 1 > start)
+                sheet.addMergedRegion(new CellRangeAddress(lvl, lvl, start, col - 1));
         }
-    }
 
-    private String extractGroupName(Category c) {
-        // 카테고리 코드 규칙: MAJOR-AWARD_CAREER-IN_SCHOOL-XXX
-        // 상위 그룹은 두 번째 토큰까지(AWARD_CAREER, CERTIFICATE 등)로 정의
-        String[] parts = c.getName().split("-");
-        return parts.length > 2 ? parts[1] : "기타";
-    }
+        int areaCol = col;
+        int totalCol = col + 1;
+        int rankCol = col + 2;
 
-    private Area resolveArea(Category c) {
-        if (c.getName().startsWith("MAJOR")) return Area.MAJOR;
-        if (c.getName().startsWith("HUMANITIES")) return Area.HUMANITIES;
-        if (c.getName().startsWith("FOREIGN_LANG")) return Area.FOREIGN_LANG;
-        throw new IllegalArgumentException("Unknown area prefix: " + c.getName());
+        Cell areaH = hdr[0].createCell(areaCol);
+        areaH.setCellValue("영역 합계");
+        areaH.setCellStyle(headerStyle);
+        Cell totH = hdr[0].createCell(totalCol);
+        totH.setCellValue("모든 영역 합계");
+        totH.setCellStyle(headerStyle);
+        Cell rkH = hdr[0].createCell(rankCol);
+        rkH.setCellValue("반 순위");
+        rkH.setCellStyle(headerStyle);
+        if (depth > 1) {
+            sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, areaCol, areaCol));
+            sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, totalCol, totalCol));
+            sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, rankCol, rankCol));
+        }
+
+        int rowIdx = depth;
+        for (StudentDetail s : students) {
+            Row r = sheet.createRow(rowIdx++);
+            r.createCell(0).setCellValue(s.getNumber());
+            r.createCell(1).setCellValue(s.getMember().getName());
+
+            Map<String, Integer> raw = scorePort.findScoreByStudentDetailStudentCode(s.getStudentCode()).stream()
+                    .collect(Collectors.toMap(
+                            sc -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(sc.getCategory().getName()),
+                            Score::getValue, (a, b) -> a
+                    ));
+            Map<String, Float> weights = allCats.stream()
+                    .collect(Collectors.toMap(
+                            c -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(c.getName()),
+                            Category::getWeight
+                    ));
+
+            Tuple4<Integer, Integer, Integer, Integer> t = SimulateScoreUtil.simulateScore(
+                    raw.getOrDefault("majorAwardCareerOutSchoolOfficial", 0),
+                    raw.getOrDefault("majorAwardCareerOutSchoolUnofficial", 0),
+                    raw.getOrDefault("majorAwardCareerOutSchoolHackathon", 0),
+                    raw.getOrDefault("majorAwardCareerInSchoolGsmfest", 0),
+                    raw.getOrDefault("majorAwardCareerInSchoolSchoolHackathon", 0),
+                    raw.getOrDefault("majorAwardCareerInSchoolPresentation", 0),
+                    raw.getOrDefault("majorCertificateNum", 0),
+                    raw.getOrDefault("majorTopcitScore", 0),
+                    raw.getOrDefault("majorClubAttendanceSemester1", 0),
+                    raw.getOrDefault("majorClubAttendanceSemester2", 0),
+                    raw.getOrDefault("majorOutSchoolAttendanceOfficialContest", 0),
+                    raw.getOrDefault("majorOutSchoolAttendanceUnofficialContest", 0),
+                    raw.getOrDefault("majorOutSchoolAttendanceHackathon", 0),
+                    raw.getOrDefault("majorOutSchoolAttendanceSeminar", 0),
+                    raw.getOrDefault("majorInSchoolAttendanceGsmfest", 0),
+                    raw.getOrDefault("majorInSchoolAttendanceHackathon", 0),
+                    raw.getOrDefault("majorInSchoolAttendanceClubPresentation", 0),
+                    raw.getOrDefault("majorInSchoolAttendanceSeminar", 0),
+                    raw.getOrDefault("majorInSchoolAttendanceAfterSchool", 0),
+
+                    raw.getOrDefault("humanitiesAwardCareerHumanityInSchool", 0),
+                    raw.getOrDefault("humanitiesAwardCareerHumanityOutSchool", 0),
+                    raw.getOrDefault("humanitiesReadingReadAThonTurtle", 0) == 1,
+                    raw.getOrDefault("humanitiesReadingReadAThonCrocodile", 0) == 1,
+                    raw.getOrDefault("humanitiesReadingReadAThonRabbitOver", 0) == 1,
+                    raw.getOrDefault("humanitiesReading", 0),
+                    raw.getOrDefault("humanitiesServiceActivity", 0),
+                    raw.getOrDefault("humanitiesServiceClubSemester1", 0),
+                    raw.getOrDefault("humanitiesServiceClubSemester2", 0),
+                    raw.getOrDefault("humanitiesCertificateChineseCharacter", 0) == 1,
+                    raw.getOrDefault("humanitiesCertificateKoreanHistory", 0) == 1,
+                    raw.getOrDefault("humanitiesActivitiesNewrrowS", 0),
+                    raw.getOrDefault("humanitiesActivitiesSelfDirectedActivities", 0),
+
+                    raw.getOrDefault("foreignLangAttendanceToeicAcademyStatus", 0) == 1,
+                    raw.getOrDefault("foreignLangToeicScore", 0),
+                    raw.getOrDefault("foreignLangToeflScore", 0),
+                    raw.getOrDefault("foreignLangTepsScore", 0),
+                    raw.getOrDefault("foreignLangToeicSpeakingLevel", 0),
+                    raw.getOrDefault("foreignLangOpicScore", 0),
+                    raw.getOrDefault("foreignLangJptScore", 0),
+                    raw.getOrDefault("foreignLangCptScore", 0),
+                    raw.getOrDefault("foreignLangHskScore", 0),
+
+                    weights
+            );
+            int majorScore = t.getT1();
+            int humanityScore = t.getT2();
+            int foreignScore = t.getT3();
+            int totalScore = t.getT4();
+
+            int dataCol = 2;
+            for (Category c : cats) {
+                String key = SnakeKebabToCamelCaseConverterUtil.toCamelCase(c.getName());
+                r.createCell(dataCol++).setCellValue(raw.getOrDefault(key, 0));
+            }
+
+            r.createCell(areaCol).setCellValue(
+                    title.equals(CategoryArea.MAJOR.getDisplayName()) ? majorScore :
+                            title.equals(CategoryArea.HUMANITIES.getDisplayName()) ? humanityScore : foreignScore
+            );
+            r.createCell(totalCol).setCellValue(totalScore);
+            r.createCell(rankCol).setCellValue(rankMap.get(s.getStudentCode()));
+        }
+
+        for (int i = 0; i <= rankCol; i++) sheet.autoSizeColumn(i);
     }
 
     private CellStyle createHeaderStyle(Workbook wb) {
-        CellStyle style = wb.createCellStyle();
-        Font font = wb.createFont();
-        font.setBold(true);
-        style.setFont(font);
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-        style.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        return style;
+        CellStyle s = wb.createCellStyle();
+        Font f = wb.createFont();
+        f.setBold(true);
+        s.setFont(f);
+        s.setAlignment(HorizontalAlignment.CENTER);
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        s.setBorderBottom(BorderStyle.THIN);
+        s.setBorderTop(BorderStyle.THIN);
+        s.setBorderLeft(BorderStyle.THIN);
+        s.setBorderRight(BorderStyle.THIN);
+        s.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+        s.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        return s;
     }
 
-    private CellStyle createSectionHeaderStyle(Workbook wb) {
-        CellStyle style = createHeaderStyle(wb);
-        style.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
-        return style;
+    private CellStyle createSectionStyle(Workbook wb) {
+        CellStyle s = createHeaderStyle(wb);
+        s.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
+        return s;
     }
 
-    private void createHeaderCell(Row row, int colIdx, String value, CellStyle style) {
-        Cell cell = row.createCell(colIdx);
-        cell.setCellValue(value);
-        cell.setCellStyle(style);
-    }
-
-    // -------------------------------------------------------------------------
-    // 커스텀 in‑memory MultipartFile 구현체
-    // -------------------------------------------------------------------------
-    private static final class InMemoryMultipartFile implements MultipartFile {
-        private final String name;
-        private final String filename;
-        private final String contentType;
-        private final byte[] content;
-
-        private InMemoryMultipartFile(String name, String filename, String contentType, byte[] content) {
-            this.name = name;
-            this.filename = filename;
-            this.contentType = contentType;
-            this.content = content;
-        }
-
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String getOriginalFilename() {
-            return filename;
-        }
-
-        @Override
-        public String getContentType() {
-            return contentType;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return content.length == 0;
-        }
-
-        @Override
-        public long getSize() {
-            return content.length;
-        }
-
-        @Override
-        public byte[] getBytes() {
-            return content.clone();
-        }
-
-        @Override
-        public InputStream getInputStream() {
-            return new ByteArrayInputStream(content);
-        }
-
-        @Override
-        public void transferTo(File dest) throws IOException, IllegalStateException {
-            try (OutputStream os = new FileOutputStream(dest)) {
-                os.write(content);
-            }
-        }
-
-        @Override
-        public void transferTo(Path dest) throws IOException {
-            Files.write(dest, content);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // Area enum
-    // -------------------------------------------------------------------------
-    @Getter
-    private enum Area {
-        MAJOR("전공 영역"),
-        HUMANITIES("인문·인성 영역"),
-        FOREIGN_LANG("외국어 영역");
-
-        private final String displayName;
-
-        Area(String displayName) {
-            this.displayName = displayName;
-        }
+    private CategoryArea resolveArea(Category c) {
+        if (c.getName().startsWith("MAJOR")) return CategoryArea.MAJOR;
+        if (c.getName().startsWith("HUMANITIES")) return CategoryArea.HUMANITIES;
+        if (c.getName().startsWith("FOREIGN_LANG")) return CategoryArea.FOREIGN_LANG;
+        throw new IllegalArgumentException("Unknown prefix: " + c.getName());
     }
 }
