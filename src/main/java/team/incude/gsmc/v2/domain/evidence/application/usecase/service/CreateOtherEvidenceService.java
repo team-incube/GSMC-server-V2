@@ -23,6 +23,8 @@ import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedExcepti
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +45,8 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
         score.plusValue(1);
 
-        Evidence evidence = createEvidence(score);
+        EvidenceType evidenceType = categoryMap.get(categoryName);
+        Evidence evidence = createEvidence(score, evidenceType);
         String fileUrl = uploadFile(file);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUrl);
 
@@ -52,11 +55,12 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
 
-    private Evidence createEvidence(Score score) {
+
+    private Evidence createEvidence(Score score, EvidenceType evidenceType) {
         return Evidence.builder()
                 .score(score)
                 .reviewStatus(ReviewStatus.PENDING)
-                .evidenceType(EvidenceType.READ_A_THON)
+                .evidenceType(evidenceType)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -79,4 +83,12 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
             throw new S3UploadFailedException();
         }
     }
+
+    private static final Map<String, EvidenceType> categoryMap = Map.ofEntries(
+            Map.entry("HUMANITIES-CERTIFICATE-CHINESE_CHARACTER", EvidenceType.CERTIFICATE),
+            Map.entry("HUMANITIES-CERTIFICATE-KOREAN_HISTORY", EvidenceType.CERTIFICATE),
+            Map.entry("HUMANITIES-READING-READ_A_THON-TURTLE", EvidenceType.READ_A_THON),
+            Map.entry("HUMANITIES-READING-READ_A_THON-CROCODILE", EvidenceType.READ_A_THON),
+            Map.entry("HUMANITIES-READING-READ_A_THON-RABBIT_OVER", EvidenceType.READ_A_THON)
+    );
 }

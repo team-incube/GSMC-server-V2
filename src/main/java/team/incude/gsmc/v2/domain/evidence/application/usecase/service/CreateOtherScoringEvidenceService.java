@@ -45,12 +45,12 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
 
         Score newScore = createScore(score, value);
 
-        EvidenceType evidenceType = findEvidenceType(categoryName);
+        EvidenceType evidenceType = categoryMap.get(categoryName);
         Evidence evidence = createEvidence(score, evidenceType);
         String fileUrl = uploadFile(file);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUrl);
 
-        scorePersistencePort.saveScore(score);
+        scorePersistencePort.saveScore(newScore);
         otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
@@ -72,10 +72,6 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-    }
-
-    private EvidenceType findEvidenceType(String categoryName) {
-        return categoryMap.get(categoryName);
     }
 
     private String uploadFile(MultipartFile file) {
