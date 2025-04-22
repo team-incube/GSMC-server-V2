@@ -43,7 +43,7 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
 
-        score.plusValue(value);
+        Score newScore = createScore(score, value);
 
         EvidenceType evidenceType = findEvidenceType(categoryName);
         Evidence evidence = createEvidence(score, evidenceType);
@@ -53,6 +53,15 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
         scorePersistencePort.saveScore(score);
         otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+    }
+
+    private Score createScore(Score score, int value) {
+        return Score.builder()
+                .id(score.getId())
+                .value(value)
+                .category(score.getCategory())
+                .member(score.getMember())
+                .build();
     }
 
     private Evidence createEvidence(Score score, EvidenceType evidenceType) {
