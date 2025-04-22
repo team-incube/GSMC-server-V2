@@ -1,44 +1,57 @@
 package team.incude.gsmc.v2.domain.score.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
+import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.RequiredEvidenceCategoryException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
+import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UpdateScoreService implements UpdateScoreUseCase {
 
     private final ScorePersistencePort scorePersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final MemberPersistencePort memberPersistencePort;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
+    private final CurrentMemberProvider currentMemberProvider;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public void execute(String categoryName, Integer value) {
-        updateScore("", categoryName, value);
+        updateScore(studentDetailPersistencePort.findStudentDetailByMemberEmail(currentMemberProvider.getCurrentUser().getEmail()).getStudentCode(), categoryName, value);
     }
 
     @Override
-    public void execute(String email, String categoryName, Integer value) {
-        updateScore(email, categoryName, value);
+    public void execute(String studentCode, String categoryName, Integer value) {
+        updateScore(studentCode, categoryName, value);
     }
 
-    private void updateScore(String email, String categoryName, Integer value) {
+    protected void updateScore(String studentCode, String categoryName, Integer value) {
         Category category = categoryPersistencePort.findCategoryByName(categoryName);
-        if(ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())){
+        if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
             throw new ScoreLimitExceededException();
         }
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, email);
+        if (category.getIsEvidenceRequired()) {
+            throw new RequiredEvidenceCategoryException();
+        }
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode);
         if (score == null) {
-            Member member = memberPersistencePort.findMemberByEmail(email);
-            score = createNewScore(category,member);
+            Member member = memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode);
+            score = createNewScore(category, member);
         } else {
             score = Score.builder()
                     .id(score.getId())
@@ -48,6 +61,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
                     .build();
         }
         scorePersistencePort.saveScore(score);
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentCode));
     }
 
     private Score createNewScore(Category category, Member member) {

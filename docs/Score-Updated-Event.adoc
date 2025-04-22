@@ -1,0 +1,66 @@
+= 종합 점수 계산 이벤트 사용 가이드
+:toc:
+:icons: font
+:sectnums:
+:source-highlighter: rouge
+
+== 사용법
+
+스코어를 수정하는 서비스 클래스 내에서 `ScoreUpdatedEventPublisher`를 주입 받아, 아래와 같이 이벤트를 발행해 주세요.
+
+[source,java]
+----
+@RequiredArgsConstructor
+@Service
+public class UpdateScoreService {
+
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    public void execute(String studentCode, String categoryName, int value) {
+        // 점수 수정 로직...
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentCode));
+    }
+}
+----
+
+- `studentCode`는 종합 점수를 계산할 학생의 코드입니다.
+- DI로 `ApplicationEventPublisher`를 주입받아 사용하세요.
+- 이벤트는 Spring의 `ApplicationEventPublisher`를 통해 내부적으로 발행됩니다.
+
+== 내부 동작 흐름
+
+image::https://uml.planttext.com/plantuml/svg/TP0z3W8X48LxJZ6nsYsyW8NPX9XGag07G21AWa1Ws1FOUGaFuCtq4B9euMPZE-zxFvaXeqnOBev8XI71IfWqMcLM83C84gjebOtIOvLKIEOGjKIZTwFnoClHsNmsgT7yBzrW9hrsNvJDKIgTAgw2-u3IDUFl34g8WFKME6mWVYgxZ4NNK1gqwGcVL5RLnK9utQ_FsmCw4PFr9sZ7dh39GAj1BPldqOFnkdxd3G00[종합 점수 계산 흐름도]
+
+- `publish()` 호출 시 이벤트가 전파됩니다.
+- 스프링 이벤트 시스템을 통해 `ScoreUpdateEventHandler`가 자동으로 실행됩니다.
+- 핸들러 내부에서는 `CalculateTotalScoreService`의 계산 로직을 실행합니다.
+
+== 기존 AOP 방식과의 차이점
+
+|===
+| 항목 | AOP 방식 | 이벤트 방식
+
+| 접근성
+| private 메서드에 접근 가능 (LTW 필요)
+| public/protected 메서드만 가능 (단순 DI 사용)
+
+| 설정
+| LTW 설정 필요 (`aop.xml`, VM 옵션 등)
+| Spring Boot 기본 기능으로 충분
+
+| 추적성
+| 암묵적으로 실행됨 (흐름 추적 어려움)
+| 명시적으로 발행 (디버깅 쉬움)
+
+| 유지보수성
+| Aspect가 많아질수록 복잡도 증가
+| 명확한 책임 분리로 구조 단순
+|===
+
+== 왜 이벤트 방식을 선택했는가?
+
+- LTW 기반 AOP는 설정 복잡도, 예외 상황의 디버깅 난이도 등으로 인해 유지보수가 어렵습니다.
+- 이벤트는 **Spring의 표준 기능**이며, 코드의 흐름을 명확하게 파악할 수 있습니다.
+- 또한 단일 책임 원칙(SRP)에 더 잘 부합하며, **테스트도 용이**합니다.
+
+---

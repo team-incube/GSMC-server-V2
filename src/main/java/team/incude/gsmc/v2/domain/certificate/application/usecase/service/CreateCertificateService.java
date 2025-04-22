@@ -1,9 +1,6 @@
 package team.incude.gsmc.v2.domain.certificate.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,13 +13,13 @@ import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
@@ -37,7 +34,6 @@ public class CreateCertificateService implements CreateCertificateUseCase {
 
     private final CertificatePersistencePort certificatePersistencePort;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
-    private final MemberPersistencePort memberPersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final ScorePersistencePort scorePersistencePort;
     private final S3Port s3Port;
@@ -45,11 +41,11 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     private static final String MAJOR_CERTIFICATE_CATEGORY_NAME = "MAJOR-CERTIFICATE-NUM";
     private static final String HUMANITIES_CERTIFICATE_KOREAN_HISTORY_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-KOREAN-HISTORY";
     private static final String HUMANITIES_CERTIFICATE_CHINESE_CHARACTER_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-CHINESE-CHARACTER";
+    private final CurrentMemberProvider currentMemberProvider;
 
     @Override
     public void execute(String name, LocalDate acquisitionDate, MultipartFile file) {
-        String email = getAuthenticatedEmail();
-        Member member = memberPersistencePort.findMemberByEmail(email);
+        Member member = currentMemberProvider.getCurrentUser();
 
         Score updatedScore = updateScore(member, name);
         Score savedScore = scorePersistencePort.saveScore(updatedScore);
@@ -59,12 +55,6 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         OtherEvidence otherEvidence = otherEvidencePersistencePort.saveOtherEvidence(createOtherEvidence(evidence, fileUri));
 
         saveCertificate(name, member, acquisitionDate, otherEvidence);
-    }
-
-    // TODO: 이메일을 SecurityContext에 넣는 부분을 리팩토링해야함
-    private String getAuthenticatedEmail() {
-        setSecurityContext("s24058@gsm.hs.kr");
-        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     private Score updateScore(Member member, String certificateName) {
@@ -133,12 +123,5 @@ public class CreateCertificateService implements CreateCertificateUseCase {
                 .acquisitionDate(acquisitionDate)
                 .build();
         certificatePersistencePort.saveCertificate(certificate);
-    }
-
-    // TODO: 이메일을 SecurityContext에 넣는 부분을 리팩토링해야함
-    private void setSecurityContext(String email) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, "");
-        SecurityContextHolder.clearContext();
-        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

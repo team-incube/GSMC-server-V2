@@ -7,13 +7,13 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidenc
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
 
-import java.util.List;
-
 @Port(direction = PortDirection.INBOUND)
 public interface EvidenceApplicationPort {
-    List<GetEvidencesResponse> findEvidenceByCurrentUser();
+    GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType);
 
-    List<GetEvidencesResponse> findEvidenceByEmail(String email);
+    GetEvidencesResponse findEvidenceByStudentCodeAndTypeAndStatus(String studentCode, EvidenceType evidenceType, ReviewStatus status);
+
+    GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(String  studentCode, String title, EvidenceType evidenceType);
 
     void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
 
@@ -32,4 +32,8 @@ public interface EvidenceApplicationPort {
     void createOtherEvidence(String categoryName, MultipartFile file);
 
     void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus);
+
+    void createOtherScoringEvidence(String categoryName, MultipartFile file, int value);
+
+    void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value);
 }

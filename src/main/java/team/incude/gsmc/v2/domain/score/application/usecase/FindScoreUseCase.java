@@ -5,5 +5,5 @@ import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreRespo
 public interface FindScoreUseCase {
     GetScoreResponse execute();
 
-    GetScoreResponse execute(String email);
+    GetScoreResponse execute(String studentCode);
 }

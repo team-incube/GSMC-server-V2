@@ -1,9 +1,6 @@
 package team.incude.gsmc.v2.domain.certificate.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
@@ -19,6 +16,7 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.InvalidScoreValueException;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ExtractFileKeyUtil;
 
 @Service
@@ -34,25 +32,11 @@ public class DeleteCertificateService implements DeleteCertificateUseCase {
     private final S3Port s3Port;
 
     private static final String CATEGORY_NAME = "MAJOR-CERTIFICATE-NUM";
-
-    // TODO: auth 구현 전 임시 코드
-    private void setSecurityContext(String email) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, "");
-        SecurityContextHolder.clearContext();
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    // TODO: auth 구현 전 임시 코드
-    private String getAuthenticatedEmail() {
-        setSecurityContext("s24058@gsm.hs.kr");
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
+    private final CurrentMemberProvider currentMemberProvider;
 
     @Override
     public void execute(Long id) {
-        String email = getAuthenticatedEmail();
-        Member member = memberPersistencePort.findMemberByEmail(email);
-        deleteCertificate(member, id);
+        deleteCertificate(currentMemberProvider.getCurrentUser(), id);
     }
 
     @Override

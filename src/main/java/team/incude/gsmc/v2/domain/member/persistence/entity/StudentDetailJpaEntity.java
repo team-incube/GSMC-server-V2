@@ -32,10 +32,10 @@ public class StudentDetailJpaEntity {
     private Integer totalScore;
 
     @Column(name = "student_code", unique = true, nullable = false)
-    private Integer studentCode;
+    private String studentCode;
 
     @Builder
-    public StudentDetailJpaEntity(Long id, MemberJpaEntity member, Integer grade, Integer classNumber, Integer number, Integer totalScore, Integer studentCode) {
+    public StudentDetailJpaEntity(Long id, MemberJpaEntity member, Integer grade, Integer classNumber, Integer number, Integer totalScore, String studentCode) {
         this.id = id;
         this.member = member;
         this.grade = grade;

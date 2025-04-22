@@ -3,6 +3,7 @@ package team.incude.gsmc.v2.global.thirdparty.aws.s3.usecase.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -21,6 +22,7 @@ public class FileDeleteService implements FileDeleteUseCase {
     private String bucketName;
 
     @Override
+    @Async
     public CompletableFuture<Void> execute(String uniqueFileName) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
