@@ -27,8 +27,11 @@ public class CategoryJpaEntity {
     @Column(name = "is_evidence_required", nullable = false)
     private Boolean isEvidenceRequired;
 
+    @Column(name = "korean_name", nullable = false)
+    private String koreanName;
+
     @Builder
-    public CategoryJpaEntity(Long id, String name, Integer maximumValue, Float weight, Boolean isEvidenceRequired) {
+    public CategoryJpaEntity(Long id, String name, Integer maximumValue, Float weight, Boolean isEvidenceRequired, String koreanName) {
         this.id = id;
         this.name = name;
         this.maximumValue = maximumValue;
