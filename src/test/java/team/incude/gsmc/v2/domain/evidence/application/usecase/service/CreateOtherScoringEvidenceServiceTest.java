@@ -63,7 +63,7 @@ public class CreateOtherScoringEvidenceServiceTest {
         @DisplayName("점수제 증빙자료를 생성하고 점수를 저장한다")
         void it_create_other_scoring_evidence_and_updates_score() throws IOException {
             // given
-            String categoryName = "MAJOR-AWARD_CAREER-OUT_SCHOOL-OFFICIAL";
+            String categoryName = "FOREIGN_LANG-TOEIC_SCORE";
             String fakeFileUrl = "https://s3.url/evidence.png";
             Integer value = 550;
 
