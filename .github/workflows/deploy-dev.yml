@@ -9,10 +9,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Writing application-deploy.yml
-        run: |
-          touch ./src/main/resources/application-deploy.yml
-          echo "${{ secrets.APPLICATION_DEPLOY_YAML }}" > ./src/main/resources/application-prod.yml
       - name: Connect deploy key
         uses: cloudtype-github-actions/connect@v1
         with:
