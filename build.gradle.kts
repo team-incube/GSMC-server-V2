@@ -59,6 +59,7 @@ dependencies {
 
 	// apache poi
 	implementation("org.apache.poi:poi:5.4.0")
+	implementation("org.apache.poi:poi-ooxml:5.4.0")
 
 	// aws
 	implementation("software.amazon.awssdk:s3:2.29.49")

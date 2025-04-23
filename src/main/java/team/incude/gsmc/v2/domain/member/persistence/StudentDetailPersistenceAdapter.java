@@ -10,6 +10,7 @@ import team.incude.gsmc.v2.domain.member.persistence.repository.StudentDetailJpa
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
+import java.util.List;
 import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
@@ -45,7 +46,19 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     @Override
-    @Deprecated(forRemoval = true,since = "StudentCode로 전환으로 인한 메서드 제거 예정")
+    public List<StudentDetail> findStudentDetailsByGradeAndClassNumber(Integer grade, Integer classNumber) {
+        return jpaQueryFactory
+                .selectFrom(studentDetailJpaEntity)
+                .where(studentDetailJpaEntity.grade.eq(grade)
+                        .and(studentDetailJpaEntity.classNumber.eq(classNumber)))
+                .fetch()
+                .stream()
+                .map(studentDetailMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    @Deprecated(forRemoval = true, since = "StudentCode로 전환으로 인한 메서드 제거 예정")
     public Integer findTotalScoreByMemberEmail(String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
