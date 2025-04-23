@@ -4,15 +4,15 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/gsmc_db
-    username: user
-    password: 12345
+    url: jdbc:${RDB_TYPE:mysql}://${RDB_HOST:localhost}:${RDB_PORT:3306}/${RDB_SCHEMA:gsmc_db}
+    username: ${RDB_USERNAME:user}
+    password: ${RDB_PASSWORD:12345}
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   sql:
     init:
       mode: always
