@@ -30,9 +30,11 @@ public class DeleteCertificateService implements DeleteCertificateUseCase {
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final MemberPersistencePort memberPersistencePort;
     private final S3Port s3Port;
-
-    private static final String CATEGORY_NAME = "MAJOR-CERTIFICATE-NUM";
     private final CurrentMemberProvider currentMemberProvider;
+
+    private static final String CATEGORY_NAME = "MAJOR-CERTIFICATE_NUM";
+    private static final String HUMANITIES_CERTIFICATE_KOREAN_HISTORY_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-KOREAN_HISTORY";
+    private static final String HUMANITIES_CERTIFICATE_CHINESE_CHARACTER_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-CHINESE_CHARACTER";
 
     @Override
     public void execute(Long id) {
@@ -54,7 +56,14 @@ public class DeleteCertificateService implements DeleteCertificateUseCase {
         OtherEvidence otherEvidence = certificate.getEvidence();
         s3Port.deleteFile(ExtractFileKeyUtil.extractFileKey(otherEvidence.getFileUri()));
 
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(CATEGORY_NAME, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(
+                certificate.getName().startsWith("한국사 능력검정")
+                        ? HUMANITIES_CERTIFICATE_KOREAN_HISTORY_CATEGORY_NAME
+                        : certificate.getName().startsWith("한자검정시험")
+                        ? HUMANITIES_CERTIFICATE_CHINESE_CHARACTER_CATEGORY_NAME
+                        : CATEGORY_NAME,
+                member.getEmail()
+        );
         if (score.getValue() > 0) {
             score.minusValue(1);
             scorePersistencePort.saveScore(score);

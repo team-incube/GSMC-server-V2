@@ -72,6 +72,6 @@ public class SimulateScoreService implements SimulateScoreUseCase {
                 category.stream().collect(
                         Collectors.toMap(Category::getName, Category::getWeight)
                 )
-        ));
+        ).getT4());
     }
 }

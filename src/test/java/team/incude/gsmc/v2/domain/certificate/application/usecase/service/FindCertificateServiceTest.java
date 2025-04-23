@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incude.gsmc.v2.domain.certificate.domain.Certificate;
-import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificatesResponse;
+import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -64,7 +64,7 @@ class FindCertificateServiceTest {
             when(certificatePersistencePort.findCertificateByStudentDetailStudentCode(studentCode)).thenReturn(List.of(certificate));
 
             // when
-            GetCertificatesResponse response = findCertificateService.execute();
+            GetCertificateResponse response = findCertificateService.execute();
 
             // then
             assertThat(response.certificates()).hasSize(1);
@@ -92,7 +92,7 @@ class FindCertificateServiceTest {
                     .thenReturn(List.of(certificate));
 
             // when
-            GetCertificatesResponse response = findCertificateService.execute(studentCode);
+            GetCertificateResponse response = findCertificateService.execute(studentCode);
 
             // then
             assertThat(response.certificates()).hasSize(1);

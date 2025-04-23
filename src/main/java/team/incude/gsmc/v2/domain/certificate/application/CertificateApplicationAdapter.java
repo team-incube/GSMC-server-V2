@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificateApplicationPort;
 import team.incude.gsmc.v2.domain.certificate.application.usecase.*;
-import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificatesResponse;
+import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
@@ -20,12 +20,12 @@ public class CertificateApplicationAdapter implements CertificateApplicationPort
     private final DeleteCertificateUseCase deleteCertificateUseCase;
 
     @Override
-    public GetCertificatesResponse findCurrentCertificate() {
+    public GetCertificateResponse findCurrentCertificate() {
         return findCertificateUseCase.execute();
     }
 
     @Override
-    public GetCertificatesResponse findCertificateByStudentCode(String email) {
+    public GetCertificateResponse findCertificateByStudentCode(String email) {
         return findCertificateUseCase.execute(email);
     }
 
