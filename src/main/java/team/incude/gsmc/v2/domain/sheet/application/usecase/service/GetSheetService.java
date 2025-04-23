@@ -44,6 +44,30 @@ public class GetSheetService implements GetSheetUseCase {
         );
         students.sort(Comparator.comparingInt(StudentDetail::getNumber));
 
+        Map<String, Float> weights = allCats.stream()
+                .collect(Collectors.toMap(
+                        c -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(c.getName()),
+                        Category::getWeight
+                ));
+
+        Map<Long, String> memberIdToStudentCode = students.stream()
+                .collect(Collectors.toMap(
+                        s -> s.getMember().getId(),
+                        StudentDetail::getStudentCode
+                ));
+
+        List<Score> scores = scorePersistencePort.findScoreByStudentDetailStudentCodes(
+                students.stream().map(StudentDetail::getStudentCode).toList()
+        );
+
+        Map<String, List<Score>> scoreMap = scores.stream()
+                .collect(Collectors.groupingBy(score -> {
+                    Long memberId = score.getMember().getId();
+                    return memberIdToStudentCode.get(memberId);
+                }));
+
+        Map<String, Integer> rankMap = calculateRanks(students);
+
         try (XSSFWorkbook wb = new XSSFWorkbook()) {
             CellStyle headerStyle = createHeaderStyle(wb);
             CellStyle sectionStyle = createSectionStyle(wb);
@@ -52,11 +76,24 @@ public class GetSheetService implements GetSheetUseCase {
                 List<Category> cats = allCats.stream()
                         .filter(c -> resolveArea(c) == area)
                         .collect(Collectors.toList());
-                buildSheet(wb, area.getDisplayName(), allCats, cats, students, headerStyle, sectionStyle);
+
+                buildSheet(
+                        wb,
+                        area.getDisplayName(),
+                        allCats,
+                        cats,
+                        students,
+                        scoreMap,
+                        weights,
+                        rankMap,
+                        headerStyle,
+                        sectionStyle
+                );
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             wb.write(baos);
+
             return new InMemoryMultipartFile(
                     "file",
                     grade + "-" + classNumber + "-점수표.xlsx",
@@ -68,20 +105,11 @@ public class GetSheetService implements GetSheetUseCase {
         }
     }
 
-    private void buildSheet(Workbook wb,
-                            String title,
-                            List<Category> allCats,
-                            List<Category> cats,
-                            List<StudentDetail> students,
-                            CellStyle headerStyle,
-                            CellStyle sectionStyle) {
-
-        Sheet sheet = wb.createSheet(title);
-        sheet.createFreezePane(2, 1);
-
+    private Map<String, Integer> calculateRanks(List<StudentDetail> students) {
         Map<String, Integer> rankMap = new HashMap<>();
         List<StudentDetail> sorted = new ArrayList<>(students);
-        sorted.sort(Comparator.comparingInt(StudentDetail::getTotalScore));
+        sorted.sort(Comparator.comparingInt(StudentDetail::getTotalScore).reversed());
+
         int prevScore = Integer.MIN_VALUE, rank = 0;
         for (StudentDetail sd : sorted) {
             int sc = sd.getTotalScore();
@@ -91,10 +119,19 @@ public class GetSheetService implements GetSheetUseCase {
             }
             rankMap.put(sd.getStudentCode(), rank);
         }
+        return rankMap;
+    }
+
+    private void buildSheet(Workbook wb, String title, List<Category> allCats, List<Category> cats, List<StudentDetail> students,
+                            Map<String, List<Score>> scoreMap, Map<String, Float> weights, Map<String, Integer> rankMap,
+                            CellStyle headerStyle, CellStyle sectionStyle) {
+
+        Sheet sheet = wb.createSheet(title);
+        sheet.createFreezePane(2, 1);
 
         List<String[]> splitLabels = cats.stream()
                 .map(c -> c.getKoreanName().split("-", -1))
-                .collect(Collectors.toList());
+                .toList();
         int depth = splitLabels.stream().mapToInt(arr -> arr.length).max().orElse(1);
         Row[] hdr = new Row[depth];
         for (int i = 0; i < depth; i++) hdr[i] = sheet.createRow(i);
@@ -119,18 +156,9 @@ public class GetSheetService implements GetSheetUseCase {
                 c.setCellStyle(lvl == 0 ? sectionStyle : headerStyle);
             }
 
-            if (parts.length < depth) {
-                int startRow = parts.length;
-                int endRow = depth - 1;
-
-                for (int lvl = startRow; lvl <= endRow; lvl++) {
-                    Cell blank = hdr[lvl].createCell(cidx);
-                    blank.setCellStyle(headerStyle);
-                }
-
-                if (startRow < endRow) {
-                    sheet.addMergedRegion(new CellRangeAddress(startRow, endRow, cidx, cidx));
-                }
+            for (int lvl = parts.length; lvl < depth; lvl++) {
+                Cell blank = hdr[lvl].createCell(cidx);
+                blank.setCellStyle(headerStyle);
             }
         }
 
@@ -178,16 +206,10 @@ public class GetSheetService implements GetSheetUseCase {
             r.createCell(0).setCellValue(s.getNumber());
             r.createCell(1).setCellValue(s.getMember().getName());
 
-            Map<String, Integer> raw = scorePersistencePort.findScoreByStudentDetailStudentCode(s.getStudentCode()).stream()
-                    .collect(Collectors.toMap(
+            Map<String, Integer> raw = scoreMap.getOrDefault(s.getStudentCode(), Collections.emptyList())
+                    .stream().collect(Collectors.toMap(
                             sc -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(sc.getCategory().getName()),
                             Score::getValue, (a, b) -> a
-                    ));
-
-            Map<String, Float> weights = allCats.stream()
-                    .collect(Collectors.toMap(
-                            c -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(c.getName()),
-                            Category::getWeight
                     ));
 
             Tuple4<Integer, Integer, Integer, Integer> t = SimulateScoreUtil.simulateScore(
@@ -283,9 +305,10 @@ public class GetSheetService implements GetSheetUseCase {
     }
 
     private CategoryArea resolveArea(Category c) {
-        if (c.getName().startsWith("MAJOR")) return CategoryArea.MAJOR;
-        if (c.getName().startsWith("HUMANITIES")) return CategoryArea.HUMANITIES;
-        if (c.getName().startsWith("FOREIGN_LANG")) return CategoryArea.FOREIGN_LANG;
+        String name = c.getName().toLowerCase();
+        if (name.startsWith("major")) return CategoryArea.MAJOR;
+        if (name.startsWith("humanities")) return CategoryArea.HUMANITIES;
+        if (name.startsWith("foreign_lang")) return CategoryArea.FOREIGN_LANG;
         throw new InvalidCategoryException();
     }
 }
