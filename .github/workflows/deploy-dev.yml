@@ -73,7 +73,7 @@ jobs:
                 - name: RDB_PASSWORD
                   value: ${{ secrets.RDB_PASSWORD }}
                 - name: REDIS_HOST
-                  value ${{ secrets.REDIS_HOST }}
+                  value: ${{ secrets.REDIS_HOST }}
                 - name: REDIS_PORT
                   value: ${{ secrets.REDIS_PORT }}
               buildenv: []
