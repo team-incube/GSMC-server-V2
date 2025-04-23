@@ -4,7 +4,7 @@ import team.incude.gsmc.v2.domain.certificate.persentation.data.GetCertificateDt
 
 import java.util.List;
 
-public record GetCertificatesResponse(
+public record GetCertificateResponse(
         List<GetCertificateDto> certificates
 ) {
 }
