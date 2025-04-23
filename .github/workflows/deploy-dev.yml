@@ -63,9 +63,9 @@ jobs:
                 - name: RDB_PORT
                   value: ${{ secrets.RDB_PORT }}
                 - name: RDB_SCHEMA
-                  value: $${{ secrets.RDB_SCHEMA }}
+                  value: ${{ secrets.RDB_SCHEMA }}
                 - name: RDB_USERNAME
-                  value: ${{ secrets.RDB_USERANE }}
+                  value: ${{ secrets.RDB_USERNAME }}
                 - name: RDB_PASSWORD
                   value: ${{ secrets.RDB_PASSWORD }}
                 - name: REDIS_HOST
