@@ -60,6 +60,12 @@ jobs:
                   value: ${{ secrets.EMAIL_PASSWORD }}
                 - name: EMAIL_TTL
                   value: ${{ secrets.EMAIL_TTL }}
+                - name: RDB_URL
+                  value: ${{ secrets.RDB_URL }}
+                - name: RDB_USERNAME
+                  value: ${{ secrets.RDB_USERANE }}
+                - name: RDB_PASSWORD
+                  value: ${{ secrets.RDB_PASSWORD }}
               buildenv: []
             context:
               git:
