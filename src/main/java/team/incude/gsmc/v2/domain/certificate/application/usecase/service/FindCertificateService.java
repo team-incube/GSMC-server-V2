@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incude.gsmc.v2.domain.certificate.application.usecase.FindCertificateUseCase;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.GetCertificateDto;
-import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificatesResponse;
+import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 
@@ -20,17 +20,17 @@ public class FindCertificateService implements FindCertificateUseCase {
     private final CurrentMemberProvider currentMemberProvider;
 
     @Override
-    public GetCertificatesResponse execute() {
+    public GetCertificateResponse execute() {
         return findCertificate(studentDetailPersistencePort.findStudentDetailByMemberEmail(currentMemberProvider.getCurrentUser().getEmail()).getStudentCode());
     }
 
     @Override
-    public GetCertificatesResponse execute(String studentCode) {
+    public GetCertificateResponse execute(String studentCode) {
         return findCertificate(studentCode);
     }
 
-    private GetCertificatesResponse findCertificate(String studentCode) {
-        return new GetCertificatesResponse(certificatePersistencePort.findCertificateByStudentDetailStudentCode(studentCode)
+    private GetCertificateResponse findCertificate(String studentCode) {
+        return new GetCertificateResponse(certificatePersistencePort.findCertificateByStudentDetailStudentCode(studentCode)
                 .stream()
                 .map(certificate -> new GetCertificateDto(
                         certificate.getId(),

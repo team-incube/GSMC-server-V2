@@ -18,6 +18,7 @@ public class CategoryMapper implements GenericMapper<CategoryJpaEntity, Category
                 .weight(category.getWeight())
                 .maximumValue(category.getMaximumValue())
                 .isEvidenceRequired(category.getIsEvidenceRequired())
+                .koreanName(category.getKoreanName())
                 .build();
     }
 
@@ -29,6 +30,7 @@ public class CategoryMapper implements GenericMapper<CategoryJpaEntity, Category
                 .weight(categoryJpaEntity.getWeight())
                 .maximumValue(categoryJpaEntity.getMaximumValue())
                 .isEvidenceRequired(categoryJpaEntity.getIsEvidenceRequired())
+                .koreanName(categoryJpaEntity.getKoreanName())
                 .build();
     }
 }

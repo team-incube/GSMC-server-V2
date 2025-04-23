@@ -70,6 +70,7 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
                         .join(scoreJpaEntity.member, memberJpaEntity)
                         .join(studentDetailJpaEntity)
                         .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
+                        .fetchJoin()
                         .where(
                                 categoryJpaEntity.name.eq(name),
                                 studentDetailJpaEntity.studentCode.eq(studentCode)
@@ -98,11 +99,28 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     @Override
     public List<Score> findScoreByStudentDetailStudentCode(String studentCode) {
         return jpaQueryFactory
+                .selectFrom(scoreJpaEntity).distinct()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity)
+                .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
+                .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                .fetch()
+                .stream()
+                .map(scoreMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Score> findScoreByStudentDetailStudentCodes(List<String> studentCodes) {
+        return jpaQueryFactory
                 .selectFrom(scoreJpaEntity)
                 .join(scoreJpaEntity.member, memberJpaEntity)
-                .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
-                .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                .join(scoreJpaEntity.category, categoryJpaEntity)
+                .fetchJoin()
+                .join(studentDetailJpaEntity)
+                .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
+                .where(studentDetailJpaEntity.studentCode.in(studentCodes))
                 .fetch()
                 .stream()
                 .map(scoreMapper::toDomain)

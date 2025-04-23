@@ -18,5 +18,7 @@ public interface ScorePersistencePort {
 
     List<Score> findScoreByStudentDetailStudentCode(String studentCode);
 
+    List<Score> findScoreByStudentDetailStudentCodes(List<String> studentCodes);
+
     Score saveScore(Score score);
 }

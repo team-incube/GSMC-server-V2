@@ -1,6 +1,8 @@
 package team.incude.gsmc.v2.global.util;
 
 import lombok.experimental.UtilityClass;
+import reactor.util.function.Tuples;
+import reactor.util.function.Tuple4;
 
 import java.util.Map;
 
@@ -9,7 +11,7 @@ public class SimulateScoreUtil {
 
     private static final Integer MAX_FOREIGN_LANG_SCORE = 500;
 
-    public Integer simulateScore(
+    public Tuple4<Integer, Integer, Integer, Integer> simulateScore(
             Integer majorAwardCareerOutSchoolOfficial,
             Integer majorAwardCareerOutSchoolUnofficial,
             Integer majorAwardCareerOutSchoolHackathon,
@@ -53,7 +55,7 @@ public class SimulateScoreUtil {
             Integer foreignLangHskScore,
             Map<String, Float> categoryWeightMap
     ) {
-        int major    = majorScore(
+        int major = majorScore(
                 majorAwardCareerOutSchoolOfficial,
                 majorAwardCareerOutSchoolUnofficial,
                 majorAwardCareerOutSchoolHackathon,
@@ -102,8 +104,12 @@ public class SimulateScoreUtil {
                 foreignLangCptScore,
                 foreignLangHskScore
         );
-
-        return major + humanity + foreignLang;
+        return Tuples.of(
+                major,
+                humanity,
+                foreignLang,
+                major + humanity + foreignLang
+        );
     }
 
     private int majorScore(
@@ -159,7 +165,7 @@ public class SimulateScoreUtil {
         score += capped(reading, 10) * w.get("humanitiesReading");
         score += capped(serviceAct, 40) * w.get("humanitiesServiceActivity");
         score += capped(serviceClub, 2) * w.get("humanitiesServiceClubSemester1");
-        score += hanja   ? w.get("humanitiesCertificateChineseCharacter") : 0;
+        score += hanja ? w.get("humanitiesCertificateChineseCharacter") : 0;
         score += history ? w.get("humanitiesCertificateKoreanHistory") : 0;
         score += Math.min(afterSchool * w.get("humanitiesActivitiesNewrrowS"), 200);
         score += capped(selfDir, 8) * w.get("humanitiesActivitiesSelfDirectedActivities");
@@ -173,13 +179,13 @@ public class SimulateScoreUtil {
         int score = 0;
         int[][] cutoffs = {
                 {700, 630, 560, 490, 420, 300},
-                { 80,  75,  70,  65,  60,  55},
+                {80, 75, 70, 65, 60, 55},
                 {555, 520, 480, 440, 400, 360},
-                {  6,   5,   4,   3},
-                {  4,   3,   2,   1},
+                {6, 5, 4, 3},
+                {4, 3, 2, 1},
                 {700, 630, 560, 490, 420, 350},
                 {651, 501, 351, 201},
-                {  6,   5,   4,   3,   2}
+                {6, 5, 4, 3, 2}
         };
         int[][] scores = {
                 {500, 450, 400, 350, 300, 250},
