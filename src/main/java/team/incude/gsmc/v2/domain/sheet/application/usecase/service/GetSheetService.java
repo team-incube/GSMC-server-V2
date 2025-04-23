@@ -14,9 +14,11 @@ import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.InvalidCategoryException;
 import team.incude.gsmc.v2.domain.sheet.application.usecase.GetSheetUseCase;
 import team.incude.gsmc.v2.domain.sheet.domain.InMemoryMultipartFile;
 import team.incude.gsmc.v2.domain.sheet.domain.constant.CategoryArea;
+import team.incude.gsmc.v2.domain.sheet.exception.GenerationSheetFailedException;
 import team.incude.gsmc.v2.global.util.SimulateScoreUtil;
 import team.incude.gsmc.v2.global.util.SnakeKebabToCamelCaseConverterUtil;
 
@@ -62,7 +64,7 @@ public class GetSheetService implements GetSheetUseCase {
                     baos.toByteArray()
             );
         } catch (IOException e) {
-            throw new IllegalStateException("엑셀 생성 중 오류", e);
+            throw new GenerationSheetFailedException();
         }
     }
 
@@ -92,7 +94,7 @@ public class GetSheetService implements GetSheetUseCase {
 
         List<String[]> splitLabels = cats.stream()
                 .map(c -> c.getKoreanName().split("-", -1))
-                .collect(Collectors.toList());
+                .toList();
         int depth = splitLabels.stream().mapToInt(arr -> arr.length).max().orElse(1);
         Row[] hdr = new Row[depth];
         for (int i = 0; i < depth; i++) hdr[i] = sheet.createRow(i);
@@ -285,6 +287,6 @@ public class GetSheetService implements GetSheetUseCase {
         if (c.getName().startsWith("MAJOR")) return CategoryArea.MAJOR;
         if (c.getName().startsWith("HUMANITIES")) return CategoryArea.HUMANITIES;
         if (c.getName().startsWith("FOREIGN_LANG")) return CategoryArea.FOREIGN_LANG;
-        throw new IllegalArgumentException("Unknown prefix: " + c.getName());
+        throw new InvalidCategoryException();
     }
 }
