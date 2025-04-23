@@ -60,12 +60,22 @@ jobs:
                   value: ${{ secrets.EMAIL_PASSWORD }}
                 - name: EMAIL_TTL
                   value: ${{ secrets.EMAIL_TTL }}
-                - name: RDB_URL
-                  value: ${{ secrets.RDB_URL }}
+                - name: RDB_TYPE
+                  value: ${{ secrets.RDB_TYPE }}
+                - name: RDB_HOST
+                  value: ${{ secrets.RDB_HOST }}
+                - name: RDB_PORT
+                  value: ${{ secrets.RDB_PORT }}
+                - name: RDB_SCHEMA
+                  value: $${{ secrets.RDB_SCHEMA }}
                 - name: RDB_USERNAME
                   value: ${{ secrets.RDB_USERANE }}
                 - name: RDB_PASSWORD
                   value: ${{ secrets.RDB_PASSWORD }}
+                - name: REDIS_HOST
+                  value ${{ secrets.REDIS_HOST }}
+                - name: REDIS_PORT
+                  value: ${{ secrets.REDIS_PORT }}
               buildenv: []
             context:
               git:
