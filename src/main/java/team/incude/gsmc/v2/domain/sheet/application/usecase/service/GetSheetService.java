@@ -32,15 +32,15 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class GetSheetService implements GetSheetUseCase {
 
-    private final ScorePersistencePort scorePort;
-    private final CategoryPersistencePort categoryPort;
-    private final StudentDetailPersistencePort studentPort;
+    private final ScorePersistencePort scorePersistencePort;
+    private final CategoryPersistencePort categoryPersistencePort;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
 
     @Override
     public MultipartFile execute(Integer grade, Integer classNumber) {
-        List<Category> allCats = categoryPort.findAllCategory();
+        List<Category> allCats = categoryPersistencePort.findAllCategory();
         List<StudentDetail> students = new ArrayList<>(
-                studentPort.findStudentDetailsByGradeAndClassNumber(grade, classNumber)
+                studentDetailPersistencePort.findStudentDetailsByGradeAndClassNumber(grade, classNumber)
         );
         students.sort(Comparator.comparingInt(StudentDetail::getNumber));
 
@@ -59,7 +59,7 @@ public class GetSheetService implements GetSheetUseCase {
             wb.write(baos);
             return new InMemoryMultipartFile(
                     "file",
-                    grade + "-" + classNumber + "-scores.xlsx",
+                    grade + "-" + classNumber + "-점수표.xlsx",
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     baos.toByteArray()
             );
@@ -94,7 +94,7 @@ public class GetSheetService implements GetSheetUseCase {
 
         List<String[]> splitLabels = cats.stream()
                 .map(c -> c.getKoreanName().split("-", -1))
-                .toList();
+                .collect(Collectors.toList());
         int depth = splitLabels.stream().mapToInt(arr -> arr.length).max().orElse(1);
         Row[] hdr = new Row[depth];
         for (int i = 0; i < depth; i++) hdr[i] = sheet.createRow(i);
@@ -121,7 +121,7 @@ public class GetSheetService implements GetSheetUseCase {
 
             if (parts.length < depth) {
                 int startRow = parts.length;
-                int endRow = depth + 1;
+                int endRow = depth - 1;
 
                 for (int lvl = startRow; lvl <= endRow; lvl++) {
                     Cell blank = hdr[lvl].createCell(cidx);
@@ -178,7 +178,7 @@ public class GetSheetService implements GetSheetUseCase {
             r.createCell(0).setCellValue(s.getNumber());
             r.createCell(1).setCellValue(s.getMember().getName());
 
-            Map<String, Integer> raw = scorePort.findScoreByStudentDetailStudentCode(s.getStudentCode()).stream()
+            Map<String, Integer> raw = scorePersistencePort.findScoreByStudentDetailStudentCode(s.getStudentCode()).stream()
                     .collect(Collectors.toMap(
                             sc -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(sc.getCategory().getName()),
                             Score::getValue, (a, b) -> a
@@ -258,7 +258,6 @@ public class GetSheetService implements GetSheetUseCase {
             sheet.setColumnWidth(i, 10 * 256);
         }
     }
-
 
     private CellStyle createHeaderStyle(Workbook wb) {
         CellStyle s = wb.createCellStyle();
