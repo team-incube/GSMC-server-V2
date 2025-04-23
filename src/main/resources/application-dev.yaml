@@ -4,7 +4,7 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${RDB_URL:jdbc:mysql://localhost:3306/gsmc_db}
+    url: jdbc:${RDB_TYPE:mysql}://${RDB_HOST:localhost}:${RDB_PORT:3306}/${RDB_SCHEMA:gsmc_db}
     username: ${RDB_USERNAME:user}
     password: ${RDB_PASSWORD:12345}
   jpa:
