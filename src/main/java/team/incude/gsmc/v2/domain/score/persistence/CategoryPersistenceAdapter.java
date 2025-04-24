@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.score.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
@@ -23,7 +24,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     private final JPAQueryFactory jpaQueryFactory;
     private final CategoryMapper categoryMapper;
 
-    // TODO: 캐싱 적용으로 성능 최적화 어떠신가요?
+    @Cacheable(value = "category", key = "#name")
     @Override
     public Category findCategoryByName(String name) {
         return Optional.ofNullable(

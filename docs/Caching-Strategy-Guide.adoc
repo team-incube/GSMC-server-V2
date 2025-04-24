@@ -1,0 +1,99 @@
+= 카테고리 캐싱 적용 가이드
+:toc:
+:icons: font
+:sectnums:
+:source-highlighter: rouge
+
+== 적용 배경
+
+- `findCategoryByName(String name)` 메서드는 다양한 비즈니스 로직에서 반복적으로 호출됩니다.
+- 해당 데이터는 자주 변경되지 않는 정적인 정보입니다.
+- 결과적으로 **불필요한 DB I/O**가 많아지고, 시스템 전체 성능에 영향을 줄 수 있습니다.
+- 캐시를 적용하여 **DB 부하를 줄이고**, **API 응답 속도를 향상**시키는 것이 목적입니다.
+
+== 적용 방법
+
+=== 1. Adapter 클래스에 `@Cacheable` 적용
+
+[source,java]
+----
+@Cacheable(value = "category", key = "#name")
+@Override
+public Category findCategoryByName(String name) {
+    return Optional.ofNullable(
+            jpaQueryFactory
+                .selectFrom(categoryJpaEntity)
+                .where(categoryJpaEntity.name.eq(name))
+                .fetchOne()
+    ).map(categoryMapper::toDomain).orElseThrow(CategoryNotFoundException::new);
+}
+----
+
+- `value`: 캐시 이름. `"category"`로 지정하여 관리됩니다.
+- `key`: name 파라미터로 구분됩니다.
+
+=== 2. `@EnableCaching` 및 Caffeine 설정
+
+[source,java]
+----
+@Configuration
+@EnableCaching
+public class CacheConfig {
+
+    @Value("${spring.cache.expire-after-write}")
+    private long expireAfterWrite;
+
+    @Bean
+    public CaffeineCacheManager cacheManager() {
+        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager("category");
+        caffeineCacheManager.setCaffeine(
+            Caffeine.newBuilder()
+                .expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES)
+                .maximumSize(50)
+        );
+        return caffeineCacheManager;
+    }
+}
+----
+
+- `expireAfterWrite`: 캐시 만료 시간 (분 단위로 조정 가능)
+- `maximumSize`: 캐시 저장 가능한 최대 개수
+
+== Java Caffeine을 선택한 이유
+
+|===
+| 항목 | Caffeine | EhCache
+
+| 성능
+| 고성능 LRU 구현 및 async 최적화
+| JVM 내 저장이지만 상대적으로 느림
+
+| 설정
+| Java 코드 기반, 직관적
+| XML 또는 복잡한 설정 필요
+
+| Spring 통합
+| Spring Cache와 잘 통합됨
+| 사용 가능하나 학습 비용 존재
+
+| 유지보수
+| 가볍고 최근 활발한 유지보수
+| 비교적 오래된 구조
+|===
+
+- Caffeine은 최신 애플리케이션에서 널리 사용되며, 성능이 매우 우수합니다.
+- 코딩 기반 설정으로 IDE 지원이 뛰어나며, 테스트 및 유지보수도 용이합니다.
+
+== 캐시를 적용한 이유
+
+- `findCategoryByName()`은 **온갖 비즈니스 로직에서 반복 호출**됩니다.
+- 해당 카테고리 데이터는 **잘 바뀌지 않는 정적 데이터**입니다.
+- 따라서 캐시를 통해:
+* DB 접근 횟수를 줄이고,
+* 트래픽 부하를 완화하며,
+* 전체 API의 **응답 속도를 개선**할 수 있습니다.
+
+== 성능 개선 결과
+
+- 평균 처리 시간 기준 **73.43% 향상**
+- RPS 기준 **324.28% 향상**

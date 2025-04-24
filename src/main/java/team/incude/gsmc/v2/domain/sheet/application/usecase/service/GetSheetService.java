@@ -14,9 +14,11 @@ import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.InvalidCategoryException;
 import team.incude.gsmc.v2.domain.sheet.application.usecase.GetSheetUseCase;
 import team.incude.gsmc.v2.domain.sheet.domain.InMemoryMultipartFile;
 import team.incude.gsmc.v2.domain.sheet.domain.constant.CategoryArea;
+import team.incude.gsmc.v2.domain.sheet.exception.GenerationSheetFailedException;
 import team.incude.gsmc.v2.global.util.SimulateScoreUtil;
 import team.incude.gsmc.v2.global.util.SnakeKebabToCamelCaseConverterUtil;
 
@@ -30,72 +32,110 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class GetSheetService implements GetSheetUseCase {
 
-    private final ScorePersistencePort scorePort;
-    private final CategoryPersistencePort categoryPort;
-    private final StudentDetailPersistencePort studentPort;
+    private final ScorePersistencePort scorePersistencePort;
+    private final CategoryPersistencePort categoryPersistencePort;
+    private final StudentDetailPersistencePort studentDetailPersistencePort;
 
     @Override
     public MultipartFile execute(Integer grade, Integer classNumber) {
-        List<Category> allCats = categoryPort.findAllCategory();
+        List<Category> allCats = categoryPersistencePort.findAllCategory();
         List<StudentDetail> students = new ArrayList<>(
-                studentPort.findStudentDetailsByGradeAndClassNumber(grade, classNumber)
+                studentDetailPersistencePort.findStudentDetailsByGradeAndClassNumber(grade, classNumber)
         );
         students.sort(Comparator.comparingInt(StudentDetail::getNumber));
+
+        Map<String, Float> weights = allCats.stream()
+                .collect(Collectors.toMap(
+                        c -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(c.getName()),
+                        Category::getWeight
+                ));
+
+        Map<Long, String> memberIdToStudentCode = students.stream()
+                .collect(Collectors.toMap(
+                        s -> s.getMember().getId(),
+                        StudentDetail::getStudentCode
+                ));
+
+        List<Score> scores = scorePersistencePort.findScoreByStudentDetailStudentCodes(
+                students.stream().map(StudentDetail::getStudentCode).toList()
+        );
+
+        Map<String, List<Score>> scoreMap = scores.stream()
+                .collect(Collectors.groupingBy(score -> {
+                    Long memberId = score.getMember().getId();
+                    return memberIdToStudentCode.get(memberId);
+                }));
+
+        Map<String, Integer> rankMap = calculateRanks(students);
 
         try (XSSFWorkbook wb = new XSSFWorkbook()) {
             CellStyle headerStyle = createHeaderStyle(wb);
             CellStyle sectionStyle = createSectionStyle(wb);
 
-            for (CategoryArea categoryArea : CategoryArea.values()) {
+            for (CategoryArea area : CategoryArea.values()) {
                 List<Category> cats = allCats.stream()
-                        .filter(c -> resolveArea(c) == categoryArea)
+                        .filter(c -> resolveArea(c) == area)
                         .collect(Collectors.toList());
-                buildSheet(wb, categoryArea.getDisplayName(), allCats, cats, students, headerStyle, sectionStyle);
+
+                buildSheet(
+                        wb,
+                        area.getDisplayName(),
+                        allCats,
+                        cats,
+                        students,
+                        scoreMap,
+                        weights,
+                        rankMap,
+                        headerStyle,
+                        sectionStyle
+                );
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             wb.write(baos);
+
             return new InMemoryMultipartFile(
                     "file",
-                    grade + "-" + classNumber + "-scores.xlsx",
+                    grade + "-" + classNumber + "-점수표.xlsx",
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     baos.toByteArray()
             );
         } catch (IOException e) {
-            throw new IllegalStateException("엑셀 생성 중 오류", e);
+            throw new GenerationSheetFailedException();
         }
     }
 
-    private void buildSheet(Workbook wb,
-                            String title,
-                            List<Category> allCats,
-                            List<Category> cats,
-                            List<StudentDetail> students,
-                            CellStyle headerStyle,
-                            CellStyle sectionStyle) {
-        Sheet sheet = wb.createSheet(title);
-        sheet.createFreezePane(2, 1);
-
+    private Map<String, Integer> calculateRanks(List<StudentDetail> students) {
         Map<String, Integer> rankMap = new HashMap<>();
         List<StudentDetail> sorted = new ArrayList<>(students);
-        sorted.sort(Comparator.comparingInt(StudentDetail::getTotalScore));
-        int prevScore = Integer.MIN_VALUE;
-        int rank = 0;
+        sorted.sort(Comparator.comparingInt(StudentDetail::getTotalScore).reversed());
+
+        int prevScore = Integer.MIN_VALUE, rank = 0;
         for (StudentDetail sd : sorted) {
-            int score = sd.getTotalScore();
-            if (score != prevScore) {
+            int sc = sd.getTotalScore();
+            if (sc != prevScore) {
                 rank++;
-                prevScore = score;
+                prevScore = sc;
             }
             rankMap.put(sd.getStudentCode(), rank);
         }
+        return rankMap;
+    }
 
-        List<String> labels = cats.stream().map(Category::getKoreanName).collect(Collectors.toList());
-        List<String[]> splitLabels = labels.stream().map(s -> s.split("-", -1)).collect(Collectors.toList());
+    private void buildSheet(Workbook wb, String title, List<Category> allCats, List<Category> cats, List<StudentDetail> students,
+                            Map<String, List<Score>> scoreMap, Map<String, Float> weights, Map<String, Integer> rankMap,
+                            CellStyle headerStyle, CellStyle sectionStyle) {
+
+        Sheet sheet = wb.createSheet(title);
+        sheet.createFreezePane(2, 1);
+
+        List<String[]> splitLabels = cats.stream()
+                .map(c -> c.getKoreanName().split("-", -1))
+                .toList();
         int depth = splitLabels.stream().mapToInt(arr -> arr.length).max().orElse(1);
-
         Row[] hdr = new Row[depth];
         for (int i = 0; i < depth; i++) hdr[i] = sheet.createRow(i);
+
         sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, 0, 0));
         sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, 1, 1));
         Cell numCell = hdr[depth - 1].createCell(0);
@@ -106,31 +146,38 @@ public class GetSheetService implements GetSheetUseCase {
         nameCell.setCellStyle(headerStyle);
 
         int col = 2;
-        for (int idx = 0; idx < cats.size(); idx++) {
-            String[] parts = splitLabels.get(idx);
-            for (int lvl = 0; lvl < depth; lvl++) {
-                String txt = lvl < parts.length ? parts[lvl] : "";
-                Cell c = hdr[lvl].createCell(col);
-                c.setCellValue(txt);
+        for (int i = 0; i < cats.size(); i++) {
+            String[] parts = splitLabels.get(i);
+            int cidx = col++;
+
+            for (int lvl = 0; lvl < parts.length; lvl++) {
+                Cell c = hdr[lvl].createCell(cidx);
+                c.setCellValue(parts[lvl]);
                 c.setCellStyle(lvl == 0 ? sectionStyle : headerStyle);
             }
-            col++;
+
+            for (int lvl = parts.length; lvl < depth; lvl++) {
+                Cell blank = hdr[lvl].createCell(cidx);
+                blank.setCellStyle(headerStyle);
+            }
         }
 
         for (int lvl = 0; lvl < depth; lvl++) {
             int start = 2;
-            String prev = hdr[lvl].getCell(2).getStringCellValue();
+            String prev = Optional.ofNullable(hdr[lvl].getCell(2)).map(Cell::getStringCellValue).orElse("");
             for (int x = 3; x < col; x++) {
-                String cur = hdr[lvl].getCell(x).getStringCellValue();
-                if (!Objects.equals(cur, prev)) {
-                    if (!prev.isEmpty() && x - 1 > start)
+                String cur = Optional.ofNullable(hdr[lvl].getCell(x)).map(Cell::getStringCellValue).orElse("");
+                if (!Objects.equals(prev, cur)) {
+                    if (!prev.isEmpty() && x - 1 > start) {
                         sheet.addMergedRegion(new CellRangeAddress(lvl, lvl, start, x - 1));
+                    }
                     prev = cur;
                     start = x;
                 }
             }
-            if (!prev.isEmpty() && col - 1 > start)
+            if (!prev.isEmpty() && col - 1 > start) {
                 sheet.addMergedRegion(new CellRangeAddress(lvl, lvl, start, col - 1));
+            }
         }
 
         int areaCol = col;
@@ -146,6 +193,7 @@ public class GetSheetService implements GetSheetUseCase {
         Cell rkH = hdr[0].createCell(rankCol);
         rkH.setCellValue("반 순위");
         rkH.setCellStyle(headerStyle);
+
         if (depth > 1) {
             sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, areaCol, areaCol));
             sheet.addMergedRegion(new CellRangeAddress(0, depth - 1, totalCol, totalCol));
@@ -158,15 +206,10 @@ public class GetSheetService implements GetSheetUseCase {
             r.createCell(0).setCellValue(s.getNumber());
             r.createCell(1).setCellValue(s.getMember().getName());
 
-            Map<String, Integer> raw = scorePort.findScoreByStudentDetailStudentCode(s.getStudentCode()).stream()
-                    .collect(Collectors.toMap(
+            Map<String, Integer> raw = scoreMap.getOrDefault(s.getStudentCode(), Collections.emptyList())
+                    .stream().collect(Collectors.toMap(
                             sc -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(sc.getCategory().getName()),
                             Score::getValue, (a, b) -> a
-                    ));
-            Map<String, Float> weights = allCats.stream()
-                    .collect(Collectors.toMap(
-                            c -> SnakeKebabToCamelCaseConverterUtil.toCamelCase(c.getName()),
-                            Category::getWeight
                     ));
 
             Tuple4<Integer, Integer, Integer, Integer> t = SimulateScoreUtil.simulateScore(
@@ -189,7 +232,6 @@ public class GetSheetService implements GetSheetUseCase {
                     raw.getOrDefault("majorInSchoolAttendanceClubPresentation", 0),
                     raw.getOrDefault("majorInSchoolAttendanceSeminar", 0),
                     raw.getOrDefault("majorInSchoolAttendanceAfterSchool", 0),
-
                     raw.getOrDefault("humanitiesAwardCareerHumanityInSchool", 0),
                     raw.getOrDefault("humanitiesAwardCareerHumanityOutSchool", 0),
                     raw.getOrDefault("humanitiesReadingReadAThonTurtle", 0) == 1,
@@ -203,7 +245,6 @@ public class GetSheetService implements GetSheetUseCase {
                     raw.getOrDefault("humanitiesCertificateKoreanHistory", 0) == 1,
                     raw.getOrDefault("humanitiesActivitiesNewrrowS", 0),
                     raw.getOrDefault("humanitiesActivitiesSelfDirectedActivities", 0),
-
                     raw.getOrDefault("foreignLangAttendanceToeicAcademyStatus", 0) == 1,
                     raw.getOrDefault("foreignLangToeicScore", 0),
                     raw.getOrDefault("foreignLangToeflScore", 0),
@@ -213,18 +254,18 @@ public class GetSheetService implements GetSheetUseCase {
                     raw.getOrDefault("foreignLangJptScore", 0),
                     raw.getOrDefault("foreignLangCptScore", 0),
                     raw.getOrDefault("foreignLangHskScore", 0),
-
                     weights
             );
+
             int majorScore = t.getT1();
             int humanityScore = t.getT2();
             int foreignScore = t.getT3();
             int totalScore = t.getT4();
 
-            int dataCol = 2;
+            int dc = 2;
             for (Category c : cats) {
                 String key = SnakeKebabToCamelCaseConverterUtil.toCamelCase(c.getName());
-                r.createCell(dataCol++).setCellValue(raw.getOrDefault(key, 0));
+                r.createCell(dc++).setCellValue(raw.getOrDefault(key, 0));
             }
 
             r.createCell(areaCol).setCellValue(
@@ -235,7 +276,9 @@ public class GetSheetService implements GetSheetUseCase {
             r.createCell(rankCol).setCellValue(rankMap.get(s.getStudentCode()));
         }
 
-        for (int i = 0; i <= rankCol; i++) sheet.autoSizeColumn(i);
+        for (int i = 0; i <= rankCol; i++) {
+            sheet.setColumnWidth(i, 10 * 256);
+        }
     }
 
     private CellStyle createHeaderStyle(Workbook wb) {
@@ -245,6 +288,7 @@ public class GetSheetService implements GetSheetUseCase {
         s.setFont(f);
         s.setAlignment(HorizontalAlignment.CENTER);
         s.setVerticalAlignment(VerticalAlignment.CENTER);
+        s.setWrapText(true);
         s.setBorderBottom(BorderStyle.THIN);
         s.setBorderTop(BorderStyle.THIN);
         s.setBorderLeft(BorderStyle.THIN);
@@ -261,9 +305,10 @@ public class GetSheetService implements GetSheetUseCase {
     }
 
     private CategoryArea resolveArea(Category c) {
-        if (c.getName().startsWith("MAJOR")) return CategoryArea.MAJOR;
-        if (c.getName().startsWith("HUMANITIES")) return CategoryArea.HUMANITIES;
-        if (c.getName().startsWith("FOREIGN_LANG")) return CategoryArea.FOREIGN_LANG;
-        throw new IllegalArgumentException("Unknown prefix: " + c.getName());
+        String name = c.getName().toLowerCase();
+        if (name.startsWith("major")) return CategoryArea.MAJOR;
+        if (name.startsWith("humanities")) return CategoryArea.HUMANITIES;
+        if (name.startsWith("foreign_lang")) return CategoryArea.FOREIGN_LANG;
+        throw new InvalidCategoryException();
     }
 }

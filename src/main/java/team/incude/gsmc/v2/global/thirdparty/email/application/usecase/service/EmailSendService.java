@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.thirdparty.email;
+package team.incude.gsmc.v2.global.thirdparty.email.application.usecase.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -9,10 +9,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import team.incude.gsmc.v2.global.thirdparty.email.application.usecase.EmailSendUseCase;
 
 @Service
 @RequiredArgsConstructor
-public class EmailSendService {
+public class EmailSendService implements EmailSendUseCase {
 
     private static final String EMAIL_SUBJECT = "gsmc 이메일 인증";
     private final JavaMailSender mailSender;

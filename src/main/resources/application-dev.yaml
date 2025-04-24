@@ -16,6 +16,12 @@ spring:
   sql:
     init:
       mode: always
+  security:
+    user:
+      name: prometheus
+      password: prometheus
+    cors:
+      allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001}
 jwt:
   access-token:
     secret: ${JWT_ACCESS_TOKEN_SECRET:f2ba6a534025117d28f915841d241bb1ecb758550803220812374020ef48d3cf}
@@ -34,7 +40,7 @@ aws:
 mail:
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  username: ${EMAIL_USERNAME}
-  password: ${EMAIL_PASSWORD}
+  username: ${EMAIL_USERNAME:s}
+  password: ${EMAIL_PASSWORD:s}
   ttl: ${EMAIL_TTL:300}
   attempt-limits: 5
