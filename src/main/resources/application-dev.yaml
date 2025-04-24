@@ -26,7 +26,7 @@ jwt:
 
 security:
   cors:
-    allowed-origins: ${ALLOWED_ORIGINS}
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001}
 
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
