@@ -24,10 +24,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtParserUseCase jwtParserUseCase;
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
         String token = jwtParserUseCase.resolveToken(request);
         String uri = request.getRequestURI();
-        if (uri.startsWith("/api/v2/auth")) {
+        if (uri.startsWith("/api/v2/auth") || uri.startsWith("/actuator/prometheus") || uri.startsWith("/api/v2/health")) {
             filterChain.doFilter(request, response);
             return;
         }
