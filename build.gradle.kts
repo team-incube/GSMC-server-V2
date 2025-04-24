@@ -30,6 +30,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 
 	// docker
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
@@ -73,6 +74,9 @@ dependencies {
 
 	// thymeleaf
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+
+	// prometheus
+	implementation("io.micrometer:micrometer-registry-prometheus")
 }
 
 tasks.withType<Test> {

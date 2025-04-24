@@ -1,0 +1,189 @@
+# 메트릭 수집 및 대시보드 구성 가이드
+:toc:
+:icons: font
+:sectnums:
+:source-highlighter: rouge
+
+== 개요
+
+본 문서는 Spring Boot 기반의 REST API 서버에서 **Prometheus와 Grafana를 사용하여 메트릭을 수집하고 시각화하는 방법**을 설명합니다.
+이미 구현된 메트릭 수집 시스템의 구성 및 활용 방법을 정리하여, 팀원들이 쉽게 사용할 수 있도록 가이드를 제공합니다.
+오, 아주 중요한 포인트 짚었어! 기술 선택에는 항상 **"왜 이걸 썼는가?"**에 대한 명확한 이유가 있어야지, 문서화할 때도 설득력이 생기니까.
+
+그래서 지금 상황에 맞춰 **Prometheus + Grafana를 왜 선택했는지**, 기술적인 이유와 팀 관점에서의 장점까지 정리해서 `asciidoc` 문서에 넣을 수 있는 형태로 아래처럼 작성해줄게.
+
+== 기술 스택 선정 배경
+
+기존에는 단순 로그 기반 모니터링으로 API 사용량을 확인하거나, 성능 이슈를 수작업으로 파악해야 했습니다. 하지만 다음과 같은 문제들이 있었습니다:
+
+- 로그 파싱 기반 모니터링은 **실시간성이 부족하고**, 수동 작업이 많음
+- 지표 기반 알림이 없어, 이슈 발생을 **사후에야 인지**
+- 장애 원인 분석이나 응답 시간 분석이 어렵고, **데이터가 산발적임**
+
+이를 해결하기 위해 아래 기준으로 기술 스택을 선정했습니다
+
+|===
+| 고려 기준               | 적용 항목                    | 만족도
+
+| 실시간 데이터 수집      | Prometheus                  | ✅ 초 단위 수집 가능
+| 시각화 및 알림          | Grafana                     | ✅ 다양한 대시보드 및 Alert 기능
+| Spring Boot 연동성     | Micrometer + Actuator      | ✅ 최소 설정으로 연동 가능
+| 운영 자동화 연계        | Docker / Compose 기반 배포 | ✅ 인프라 구성 단순화
+| 비용 효율               | 오픈소스                    | ✅ 라이선스 비용 없음
+|===
+
+== Prometheus를 선택한 이유
+
+- **Micrometer 통합 표준**: Spring Boot에서 기본 제공하는 메트릭 백엔드
+- **스크래핑 방식**: Push 방식보다 안정적인 Pull 구조, Prometheus가 주도권 가짐
+- **시계열 DB 내장**: 별도의 저장소 없이 메트릭 저장 가능
+- **경량 구성**: 메모리/CPU 부담 적고 단독 실행 가능
+
+== Grafana를 선택한 이유
+
+- **직관적인 UI**: 대시보드 구성과 필터링이 쉬움
+- **다양한 시각화 타입**: Stat, Graph, Table, Bar 등 모든 지표 시각화 가능
+- **알림 기능 내장**: 특정 조건 만족 시 Slack, Email 등 연동 가능
+- **재사용 가능 템플릿**: 대시보드 JSON을 쉽게 Import/Export 가능
+- **오픈소스 + 커뮤니티 강세**: 팀 내 확장이나 커스터마이징이 용이
+
+== 선택의 핵심 요약
+
+- **Spring Boot 환경과의 궁합이 뛰어나며**, 메트릭 수집에서 시각화까지 end-to-end로 자동화 가능
+- **실시간 운영 지표 확인 및 알림 설정이 가능**하여, 서비스 운영 및 장애 대응 능력 향상
+- 설정 및 유지보수가 간편하여 **개발자 주도의 DevOps 운영**이 가능
+
+== 구성도
+
+아래는 메트릭 수집 시스템의 구성도입니다.
+
+image::https://uml.planttext.com/plantuml/svg/SoWkIImgAStDuKfCBialKdZJjERDh9LlvatWoijFILLG2YueoinBLt3ApozHS2meK5Aevb9GY7PCBYbD12gtKj0lAChFJIt9I2qjZkMgXMWAW0j1-Ev5YMc9UObSN7335NHrxM322bOARsRlV3Ddp-k5SnHUzpIywPxpUlEMrvFdABnPkE7jh1ukX75WRPXEib9ulNBAswuThvUjLNZJCUFDyeaA6XuX8G6QN30hGFgGZ05gwDtmPkwMjoqRe9OeQ82a0tqqkHnIyr90mG40[🌐 PlantUML로 보기]
+
+== 구현 방식
+
+- **Spring Boot**에 `spring-boot-actuator` 및 `micrometer-registry-prometheus`를 적용
+- `/actuator/prometheus` 엔드포인트에 메트릭 노출
+- 인증(`prometheus:prometheus`)을 설정하여 보안 유지
+- **Prometheus**가 해당 경로를 15초 간격으로 스크래핑
+- **Grafana**에서 Prometheus를 데이터 소스로 사용해 대시보드 구성
+
+== 사용법
+
+Grafana에 접속하여 다음을 확인할 수 있습니다:
+
+- TPS (특정 API 호출 수)
+- RPS (전체 초당 요청 수)
+- 평균 응답 시간
+- 95th Percentile 응답 시간
+- 상태 코드 분포
+- 에러율
+
+접속 주소: `http://localhost:3000`
+로그인: `admin / admin`
+대시보드 위치: **Dashboards → Spring Boot API Metrics**
+
+== Grafana 대시보드 JSON 예시
+
+다음은 현재 사용 중인 **Grafana 대시보드 JSON 템플릿**입니다:
+
+[source,json]
+----
+{
+  "title": "Spring Boot API Metrics",
+  "panels": [
+    {
+      "title": "🔹 RPS - Requests Per Second",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count[1m]))",
+          "refId": "A"
+        }
+      ],
+      "id": 1
+    },
+    {
+      "title": "🔹 TPS - Transactions (/api/transactions)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{uri=\"/api/transactions\"}[1m]))",
+          "refId": "B"
+        }
+      ],
+      "id": 2
+    },
+    {
+      "title": "🔹 평균 응답 시간 (Average Latency)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_sum[1m])) / sum(rate(http_server_requests_seconds_count[1m]))",
+          "refId": "C"
+        }
+      ],
+      "id": 3
+    },
+    {
+      "title": "🔹 응답 시간 - 95th Percentile",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[5m])) by (le))",
+          "refId": "D"
+        }
+      ],
+      "id": 4
+    },
+    {
+      "title": "🔹 에러율 (5xx)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[1m])) / sum(rate(http_server_requests_seconds_count[1m]))",
+          "refId": "E"
+        }
+      ],
+      "id": 5
+    },
+    {
+      "title": "🔹 상태 코드 분포",
+      "type": "barchart",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count[1m])) by (status)",
+          "refId": "F"
+        }
+      ],
+      "id": 6
+    },
+    {
+      "title": "🔹 요청 경로별 요청 수",
+      "type": "table",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count[1m])) by (uri)",
+          "refId": "G"
+        }
+      ],
+      "id": 7
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "10s"
+}
+----
+
+== 보안 및 설정 팁
+
+- `/actuator/prometheus`는 기본 인증을 사용하여 외부 노출 차단
+- Prometheus `prometheus.yml`에 `basic_auth` 추가 필요
+- Prometheus 쿼리 `up` 으로 수집 정상 여부 확인 가능
+
+== 알림 설정 (선택)
+
+Grafana Alert 기능을 통해 다음 조건에 알림을 설정할 수 있습니다:
+
+- 5xx 에러율 > 5% 이상일 때 Slack 알림
+- TPS가 기준치보다 낮아졌을 때 이메일 전송
