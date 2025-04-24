@@ -30,6 +30,7 @@ public enum ErrorCode {
 
     // Category
     CATEGORY_NOT_FOUND("Category Not Found", HttpStatus.NOT_FOUND.value()),
+    INVALID_CATEGORY("Invalid Category", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 
     // Auth
     MEMBER_UNAUTHORIZED("Member Not Authorized", HttpStatus.UNAUTHORIZED.value()),
@@ -54,7 +55,10 @@ public enum ErrorCode {
     OTHER_EVIDENCE_NOT_FOUND("Other Evidence Not Found", HttpStatus.NOT_FOUND.value()),
 
     // Reading Evidence
-    READING_EVIDENCE_NOT_FOUND("Reading Evidence Not Found", HttpStatus.NOT_FOUND.value());
+    READING_EVIDENCE_NOT_FOUND("Reading Evidence Not Found", HttpStatus.NOT_FOUND.value()),
+
+    // Sheet
+    SHEET_GENERATION_FAILED("Sheet Generation Failed", HttpStatus.INTERNAL_SERVER_ERROR.value());
 
     private final String message;
     private final int status;
