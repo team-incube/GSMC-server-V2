@@ -1,6 +1,5 @@
 package team.incude.gsmc.v2.domain.auth.application.usecase.service;
 
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +11,7 @@ import team.incude.gsmc.v2.domain.auth.application.util.GenerationAuthCode;
 import team.incude.gsmc.v2.domain.auth.domain.AuthCode;
 import team.incude.gsmc.v2.domain.auth.domain.Authentication;
 import team.incude.gsmc.v2.domain.auth.exception.EmailAuthAttemptExceededException;
-import team.incude.gsmc.v2.global.thirdparty.email.EmailSendService;
+import team.incude.gsmc.v2.global.thirdparty.email.application.usecase.EmailSendUseCase;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class SendAuthenticationEmailService implements SendAuthenticationEmailUs
 
     private final AuthCodePersistencePort authCodePersistencePort;
     private final AuthenticationPersistencePort authenticationPersistencePort;
-    private final EmailSendService emailSendService;
+    private final EmailSendUseCase emailSendUseCase;
     @Value("${mail.ttl}")
     private long ttl;
     @Value("${mail.attempt-limits}")
@@ -55,6 +54,6 @@ public class SendAuthenticationEmailService implements SendAuthenticationEmailUs
                 .ttl(ttl)
                 .build();
         authCodePersistencePort.saveAuthCode(authCode);
-        emailSendService.sendEmail(email, authCode.getAuthCode());
+        emailSendUseCase.sendEmail(email, authCode.getAuthCode());
     }
 }

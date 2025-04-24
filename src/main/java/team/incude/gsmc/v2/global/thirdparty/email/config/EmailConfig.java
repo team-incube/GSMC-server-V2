@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.thirdparty.email;
+package team.incude.gsmc.v2.global.thirdparty.email.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
