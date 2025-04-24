@@ -12,16 +12,15 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Value("${production.front-url}")
-    private String productionFrontUrl; //http://lo:8080,https,htpps
+    @Value("${security.cors.allowed-origins}")
+    private String allowedUrl;
 
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        List<String> allowedOrigins = Arrays.asList(productionFrontUrl.split(","));
+        List<String> allowedOrigins = Arrays.asList(allowedUrl.split(","));
         configuration.setAllowedOrigins(allowedOrigins);
-        configuration.setAllowedOrigins(/* 이 부분에 url 삽입*/null);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "C"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
