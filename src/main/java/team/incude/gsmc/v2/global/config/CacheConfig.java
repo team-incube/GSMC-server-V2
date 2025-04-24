@@ -17,16 +17,13 @@ public class CacheConfig {
     private long expireAfterWrite;
 
     @Bean
-    public Caffeine<Object, Object> caffeineConfig() {
-        return Caffeine.newBuilder()
-                .expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES)
-                .maximumSize(50);
-    }
-
-    @Bean
-    public CaffeineCacheManager cacheManager(Caffeine<Object, Object> caffeineConfig) {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-        caffeineCacheManager.setCaffeine(caffeineConfig);
+    public CaffeineCacheManager cacheManager() {
+        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager("category");
+        caffeineCacheManager.setCaffeine(
+                Caffeine.newBuilder()
+                        .expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES)
+                        .maximumSize(50)
+        );
         return caffeineCacheManager;
     }
 }
