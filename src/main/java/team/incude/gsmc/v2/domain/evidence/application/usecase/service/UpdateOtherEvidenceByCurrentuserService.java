@@ -27,7 +27,7 @@ public class UpdateOtherEvidenceByCurrentuserService implements UpdateOtherEvide
     @Override
     @Transactional
     public void execute(Long evidenceId, MultipartFile file) {
-        Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
+        Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
 
         Evidence newEvidence = createEvidence(evidence);
         String fileUrl = uploadFile(file);

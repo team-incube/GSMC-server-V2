@@ -29,7 +29,7 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
     @Override
     @Transactional
     public void execute(Long evidenceId, String title, String content, MultipartFile file, EvidenceType evidenceType) {
-        Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
+        Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
 
         Evidence newEvidence = createEvidence(evidence, evidenceType);
         String fileUrl = uploadFile(file);
