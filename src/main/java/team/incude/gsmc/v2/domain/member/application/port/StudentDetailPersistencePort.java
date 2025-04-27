@@ -12,7 +12,10 @@ public interface StudentDetailPersistencePort {
 
     StudentDetail findStudentDetailByMemberEmail(String email);
 
-    List<StudentDetail> findStudentDetailsByGradeAndClassNumber(Integer grade, Integer classNumber);
+    List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber);
+
+    // Member가 null이 아닌 student detail 조회
+    List<StudentDetail> findStudentDetailNotNullMember();
 
     Integer findTotalScoreByMemberEmail(String email);
 

@@ -46,7 +46,7 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     @Override
-    public List<StudentDetail> findStudentDetailsByGradeAndClassNumber(Integer grade, Integer classNumber) {
+    public List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(studentDetailJpaEntity)
                 .where(studentDetailJpaEntity.grade.eq(grade)
