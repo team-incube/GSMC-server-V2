@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.auth.application.port.AuthApplicationPort;
 import team.incude.gsmc.v2.domain.auth.application.usecase.*;
 import team.incude.gsmc.v2.domain.auth.presentation.data.response.AuthTokenResponse;
-import team.incude.gsmc.v2.domain.member.application.usecase.ChangePasswordUseCase;
+import team.incude.gsmc.v2.domain.auth.application.usecase.ChangePasswordUseCase;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
