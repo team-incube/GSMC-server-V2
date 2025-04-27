@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.member.persistence;
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
@@ -13,6 +14,7 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 import java.util.List;
 import java.util.Optional;
 
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -61,7 +63,13 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     public List<StudentDetail> findStudentDetailNotNullMember() {
         return jpaQueryFactory
                 .selectFrom(studentDetailJpaEntity)
-                .where(studentDetailJpaEntity.member.isNotNull())
+                .where(
+                        JPAExpressions
+                                .selectOne()
+                                .from(memberJpaEntity)
+                                .where(memberJpaEntity.eq(studentDetailJpaEntity.member))
+                                .exists()
+                )
                 .fetch()
                 .stream()
                 .map(studentDetailMapper::toDomain)
