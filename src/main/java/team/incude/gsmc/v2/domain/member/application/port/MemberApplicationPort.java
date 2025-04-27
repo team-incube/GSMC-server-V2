@@ -9,11 +9,11 @@ import java.util.List;
 
 @Port(direction = PortDirection.INBOUND)
 public interface MemberApplicationPort {
-    List<GetMemberResponse> getAllStudents();
+    List<GetMemberResponse> findAllStudents();
 
     SearchMemberResponse searchStudents(String name, Integer grade, Integer classNumber, Integer page, Integer size);
 
-    GetMemberResponse getCurrentStudent();
+    GetMemberResponse findCurrentStudent();
 
-    GetMemberResponse getStudent(String studentCode);
+    GetMemberResponse findMemberByStudentCode(String studentCode);
 }

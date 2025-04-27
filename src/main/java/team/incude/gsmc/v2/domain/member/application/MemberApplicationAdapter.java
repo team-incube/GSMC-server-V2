@@ -13,9 +13,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberApplicationAdapter implements MemberApplicationPort {
 
-
     @Override
-    public List<GetMemberResponse> getAllStudents() {
+    public List<GetMemberResponse> findAllStudents() {
         return List.of();
     }
 
@@ -25,12 +24,12 @@ public class MemberApplicationAdapter implements MemberApplicationPort {
     }
 
     @Override
-    public GetMemberResponse getCurrentStudent() {
+    public GetMemberResponse findCurrentStudent() {
         return null;
     }
 
     @Override
-    public GetMemberResponse getStudent(String studentCode) {
+    public GetMemberResponse findMemberByStudentCode(String studentCode) {
         return null;
     }
 }
