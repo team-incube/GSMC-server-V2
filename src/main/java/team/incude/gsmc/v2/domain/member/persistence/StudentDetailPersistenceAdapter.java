@@ -58,6 +58,17 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     @Override
+    public List<StudentDetail> findStudentDetailNotNullMember() {
+        return jpaQueryFactory
+                .selectFrom(studentDetailJpaEntity)
+                .where(studentDetailJpaEntity.member.isNotNull())
+                .fetch()
+                .stream()
+                .map(studentDetailMapper::toDomain)
+                .toList();
+    }
+
+    @Override
     @Deprecated(forRemoval = true, since = "StudentCode로 전환으로 인한 메서드 제거 예정")
     public Integer findTotalScoreByMemberEmail(String email) {
         return Optional.ofNullable(
