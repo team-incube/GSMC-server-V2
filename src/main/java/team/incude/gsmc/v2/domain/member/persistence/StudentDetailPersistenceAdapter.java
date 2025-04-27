@@ -1,12 +1,15 @@
 package team.incude.gsmc.v2.domain.member.persistence;
 
-import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
+import team.incude.gsmc.v2.domain.member.domain.StudentDetailWithEvidence;
 import team.incude.gsmc.v2.domain.member.exception.MemberInvalidException;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.StudentDetailMapper;
+import team.incude.gsmc.v2.domain.member.persistence.projection.StudentProjection;
 import team.incude.gsmc.v2.domain.member.persistence.repository.StudentDetailJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
@@ -14,7 +17,7 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 import java.util.List;
 import java.util.Optional;
 
-import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
+import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -60,19 +63,32 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     @Override
-    public List<StudentDetail> findStudentDetailNotNullMember() {
+    public List<StudentDetailWithEvidence> findStudentDetailNotNullMember() {
         return jpaQueryFactory
-                .selectFrom(studentDetailJpaEntity)
-                .where(
-                        JPAExpressions
-                                .selectOne()
-                                .from(memberJpaEntity)
-                                .where(memberJpaEntity.eq(studentDetailJpaEntity.member))
-                                .exists()
+                .select(
+                        Projections.constructor(
+                                StudentProjection.class,
+                                studentDetailJpaEntity.member.email,
+                                studentDetailJpaEntity.member.name,
+                                studentDetailJpaEntity.grade,
+                                studentDetailJpaEntity.classNumber,
+                                studentDetailJpaEntity.number,
+                                studentDetailJpaEntity.totalScore,
+                                evidenceJpaEntity.id.isNotNull(),
+                                studentDetailJpaEntity.member.role
+                        )
                 )
+                .from(studentDetailJpaEntity)
+                .leftJoin(evidenceJpaEntity)
+                .on(
+                        evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id)
+                                .and(evidenceJpaEntity.reviewStatus.eq(ReviewStatus.PENDING))
+                )
+                .where(studentDetailJpaEntity.member.isNotNull())
+                .orderBy(studentDetailJpaEntity.studentCode.asc())
                 .fetch()
                 .stream()
-                .map(studentDetailMapper::toDomain)
+                .map(studentDetailMapper::fromProjection)
                 .toList();
     }
 
