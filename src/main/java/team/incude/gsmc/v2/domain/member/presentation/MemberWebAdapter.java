@@ -20,7 +20,7 @@ public class MemberWebAdapter {
 
     @GetMapping("/students")
     public ResponseEntity<Object> getAllStudents() {
-        return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>());
+        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.findAllStudents());
     }
 
     @GetMapping("/students/search")

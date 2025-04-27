@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.member.application.port.MemberApplicationPort;
+import team.incude.gsmc.v2.domain.member.application.usecase.FindAllMemberUseCase;
 import team.incude.gsmc.v2.domain.member.presentation.data.response.GetMemberResponse;
 import team.incude.gsmc.v2.domain.member.presentation.data.response.SearchMemberResponse;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -13,9 +14,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberApplicationAdapter implements MemberApplicationPort {
 
+    private final FindAllMemberUseCase findAllMemberUseCase;
+
     @Override
     public List<GetMemberResponse> findAllStudents() {
-        return List.of();
+        return findAllMemberUseCase.getAllMembers();
     }
 
     @Override
