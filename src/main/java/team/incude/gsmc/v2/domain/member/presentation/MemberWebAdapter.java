@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import team.incude.gsmc.v2.domain.member.application.port.MemberApplicationPort;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class MemberWebAdapter {
 
+    private final MemberApplicationPort memberApplicationPort;
 
     @GetMapping("/students")
     public ResponseEntity<Object> getAllStudents() {
