@@ -63,7 +63,7 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     @Override
-    public List<StudentDetailWithEvidence> findStudentDetailNotNullMember() {
+    public List<StudentDetailWithEvidence> findStudentDetailWithEvidenceReviewStatusNotNullMember() {
         return jpaQueryFactory
                 .select(
                         Projections.constructor(

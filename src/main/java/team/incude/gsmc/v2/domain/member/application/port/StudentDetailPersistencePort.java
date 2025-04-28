@@ -15,7 +15,9 @@ public interface StudentDetailPersistencePort {
 
     List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber);
 
-    List<StudentDetailWithEvidence> findStudentDetailNotNullMember();
+    List<StudentDetailWithEvidence> findStudentDetailWithEvidenceReviewStatusNotNullMember();
+
+    List<StudentDetailWithEvidence> searchStudentDetail
 
     Integer findTotalScoreByMemberEmail(String email);
 
