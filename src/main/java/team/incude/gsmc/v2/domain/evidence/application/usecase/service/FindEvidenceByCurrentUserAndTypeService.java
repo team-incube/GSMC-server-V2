@@ -11,9 +11,9 @@ import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.GetActivityEvidenceDto;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.GetOtherEvidenceDto;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.GetReadingEvidenceDto;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetActivityEvidenceResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetOtherEvidenceResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetReadingEvidenceResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -43,10 +43,10 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
         List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByEmail(member.getEmail());
         List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByEmail(member.getEmail());
 
-        List<GetActivityEvidenceDto> majorEvidenceDtos = createActivityEvidenceDtos(majorEvidences);
-        List<GetActivityEvidenceDto> humanitiesEvidenceDtos = createActivityEvidenceDtos(humanitiesEvidences);
-        List<GetReadingEvidenceDto> readingEvidenceDtos = createReadingEvidenceDtos(readingEvidences);
-        List<GetOtherEvidenceDto> otherEvidenceDtos = createOtherEvidenceDtos(otherEvidences);
+        List<GetActivityEvidenceResponse> majorEvidenceDtos = createActivityEvidenceDtos(majorEvidences);
+        List<GetActivityEvidenceResponse> humanitiesEvidenceDtos = createActivityEvidenceDtos(humanitiesEvidences);
+        List<GetReadingEvidenceResponse> readingEvidenceDtos = createReadingEvidenceDtos(readingEvidences);
+        List<GetOtherEvidenceResponse> otherEvidenceDtos = createOtherEvidenceDtos(otherEvidences);
 
         return new GetEvidencesResponse(majorEvidenceDtos, humanitiesEvidenceDtos, readingEvidenceDtos, otherEvidenceDtos);
     }
@@ -57,9 +57,9 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
                 .toList();
     }
 
-    private List<GetActivityEvidenceDto> createActivityEvidenceDtos(List<ActivityEvidence> evidences) {
+    private List<GetActivityEvidenceResponse> createActivityEvidenceDtos(List<ActivityEvidence> evidences) {
         return evidences.stream()
-                .map(e -> new GetActivityEvidenceDto(
+                .map(e -> new GetActivityEvidenceResponse(
                         e.getId().getId(),
                         e.getTitle(),
                         e.getContent(),
@@ -70,9 +70,9 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
                 .toList();
     }
 
-    private List<GetOtherEvidenceDto> createOtherEvidenceDtos(List<OtherEvidence> evidences) {
+    private List<GetOtherEvidenceResponse> createOtherEvidenceDtos(List<OtherEvidence> evidences) {
         return evidences.stream()
-                .map(e -> new GetOtherEvidenceDto(
+                .map(e -> new GetOtherEvidenceResponse(
                         e.getId().getId(),
                         e.getFileUri(),
                         e.getId().getEvidenceType(),
@@ -82,9 +82,9 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
                 .toList();
     }
 
-    private List<GetReadingEvidenceDto> createReadingEvidenceDtos(List<ReadingEvidence> evidences) {
+    private List<GetReadingEvidenceResponse> createReadingEvidenceDtos(List<ReadingEvidence> evidences) {
         return evidences.stream()
-                .map(e -> new GetReadingEvidenceDto(
+                .map(e -> new GetReadingEvidenceResponse(
                         e.getId().getId(),
                         e.getTitle(),
                         e.getAuthor(),
