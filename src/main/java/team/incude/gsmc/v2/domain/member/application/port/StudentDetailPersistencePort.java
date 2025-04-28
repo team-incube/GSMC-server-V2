@@ -1,5 +1,7 @@
 package team.incude.gsmc.v2.domain.member.application.port;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetailWithEvidence;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -17,7 +19,7 @@ public interface StudentDetailPersistencePort {
 
     List<StudentDetailWithEvidence> findStudentDetailWithEvidenceReviewStatusNotNullMember();
 
-    List<StudentDetailWithEvidence> searchStudentDetail
+    Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReiewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);
 
     Integer findTotalScoreByMemberEmail(String email);
 

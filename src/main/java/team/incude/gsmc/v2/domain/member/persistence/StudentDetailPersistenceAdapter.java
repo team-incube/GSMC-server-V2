@@ -3,6 +3,9 @@ package team.incude.gsmc.v2.domain.member.persistence;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
@@ -90,6 +93,59 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                 .stream()
                 .map(studentDetailMapper::fromProjection)
                 .toList();
+    }
+
+    @Override
+    public Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReiewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable) {
+        List<StudentProjection> content = jpaQueryFactory
+                .select(
+                        Projections.constructor(
+                                StudentProjection.class,
+                                studentDetailJpaEntity.member.email,
+                                studentDetailJpaEntity.member.name,
+                                studentDetailJpaEntity.grade,
+                                studentDetailJpaEntity.classNumber,
+                                studentDetailJpaEntity.number,
+                                studentDetailJpaEntity.totalScore,
+                                evidenceJpaEntity.id.isNotNull(),
+                                studentDetailJpaEntity.member.role
+                        )
+                )
+                .from(studentDetailJpaEntity)
+                .leftJoin(evidenceJpaEntity)
+                .on(
+                        evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id)
+                                .and(evidenceJpaEntity.reviewStatus.eq(ReviewStatus.PENDING))
+                )
+                .where(
+                        studentDetailJpaEntity.member.isNotNull(),
+                        name != null ? studentDetailJpaEntity.member.name.contains(name) : null,
+                        grade != null ? studentDetailJpaEntity.grade.eq(grade) : null,
+                        classNumber != null ? studentDetailJpaEntity.classNumber.eq(classNumber) : null
+                )
+                .orderBy(studentDetailJpaEntity.studentCode.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        Long total = jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
+                .leftJoin(evidenceJpaEntity)
+                .on(
+                        evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id)
+                                .and(evidenceJpaEntity.reviewStatus.eq(ReviewStatus.PENDING))
+                )
+                .where(
+                        studentDetailJpaEntity.member.isNotNull(),
+                        name != null ? studentDetailJpaEntity.member.name.contains(name) : null,
+                        grade != null ? studentDetailJpaEntity.grade.eq(grade) : null,
+                        classNumber != null ? studentDetailJpaEntity.classNumber.eq(classNumber) : null
+                )
+                .fetchOne();
+        List<StudentDetailWithEvidence> result = content.stream()
+                .map(studentDetailMapper::fromProjection)
+                .toList();
+        return new PageImpl<>(result, pageable, total != null ? total : 0);
     }
 
     @Override
