@@ -4,7 +4,7 @@ import java.util.List;
 
 public record SearchStudentResponse(
         Integer totalPage,
-        Integer totalElements,
+        Long totalElements,
         List<GetStudentResponse> results
 ) {
 }
