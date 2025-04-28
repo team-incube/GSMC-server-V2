@@ -39,7 +39,7 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
     @Override
     @Transactional
     public void execute(Long evidenceId, MultipartFile file, int value) {
-        Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
+        Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = evidence.getScore();
