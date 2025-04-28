@@ -49,50 +49,55 @@ public class CreateReadingEvidenceServiceTest {
     @DisplayName("execute(title, author, page, content) 메서드는")
     class Describe_execute {
 
-        @Test
-        @DisplayName("독서 영역 증빙자료를 등록하고 점수를 저장한다")
-        void it_creates_reading_evidence_and_updates_score() throws IOException {
-            // given
-            String categoryName = "HUMANITIES-READING";
-            String title = "title";
-            String author = "author";
-            Integer page = 245;
-            String content = "content";
+        @Nested
+        @DisplayName("유효한 요청이 주어졌을 때")
+        class Context_with_valid_request {
 
-            Member member = Member.builder()
-                    .email("test@gsm.hs.kr")
-                    .build();
+            @Test
+            @DisplayName("독서 영역 증빙자료를 등록하고 점수를 저장한다")
+            void it_creates_reading_evidence_and_updates_score () throws IOException {
+                // given
+                String categoryName = "HUMANITIES-READING";
+                String title = "title";
+                String author = "author";
+                Integer page = 245;
+                String content = "content";
 
-            StudentDetail studentDetail = StudentDetail.builder()
-                    .studentCode("1234")
-                    .build();
+                Member member = Member.builder()
+                        .email("test@gsm.hs.kr")
+                        .build();
 
-            Category category = Category.builder()
-                    .name(categoryName)
-                    .maximumValue(6)
-                    .build();
+                StudentDetail studentDetail = StudentDetail.builder()
+                        .studentCode("1234")
+                        .build();
 
-            Score score = Score.builder()
-                    .value(1)
-                    .category(category)
-                    .member(member)
-                    .build();
+                Category category = Category.builder()
+                        .name(categoryName)
+                        .maximumValue(6)
+                        .build();
 
-            when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-            when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(studentDetail);
-            when(scorePersistencePort.findScoreByCategoryNameAndMemberEmail(category.getName(), member.getEmail()))
-                    .thenReturn(score);
+                Score score = Score.builder()
+                        .value(1)
+                        .category(category)
+                        .member(member)
+                        .build();
 
-            // when
-            createReadingEvidenceService.execute(title, author, page, content);
+                when(currentMemberProvider.getCurrentUser()).thenReturn(member);
+                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(studentDetail);
+                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmail(category.getName(), member.getEmail()))
+                        .thenReturn(score);
 
-            // then
-            verify(scorePersistencePort).saveScore(any(Score.class));
-            verify(readingEvidencePersistencePort).saveReadingEvidence(any(ReadingEvidence.class));
-            verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
-                    event instanceof ScoreUpdatedEvent &&
-                            ((ScoreUpdatedEvent)event).getStudentCode().equals(studentDetail.getStudentCode())
-            ));
+                // when
+                createReadingEvidenceService.execute(title, author, page, content);
+
+                // then
+                verify(scorePersistencePort).saveScore(any(Score.class));
+                verify(readingEvidencePersistencePort).saveReadingEvidence(any(ReadingEvidence.class));
+                verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
+                        event instanceof ScoreUpdatedEvent &&
+                                ((ScoreUpdatedEvent) event).getStudentCode().equals(studentDetail.getStudentCode())
+                ));
+            }
         }
     }
 }
