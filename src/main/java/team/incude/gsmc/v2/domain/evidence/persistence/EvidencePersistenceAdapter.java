@@ -42,7 +42,8 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
 
     @Override
     public Evidence findEvidenceByIdWithLock(Long id) {
-        return Optional.ofNullable(jpaQueryFactory
+        return Optional.ofNullable(
+                jpaQueryFactory
                         .selectFrom(evidenceJpaEntity)
                         .where(evidenceJpaEntity.id.eq(id))
                         .setLockMode(LockModeType.PESSIMISTIC_WRITE)
