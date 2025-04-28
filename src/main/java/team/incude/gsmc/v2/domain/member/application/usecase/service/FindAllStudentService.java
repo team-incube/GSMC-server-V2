@@ -16,7 +16,7 @@ public class FindAllStudentService implements FindAllStudentUseCase {
 
     @Override
     public List<GetStudentResponse> getAllStudents() {
-        return studentDetailPersistenceAdapter.findStudentDetailNotNullMember()
+        return studentDetailPersistenceAdapter.findStudentDetailWithEvidenceReviewStatusNotNullMember()
                 .stream()
                 .map(studentDetail -> new GetStudentResponse(
                         studentDetail.getStudentDetail().getMember().getEmail(),
