@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record PatchOtherScoringEvidenceRequest(
         Integer value,
-        MultipartFile file
+        MultipartFile file,
+        String imageUrl
 ) {
 }
