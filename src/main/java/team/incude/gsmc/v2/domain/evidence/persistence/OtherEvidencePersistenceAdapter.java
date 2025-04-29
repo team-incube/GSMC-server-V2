@@ -63,6 +63,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
                 .where(memberEmailEq(email))
                 .fetch()
                 .stream()
