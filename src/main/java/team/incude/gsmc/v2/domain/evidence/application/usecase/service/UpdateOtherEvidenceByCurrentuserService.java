@@ -29,14 +29,18 @@ public class UpdateOtherEvidenceByCurrentuserService implements UpdateOtherEvide
     @Transactional
     public void execute(Long evidenceId, MultipartFile file) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
-        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
-        s3Port.deleteFile(otherEvidence.getFileUri());
+        deleteFileByEvidenceId(evidenceId);
 
         Evidence newEvidence = createEvidence(evidence);
         String fileUrl = uploadFile(file);
         OtherEvidence newOtherEvidence = createOtherEvidence(newEvidence, fileUrl);
 
         otherEvidencePersistencePort.saveOtherEvidence(newOtherEvidence);
+    }
+
+    private void deleteFileByEvidenceId(Long evidenceId) {
+        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
+        s3Port.deleteFile(otherEvidence.getFileUri());
     }
 
     private Evidence createEvidence(Evidence evidence) {

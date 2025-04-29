@@ -41,8 +41,7 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
     public void execute(Long evidenceId, MultipartFile file, int value) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
         Member member = currentMemberProvider.getCurrentUser();
-        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
-        s3Port.deleteFile(otherEvidence.getFileUri());
+        deleteFileByEvidenceId(evidenceId);
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = evidence.getScore();
 
@@ -55,6 +54,11 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
         otherEvidencePersistencePort.saveOtherEvidence(newOtherEvidence);
 
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+    }
+
+    private void deleteFileByEvidenceId(Long evidenceId) {
+        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
+        s3Port.deleteFile(otherEvidence.getFileUri());
     }
 
     private Evidence createEvidence(Evidence evidence) {
