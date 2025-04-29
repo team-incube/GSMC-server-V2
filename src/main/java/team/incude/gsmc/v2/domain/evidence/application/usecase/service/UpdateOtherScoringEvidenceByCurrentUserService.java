@@ -22,7 +22,6 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProv
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,15 +37,16 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
 
     @Override
     @Transactional
-    public void execute(Long evidenceId, MultipartFile file, int value) {
+    public void execute(Long evidenceId, MultipartFile file, int value, String imageUrl) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
         Member member = currentMemberProvider.getCurrentUser();
-        deleteFileByEvidenceId(evidenceId);
+        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = evidence.getScore();
 
+        String fileUrl = checkImageUrl(otherEvidence, imageUrl, file);
+
         Evidence newEvidence = createEvidence(evidence);
-        String fileUrl = uploadFile(file);
         Score newScore = createScore(score, member, value);
         OtherEvidence newOtherEvidence = createOtherEvidence(newEvidence, fileUrl);
 
@@ -56,9 +56,20 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
 
-    private void deleteFileByEvidenceId(Long evidenceId) {
-        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
+    private String checkImageUrl(OtherEvidence otherEvidence, String imageUrl, MultipartFile file) {
+        if (imageUrl != null
+                && !imageUrl.isEmpty()
+                && otherEvidence.getFileUri().equals(imageUrl)) {
+            return imageUrl;
+        }
+
         s3Port.deleteFile(otherEvidence.getFileUri());
+
+        if (file != null && !file.isEmpty()){
+            return uploadFile(file);
+        } else {
+            return null;
+        }
     }
 
     private Evidence createEvidence(Evidence evidence) {
