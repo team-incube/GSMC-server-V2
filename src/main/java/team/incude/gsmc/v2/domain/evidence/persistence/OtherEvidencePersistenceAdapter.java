@@ -42,8 +42,8 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.studentCode.eq(studentCode)).fetchJoin()
-                .join(studentDetailJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
                 .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
                 .where(
                         studentCodeEq(studentCode),

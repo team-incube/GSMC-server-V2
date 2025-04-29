@@ -57,8 +57,8 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
                 .selectFrom(readingEvidenceJpaEntity)
                 .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.studentCode.eq(studentCode))
-                .join(studentDetailJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
                 .where(
                         studentCodeEq(studentCode),
                         titleEq(title),
