@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("CreateCertificateService 클래스의")
+@DisplayName("자격증 생성 서비스 클래스의")
 class CreateCertificateServiceTest {
 
     @Mock private CertificatePersistencePort certificatePersistencePort;
