@@ -7,6 +7,7 @@ import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersi
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
+import team.incude.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
@@ -14,6 +15,7 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QReadingEvidenceJpaEntity.readingEvidenceJpaEntity;
@@ -80,13 +82,14 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     @Override
-    public Boolean existsReadingEvidenceByEvidenceId(Long evidenceId) {
-        Integer result = jpaQueryFactory
-                .selectOne()
-                .from(readingEvidenceJpaEntity)
-                .where(readingEvidenceJpaEntity.id.eq(evidenceId))
-                .fetchFirst();
-        return result != null;
+    public ReadingEvidence findReadingEvidenceById(Long id) {
+        return Optional.ofNullable(
+                        jpaQueryFactory
+                                .selectFrom(readingEvidenceJpaEntity)
+                                .where(readingEvidenceJpaEntity.id.eq(id))
+                                .fetchOne())
+                .map(readingEvidenceMapper::toDomain)
+                .orElseThrow(ReadingEvidenceNotFoundException::new);
     }
 
     private BooleanExpression memberEmailEq(String email) {
