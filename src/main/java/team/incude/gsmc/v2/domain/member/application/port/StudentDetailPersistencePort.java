@@ -17,6 +17,10 @@ public interface StudentDetailPersistencePort {
 
     List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber);
 
+    StudentDetailWithEvidence findStudentDetailWithEvidenceByStudentCode(String studentCode);
+
+    StudentDetailWithEvidence findStudentDetailWithEvidenceByMemberEmail(String email);
+
     List<StudentDetailWithEvidence> findStudentDetailWithEvidenceReviewStatusNotNullMember();
 
     Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReiewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);

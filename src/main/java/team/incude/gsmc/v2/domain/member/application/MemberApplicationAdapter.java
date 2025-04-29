@@ -3,6 +3,8 @@ package team.incude.gsmc.v2.domain.member.application;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.member.application.port.MemberApplicationPort;
 import team.incude.gsmc.v2.domain.member.application.usecase.FindAllStudentUseCase;
+import team.incude.gsmc.v2.domain.member.application.usecase.FindCurrentStudentUseCase;
+import team.incude.gsmc.v2.domain.member.application.usecase.FindStudentByStudentCodeUseCase;
 import team.incude.gsmc.v2.domain.member.application.usecase.SearchStudentUseCase;
 import team.incude.gsmc.v2.domain.member.presentation.data.response.GetStudentResponse;
 import team.incude.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
@@ -17,24 +19,26 @@ public class MemberApplicationAdapter implements MemberApplicationPort {
 
     private final FindAllStudentUseCase findAllStudentUseCase;
     private final SearchStudentUseCase searchStudentUseCase;
+    private final FindCurrentStudentUseCase findCurrentStudentUseCase;
+    private final FindStudentByStudentCodeUseCase findStudentByStudentCodeUseCase;
 
     @Override
     public List<GetStudentResponse> findAllStudents() {
-        return findAllStudentUseCase.getAllStudents();
+        return findAllStudentUseCase.execute();
     }
 
     @Override
     public SearchStudentResponse searchStudents(String name, Integer grade, Integer classNumber, Integer page, Integer size) {
-        return searchStudentUseCase.searchStudents(name, grade, classNumber, page, size);
+        return searchStudentUseCase.execute(name, grade, classNumber, page, size);
     }
 
     @Override
     public GetStudentResponse findCurrentStudent() {
-        return null;
+        return findCurrentStudentUseCase.execute();
     }
 
     @Override
     public GetStudentResponse findMemberByStudentCode(String studentCode) {
-        return null;
+        return findStudentByStudentCodeUseCase.execute(studentCode);
     }
 }

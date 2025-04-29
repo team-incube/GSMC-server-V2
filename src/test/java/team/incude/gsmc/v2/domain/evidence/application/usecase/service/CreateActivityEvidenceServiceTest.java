@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("CreateActivityEvidenceService의")
+@DisplayName("활동 증빙자료 생성 서비스 클래스의")
 class CreateActivityEvidenceServiceTest {
 
     @Mock
