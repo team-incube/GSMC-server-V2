@@ -11,6 +11,7 @@ import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersisten
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetailWithEvidence;
 import team.incude.gsmc.v2.domain.member.exception.MemberInvalidException;
+import team.incude.gsmc.v2.domain.member.exception.MemberNotFoundException;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.StudentDetailMapper;
 import team.incude.gsmc.v2.domain.member.persistence.projection.StudentProjection;
 import team.incude.gsmc.v2.domain.member.persistence.repository.StudentDetailJpaRepository;
@@ -63,6 +64,56 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                 .stream()
                 .map(studentDetailMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public StudentDetailWithEvidence findStudentDetailWithEvidenceByStudentCode(String studentCode) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .select(
+                                Projections.constructor(
+                                        StudentProjection.class,
+                                        studentDetailJpaEntity.member.email,
+                                        studentDetailJpaEntity.member.name,
+                                        studentDetailJpaEntity.grade,
+                                        studentDetailJpaEntity.classNumber,
+                                        studentDetailJpaEntity.number,
+                                        studentDetailJpaEntity.totalScore,
+                                        evidenceJpaEntity.id.isNotNull(),
+                                        studentDetailJpaEntity.member.role
+                                )
+                        )
+                        .from(studentDetailJpaEntity)
+                        .leftJoin(evidenceJpaEntity)
+                        .on(evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id))
+                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .fetchOne()
+        ).map(studentDetailMapper::fromProjection).orElseThrow(MemberNotFoundException::new);
+    }
+
+    @Override
+    public StudentDetailWithEvidence findStudentDetailWithEvidenceByMemberEmail(String email) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .select(
+                                Projections.constructor(
+                                        StudentProjection.class,
+                                        studentDetailJpaEntity.member.email,
+                                        studentDetailJpaEntity.member.name,
+                                        studentDetailJpaEntity.grade,
+                                        studentDetailJpaEntity.classNumber,
+                                        studentDetailJpaEntity.number,
+                                        studentDetailJpaEntity.totalScore,
+                                        evidenceJpaEntity.id.isNotNull(),
+                                        studentDetailJpaEntity.member.role
+                                )
+                        )
+                        .from(studentDetailJpaEntity)
+                        .leftJoin(evidenceJpaEntity)
+                        .on(evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id))
+                        .where(studentDetailJpaEntity.member.email.eq(email))
+                        .fetchOne()
+        ).map(studentDetailMapper::fromProjection).orElseThrow(MemberNotFoundException::new);
     }
 
     @Override
