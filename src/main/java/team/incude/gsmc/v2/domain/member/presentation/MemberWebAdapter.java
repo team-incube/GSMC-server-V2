@@ -9,8 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.incude.gsmc.v2.domain.member.application.port.MemberApplicationPort;
 
-import java.util.ArrayList;
-
 @RestController
 @RequestMapping("/api/v2/members")
 @RequiredArgsConstructor
@@ -37,11 +35,11 @@ public class MemberWebAdapter {
 
     @GetMapping("/students/current")
     public ResponseEntity<Object> getCurrentStudent() {
-        return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>());
+        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.findCurrentStudent());
     }
 
     @GetMapping("/students/{studentCode}")
     public ResponseEntity<Object> getStudent(@PathVariable(value = "studentCode") String studentCode) {
-        return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>());
+        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.findMemberByStudentCode(studentCode));
     }
 }
