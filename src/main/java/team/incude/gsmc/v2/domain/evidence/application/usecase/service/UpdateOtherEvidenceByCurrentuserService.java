@@ -8,6 +8,7 @@ import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistenceP
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.UpdateOtherEvidenceByCurrentUserUseCase;
+import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
@@ -28,6 +29,8 @@ public class UpdateOtherEvidenceByCurrentuserService implements UpdateOtherEvide
     @Transactional
     public void execute(Long evidenceId, MultipartFile file) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
+        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
+        s3Port.deleteFile(otherEvidence.getFileUri());
 
         Evidence newEvidence = createEvidence(evidence);
         String fileUrl = uploadFile(file);

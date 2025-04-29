@@ -30,6 +30,8 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
     @Transactional
     public void execute(Long evidenceId, String title, String content, MultipartFile file, EvidenceType evidenceType) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
+        ActivityEvidence activityEvidence = activityEvidencePersistencePort.findActivityEvidenceById(evidenceId);
+        s3Port.deleteFile(activityEvidence.getImageUrl());
 
         Evidence newEvidence = createEvidence(evidence, evidenceType);
         String fileUrl = uploadFile(file);
