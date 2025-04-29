@@ -24,12 +24,12 @@ public class MemberApplicationAdapter implements MemberApplicationPort {
 
     @Override
     public List<GetStudentResponse> findAllStudents() {
-        return findAllStudentUseCase.getAllStudents();
+        return findAllStudentUseCase.execute();
     }
 
     @Override
     public SearchStudentResponse searchStudents(String name, Integer grade, Integer classNumber, Integer page, Integer size) {
-        return searchStudentUseCase.searchStudents(name, grade, classNumber, page, size);
+        return searchStudentUseCase.execute(name, grade, classNumber, page, size);
     }
 
     @Override
