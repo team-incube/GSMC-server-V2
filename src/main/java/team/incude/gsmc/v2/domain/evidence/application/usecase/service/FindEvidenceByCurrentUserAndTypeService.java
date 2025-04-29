@@ -38,8 +38,8 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
 
         List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByEmailAndEvidenceType(member.getEmail(), type);
 
-        List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, type);
-        List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, type);
+        List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, EvidenceType.MAJOR);
+        List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, EvidenceType.HUMANITIES);
         List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByEmail(member.getEmail());
         List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByEmail(member.getEmail());
 

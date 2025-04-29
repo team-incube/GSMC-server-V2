@@ -32,8 +32,8 @@ public class FindEvidenceByStudentCodeAndFilteringTypeAndStatusService implement
     public GetEvidencesResponse execute(String studentCode, EvidenceType type, ReviewStatus status) {
         List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(studentCode, type, null, status, null, null);
 
-        List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, type);
-        List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, type);
+        List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, EvidenceType.MAJOR);
+        List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, EvidenceType.HUMANITIES);
         List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(studentCode, type, status, null, null);
         List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByStudentCodeAndTitleAndTypeAndStatusAndGradeAndClassNumber(studentCode, null, type, status, null, null);
 
