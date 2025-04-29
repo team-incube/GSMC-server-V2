@@ -10,14 +10,12 @@ import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.UpdateActivityEvidenceByCurrentUserUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
-import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,20 +27,32 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
 
     @Override
     @Transactional
-    public void execute(Long evidenceId, String title, String content, MultipartFile file, EvidenceType evidenceType) {
+    public void execute(Long evidenceId, String title, String content, MultipartFile file, EvidenceType evidenceType, String imageUrl) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
-        deleteFileByEvidenceId(evidenceId);
+        ActivityEvidence activityEvidence = activityEvidencePersistencePort.findActivityEvidenceById(evidenceId);
+
+        String fileUrl = checkImageUrl(activityEvidence, imageUrl, file);
 
         Evidence newEvidence = createEvidence(evidence, evidenceType);
-        String fileUrl = uploadFile(file);
         ActivityEvidence newActivityEvidence = createActivityEvidence(newEvidence, title, content, fileUrl);
 
         activityEvidencePersistencePort.saveActivityEvidence(newActivityEvidence);
     }
 
-    private void deleteFileByEvidenceId(Long evidenceId) {
-        ActivityEvidence activityEvidence = activityEvidencePersistencePort.findActivityEvidenceById(evidenceId);
+    private String checkImageUrl(ActivityEvidence activityEvidence, String imageUrl, MultipartFile file) {
+        if (imageUrl != null
+                && !imageUrl.isEmpty()
+                && activityEvidence.getImageUrl().equals(imageUrl)) {
+            return imageUrl;
+        }
+
         s3Port.deleteFile(activityEvidence.getImageUrl());
+
+        if (file != null && !file.isEmpty()){
+            return uploadFile(file);
+        } else {
+            return null;
+        }
     }
 
     private ActivityEvidence createActivityEvidence(Evidence evidence, String title, String content, String fileUrl) {
