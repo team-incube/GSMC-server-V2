@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.application.port.*;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.DeleteEvidenceUseCase;
+import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
+import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
+import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
@@ -34,6 +34,7 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
     private final ScorePersistencePort scorePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final S3Port s3Port;
 
     @Override
     @Transactional
@@ -50,11 +51,27 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
     }
 
     private void deleteSubEvidenceIfExists(Long evidenceId) {
-        if (activityEvidencePersistencePort.existsActivityEvidenceByEvidenceId(evidenceId)) {
+
+        ActivityEvidence activityEvidence = activityEvidencePersistencePort.findActivityEvidenceById(evidenceId);
+        if (activityEvidence != null) {
+            if (activityEvidence.getImageUrl() != null) {
+                s3Port.deleteFile(activityEvidence.getImageUrl());
+            }
             activityEvidencePersistencePort.deleteActivityEvidenceById(evidenceId);
-        } else if (otherEvidencePersistencePort.existsOtherEvidenceByEvidenceId(evidenceId)) {
-            otherEvidencePersistencePort.deleteOtherEvidenceById(evidenceId);
-        } else if (readingEvidencePersistencePort.existsReadingEvidenceByEvidenceId(evidenceId)) {
+            return;
+        }
+
+        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
+        if (otherEvidence != null) {
+            if (otherEvidence.getFileUri() != null) {
+                s3Port.deleteFile(otherEvidence.getFileUri());
+            }
+            activityEvidencePersistencePort.deleteActivityEvidenceById(evidenceId);
+            return;
+        }
+
+        ReadingEvidence readingEvidence = readingEvidencePersistencePort.findReadingEvidenceById(evidenceId);
+        if (readingEvidence != null) {
             readingEvidencePersistencePort.deleteReadingEvidenceById(evidenceId);
         }
     }

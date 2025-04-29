@@ -45,13 +45,13 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file) {
-        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.MAJOR);
+    public void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl) {
+        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.MAJOR, imageUrl);
     }
 
     @Override
-    public void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file) {
-        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.HUMANITIES);
+    public void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl) {
+        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.HUMANITIES, imageUrl);
     }
 
     @Override
@@ -60,8 +60,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public void updateOtherEvidenceByCurrentUser(Long evidenceId, MultipartFile file) {
-        updateOtherEvidenceByCurrentUserUseCase.execute(evidenceId, file);
+    public void updateOtherEvidenceByCurrentUser(Long evidenceId, MultipartFile file, String imageUrl) {
+        updateOtherEvidenceByCurrentUserUseCase.execute(evidenceId, file, imageUrl);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value) {
-        updateOtherScoringUseCase.execute(evidenceId, file, value);
+    public void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value, String imageUrl) {
+        updateOtherScoringUseCase.execute(evidenceId, file, value, imageUrl);
     }
 }

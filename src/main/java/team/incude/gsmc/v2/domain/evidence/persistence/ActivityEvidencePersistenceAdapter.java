@@ -14,6 +14,7 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QActivityEvidenceJpaEntity.activityEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
@@ -87,14 +88,15 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public Boolean existsActivityEvidenceByEvidenceId(Long evidenceId) {
-        Integer result = jpaQueryFactory
-                .selectOne()
-                .from(activityEvidenceJpaEntity)
-                .where(activityEvidenceJpaEntity.id.eq(evidenceId))
-                .fetchFirst();
+    public ActivityEvidence findActivityEvidenceById(Long id) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(activityEvidenceJpaEntity)
+                        .where(activityEvidenceJpaEntity.id.eq(id))
+                        .fetchOne())
+                .map(activityEvidenceMapper::toDomain)
+                .orElseThrow(ActivityEvidenceNotFountException::new);
 
-        return result != null;
     }
 
     private BooleanExpression memberEmailEq(String email) {

@@ -18,5 +18,5 @@ public interface ReadingEvidencePersistencePort {
 
     void deleteReadingEvidenceById(Long evidenceId);
 
-    Boolean existsReadingEvidenceByEvidenceId(Long evidenceId);
+    ReadingEvidence findReadingEvidenceById(Long id);
 }
