@@ -37,7 +37,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public List<OtherEvidence> findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()

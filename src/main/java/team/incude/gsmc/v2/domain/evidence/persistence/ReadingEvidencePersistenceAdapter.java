@@ -52,7 +52,7 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     @Override
-    public List<ReadingEvidence> findReadingEvidenceByStudentCodeAndTitleAndTypeAndStatusAndGradeAndClassNumber(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<ReadingEvidence> searchReadingEvidence(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
                 .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
