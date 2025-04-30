@@ -44,7 +44,7 @@ public class JwtParserService implements JwtParserUseCase {
     @Override
     public Boolean validateRefreshToken(String token) {
         try {
-            // parseRefreshTokenClaims(token); // TODO: 이거땜에 에러나는데 확인바랍니다
+            parseRefreshTokenClaims(token);
             return refreshTokenRedisRepository.existsById(token);
         } catch (Exception e) {
             return false;
