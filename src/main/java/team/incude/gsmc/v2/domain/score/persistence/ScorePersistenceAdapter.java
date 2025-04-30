@@ -68,6 +68,7 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
                         .selectFrom(scoreJpaEntity)
                         .join(scoreJpaEntity.category, categoryJpaEntity)
                         .join(scoreJpaEntity.member, memberJpaEntity)
+                        .fetchJoin()
                         .join(studentDetailJpaEntity)
                         .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
                         .fetchJoin()
