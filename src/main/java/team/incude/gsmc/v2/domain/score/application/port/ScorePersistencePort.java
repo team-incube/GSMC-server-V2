@@ -14,8 +14,6 @@ public interface ScorePersistencePort {
 
     Score findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(String name, String studentCode);
 
-    List<Score> findScoreByMemberEmail(String email);
-
     List<Score> findScoreByStudentDetailStudentCode(String studentCode);
 
     List<Score> findScoreByStudentDetailStudentCodes(List<String> studentCodes);

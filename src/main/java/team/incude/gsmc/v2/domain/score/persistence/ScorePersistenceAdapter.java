@@ -44,7 +44,6 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     }
 
     @Override
-    @Deprecated(since = "StudentCode 값 사용으로 인하여 리팩터링 후 삭제될 예정입니다")
     public Score findScoreByCategoryNameAndMemberEmailWithLock(String name, String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
@@ -79,22 +78,6 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
                         .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne()
         ).map(scoreMapper::toDomain).orElse(null);
-    }
-
-    @Override
-    @Deprecated(since = "StudentCode 값 사용으로 인하여 리팩터링 후 삭제될 예정입니다")
-    public List<Score> findScoreByMemberEmail(String email) {
-        return jpaQueryFactory
-                .selectFrom(scoreJpaEntity)
-                .join(scoreJpaEntity.member, memberJpaEntity)
-                .fetchJoin()
-                .join(scoreJpaEntity.category, categoryJpaEntity)
-                .fetchJoin()
-                .where(memberJpaEntity.email.eq(email))
-                .fetch()
-                .stream()
-                .map(scoreMapper::toDomain)
-                .toList();
     }
 
     @Override
