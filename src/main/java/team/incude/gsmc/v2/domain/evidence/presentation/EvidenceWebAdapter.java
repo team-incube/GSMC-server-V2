@@ -73,7 +73,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> patchMajorEvidence(
             @PathVariable Long evidenceId,
             @ModelAttribute PatchActivityEvidenceRequest request) {
-        evidenceApplicationPort.updateMajorEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file());
+        evidenceApplicationPort.updateMajorEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file(), request.imageUrl());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -81,7 +81,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> patchHumanityEvidence(
             @PathVariable Long evidenceId,
             @ModelAttribute PatchActivityEvidenceRequest request) {
-        evidenceApplicationPort.updateHumanitiesEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file());
+        evidenceApplicationPort.updateHumanitiesEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file(), request.imageUrl());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -97,7 +97,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> patchOtherEvidence(
             @PathVariable Long evidenceId,
             @ModelAttribute PatchOtherEvidenceRequest request) {
-        evidenceApplicationPort.updateOtherEvidenceByCurrentUser(evidenceId, request.file());
+        evidenceApplicationPort.updateOtherEvidenceByCurrentUser(evidenceId, request.file(), request.imageUrl());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -105,7 +105,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> patchScoringEvidence(
             @PathVariable Long evidenceId,
             @ModelAttribute PatchOtherScoringEvidenceRequest request) {
-        evidenceApplicationPort.updateOtherScoringEvidenceByCurrentUser(evidenceId, request.file(), request.value());
+        evidenceApplicationPort.updateOtherScoringEvidenceByCurrentUser(evidenceId, request.file(), request.value(), request.imageUrl());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

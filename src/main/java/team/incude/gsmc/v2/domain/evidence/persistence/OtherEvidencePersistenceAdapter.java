@@ -7,12 +7,14 @@ import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersist
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
+import team.incude.gsmc.v2.domain.evidence.exception.OtherEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.OtherEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.OtherEvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QOtherEvidenceJpaEntity.otherEvidenceJpaEntity;
@@ -74,13 +76,14 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public Boolean existsOtherEvidenceByEvidenceId(Long evidenceId) {
-        Integer result = jpaQueryFactory
-                .selectOne()
-                .from(otherEvidenceJpaEntity)
-                .where(otherEvidenceJpaEntity.id.eq(evidenceId))
-                .fetchOne();
-        return result != null;
+    public OtherEvidence findOtherEvidenceById(Long id) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(otherEvidenceJpaEntity)
+                        .where(otherEvidenceJpaEntity.id.eq(id))
+                        .fetchOne())
+                .map(otherEvidenceMapper::toDomain)
+                .orElseThrow(OtherEvidenceNotFoundException::new);
     }
 
     private BooleanExpression memberEmailEq(String email) {

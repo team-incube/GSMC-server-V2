@@ -15,13 +15,13 @@ public interface EvidenceApplicationPort {
 
     GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(String  studentCode, String title, EvidenceType evidenceType);
 
-    void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
+    void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl);
 
-    void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
+    void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl);
 
     void updateReadingEvidenceByCurrentUser(Long evidenceId, String title, String author, String content, int page);
 
-    void updateOtherEvidenceByCurrentUser(Long evidenceId, MultipartFile file);
+    void updateOtherEvidenceByCurrentUser(Long evidenceId, MultipartFile file, String imageUrl);
 
     void deleteEvidence(Long evidenceId);
 
@@ -35,5 +35,5 @@ public interface EvidenceApplicationPort {
 
     void createOtherScoringEvidence(String categoryName, MultipartFile file, int value);
 
-    void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value);
+    void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value, String imageUrl);
 }

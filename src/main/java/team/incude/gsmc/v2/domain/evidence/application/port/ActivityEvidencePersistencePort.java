@@ -18,5 +18,5 @@ public interface ActivityEvidencePersistencePort {
 
     void deleteActivityEvidenceById(Long evidenceId);
 
-    Boolean existsActivityEvidenceByEvidenceId(Long evidenceId);
+    ActivityEvidence findActivityEvidenceById(Long id);
 }

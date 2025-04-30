@@ -107,7 +107,7 @@ class GetSheetServiceTest {
                     .member(member)
                     .value(1)
                     .build();
-            when(studentDetailPersistencePort.findStudentDetailsByGradeAndClassNumber(grade, classNumber))
+            when(studentDetailPersistencePort.findStudentDetailByGradeAndClassNumber(grade, classNumber))
                     .thenReturn(studentDetails);
             when(categoryPersistencePort.findAllCategory())
                     .thenReturn(categories);

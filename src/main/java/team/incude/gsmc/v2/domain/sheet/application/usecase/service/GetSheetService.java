@@ -40,7 +40,7 @@ public class GetSheetService implements GetSheetUseCase {
     public MultipartFile execute(Integer grade, Integer classNumber) {
         List<Category> allCats = categoryPersistencePort.findAllCategory();
         List<StudentDetail> students = new ArrayList<>(
-                studentDetailPersistencePort.findStudentDetailsByGradeAndClassNumber(grade, classNumber)
+                studentDetailPersistencePort.findStudentDetailByGradeAndClassNumber(grade, classNumber)
         );
         students.sort(Comparator.comparingInt(StudentDetail::getNumber));
 

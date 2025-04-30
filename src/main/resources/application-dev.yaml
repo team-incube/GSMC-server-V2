@@ -34,8 +34,8 @@ aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   bucket:
-    name: gsmc-dev
-    region: ap-northeast-2
+    name: ${AWS_S3_BUCKET}
+    region: ${AWS_REGION:ap-northeast-2}
 
 mail:
   host: ${EMAIL_HOST:smtp.gmail.com}
