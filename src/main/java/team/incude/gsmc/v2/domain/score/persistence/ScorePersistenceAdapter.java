@@ -27,23 +27,6 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    @Deprecated(since = "StudentCode 값 사용으로 인하여 리팩터링 후 삭제될 예정입니다")
-    public Score findScoreByCategoryNameAndMemberEmail(String name, String email) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .selectFrom(scoreJpaEntity)
-                        .leftJoin(scoreJpaEntity.category, categoryJpaEntity)
-                        .on(scoreJpaEntity.category.id.eq(categoryJpaEntity.id))
-                        .leftJoin(scoreJpaEntity.member, memberJpaEntity)
-                        .on(scoreJpaEntity.member.id.eq(memberJpaEntity.id))
-                        .where(scoreJpaEntity.category.name.eq(name)
-                                .and(scoreJpaEntity.member.email.eq(email))
-                        )
-                        .fetchOne()
-        ).map(scoreMapper::toDomain).orElse(null);
-    }
-
-    @Override
     public Score findScoreByCategoryNameAndMemberEmailWithLock(String name, String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
