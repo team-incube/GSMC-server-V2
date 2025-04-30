@@ -91,8 +91,7 @@ class CreateActivityEvidenceServiceTest {
                 InputStream fakeInputStream = mock(InputStream.class);
 
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail()))
-                        .thenReturn(score);
+                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode())).thenReturn(score);
                 when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail()))
                         .thenReturn(studentDetail);
                 when(file.getInputStream()).thenReturn(fakeInputStream);

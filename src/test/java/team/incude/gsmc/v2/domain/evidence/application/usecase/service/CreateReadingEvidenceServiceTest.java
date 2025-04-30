@@ -84,8 +84,7 @@ public class CreateReadingEvidenceServiceTest {
 
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(studentDetail);
-                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmail(category.getName(), member.getEmail()))
-                        .thenReturn(score);
+                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(category.getName(), studentDetail.getStudentCode())).thenReturn(score);
 
                 // when
                 createReadingEvidenceService.execute(title, author, page, content);
