@@ -37,7 +37,7 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
     public void execute(String title, String author, int page, String content) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(HUMANITIES_READING, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(HUMANITIES_READING, studentDetail.getStudentCode());
 
         score.plusValue(1);
 

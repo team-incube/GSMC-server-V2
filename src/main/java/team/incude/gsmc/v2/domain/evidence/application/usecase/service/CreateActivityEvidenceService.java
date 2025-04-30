@@ -40,7 +40,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
 
         score.plusValue(1);
 
@@ -63,11 +63,12 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     }
 
     private ActivityEvidence createActivityEvidence(Evidence evidence, String title, String content, MultipartFile file) {
+        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
         return ActivityEvidence.builder()
                 .id(evidence)
                 .title(title)
                 .content(content)
-                .imageUrl(uploadFile(file))
+                .imageUrl(imageUrl)
                 .build();
     }
 

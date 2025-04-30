@@ -41,14 +41,13 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
     public void execute(String categoryName, MultipartFile file, int value) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
 
         Score newScore = createScore(score, value);
 
         EvidenceType evidenceType = categoryMap.get(categoryName);
         Evidence evidence = createEvidence(score, evidenceType);
-        String fileUrl = uploadFile(file);
-        OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUrl);
+        OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
         scorePersistencePort.saveScore(newScore);
         otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
@@ -86,10 +85,11 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
         }
     }
 
-    private OtherEvidence createOtherEvidence(Evidence evidence, String fileUrl) {
+    private OtherEvidence createOtherEvidence(Evidence evidence, MultipartFile file) {
+        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
         return OtherEvidence.builder()
                 .id(evidence)
-                .fileUri(fileUrl)
+                .fileUri(imageUrl)
                 .build();
     }
 
