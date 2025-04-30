@@ -36,9 +36,12 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     public List<ReadingEvidence> findReadingEvidenceByEmail(String email) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
-                .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
                 .where(memberEmailEq(email))
                 .fetch()
                 .stream()
@@ -55,10 +58,14 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     public List<ReadingEvidence> searchReadingEvidence(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
-                .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
+                .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(studentDetailJpaEntity)
+                .on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
                 .where(
                         studentCodeEq(studentCode),
                         titleEq(title),
@@ -87,9 +94,8 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
                         jpaQueryFactory
                                 .selectFrom(readingEvidenceJpaEntity)
                                 .where(readingEvidenceJpaEntity.id.eq(id))
-                                .fetchOne())
-                .map(readingEvidenceMapper::toDomain)
-                .orElseThrow(ReadingEvidenceNotFoundException::new);
+                                .fetchOne()
+                ).map(readingEvidenceMapper::toDomain).orElseThrow(ReadingEvidenceNotFoundException::new);
     }
 
     private BooleanExpression memberEmailEq(String email) {

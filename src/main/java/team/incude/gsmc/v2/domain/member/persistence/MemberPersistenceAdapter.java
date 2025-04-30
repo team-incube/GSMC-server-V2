@@ -60,16 +60,6 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
     }
 
     @Override
-    public Member findMemberById(Long memberId) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .selectFrom(memberJpaEntity)
-                        .where(memberJpaEntity.id.eq(memberId))
-                        .fetchOne()
-        ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
-    }
-
-    @Override
     public void updateMemberPassword(Long memberId, String newPassword) {
         jpaQueryFactory
                 .update(memberJpaEntity)

@@ -40,11 +40,17 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     public List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
-                .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
-                .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
+                .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(studentDetailJpaEntity)
+                .on(studentDetailJpaEntity.member.eq(memberJpaEntity))
+                .fetchJoin()
+                .join(scoreJpaEntity.category, categoryJpaEntity)
+                .fetchJoin()
                 .where(
                         studentCodeEq(studentCode),
                         evidenceTypeEq(evidenceType),
@@ -61,9 +67,12 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     public List<OtherEvidence> findOtherEvidenceByEmail(String email) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
-                .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
                 .where(memberEmailEq(email))
                 .fetch()
                 .stream()
@@ -82,9 +91,8 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 jpaQueryFactory
                         .selectFrom(otherEvidenceJpaEntity)
                         .where(otherEvidenceJpaEntity.id.eq(id))
-                        .fetchOne())
-                .map(otherEvidenceMapper::toDomain)
-                .orElseThrow(OtherEvidenceNotFoundException::new);
+                        .fetchOne()
+                ).map(otherEvidenceMapper::toDomain).orElseThrow(OtherEvidenceNotFoundException::new);
     }
 
     private BooleanExpression memberEmailEq(String email) {

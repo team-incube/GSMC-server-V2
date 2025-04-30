@@ -25,8 +25,6 @@ public interface StudentDetailPersistencePort {
 
     Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReiewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);
 
-    Integer findTotalScoreByMemberEmail(String email);
-
     Integer findTotalScoreByStudentCode(String studentCode);
 
     StudentDetail saveStudentDetail(StudentDetail studentDetail);

@@ -47,9 +47,8 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
                         .selectFrom(evidenceJpaEntity)
                         .where(evidenceJpaEntity.id.eq(id))
                         .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                        .fetchOne())
-                .map(evidenceMapper::toDomain)
-                .orElseThrow(EvidenceNotFoundException::new);
+                        .fetchOne()
+                ).map(evidenceMapper::toDomain).orElseThrow(EvidenceNotFoundException::new);
 
     }
 }
