@@ -1,11 +1,12 @@
 package team.incude.gsmc.v2.domain.evidence.presentation.data.request;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public record CreateReadingEvidenceRequest(
-        @NotNull String title,
-        @NotNull String author,
+        @NotNull @Size(max = 100) String title,
+        @NotNull @Size(max = 100) String author,
         @NotNull Integer page,
-        @NotNull String content
+        @NotNull @Size(max = 1500) String content
 ) {
 }
