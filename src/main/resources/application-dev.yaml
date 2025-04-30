@@ -29,7 +29,7 @@ aws:
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   bucket:
     name: ${AWS_S3_BUCKET}
-    region: ${AWS_REGION}
+    region: ap-northeast-2
 
 mail:
   host: ${EMAIL_HOST:smtp.gmail.com}
