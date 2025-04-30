@@ -25,6 +25,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOtherScoringEvidenceByCurrentUserUseCase {
 
     private final EvidencePersistencePort evidencePersistencePort;
@@ -36,7 +37,6 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    @Transactional
     public void execute(Long evidenceId, MultipartFile file, int value, String imageUrl) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
         Member member = currentMemberProvider.getCurrentUser();

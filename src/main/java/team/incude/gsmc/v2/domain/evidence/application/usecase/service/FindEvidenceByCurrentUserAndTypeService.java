@@ -22,6 +22,7 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProv
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCurrentUserAndTypeUseCase {
 
@@ -32,7 +33,6 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
     private final StudentDetailPersistencePort studentDetailPersistencePort;
 
     @Override
-    @Transactional(readOnly = true)
     public GetEvidencesResponse execute(EvidenceType type) {
         Member member = currentMemberProvider.getCurrentUser();
 

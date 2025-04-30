@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
 
     private final S3Port s3Port;
@@ -38,7 +39,6 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    @Transactional
     public void execute(String categoryName, MultipartFile file) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());

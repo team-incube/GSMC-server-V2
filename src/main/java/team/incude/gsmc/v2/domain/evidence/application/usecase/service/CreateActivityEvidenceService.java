@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CreateActivityEvidenceService implements CreateActivityEvidenceUseCase {
 
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
@@ -36,7 +37,6 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    @Transactional
     public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());

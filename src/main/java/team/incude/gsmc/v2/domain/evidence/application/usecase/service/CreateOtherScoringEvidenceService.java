@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvidenceUseCase {
 
@@ -37,7 +38,6 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
 
     @Override
-    @Transactional
     public void execute(String categoryName, MultipartFile file, int value) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());

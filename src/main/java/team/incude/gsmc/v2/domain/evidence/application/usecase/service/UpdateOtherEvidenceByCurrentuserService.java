@@ -17,6 +17,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UpdateOtherEvidenceByCurrentuserService implements UpdateOtherEvidenceByCurrentUserUseCase {
 
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
@@ -24,7 +25,6 @@ public class UpdateOtherEvidenceByCurrentuserService implements UpdateOtherEvide
     private final S3Port s3Port;
 
     @Override
-    @Transactional
     public void execute(Long evidenceId, MultipartFile file, String imageUrl) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
         OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivityEvidenceByCurrentUserUseCase {
 
     private final EvidencePersistencePort evidencePersistencePort;
@@ -26,7 +27,6 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
 
     @Override
-    @Transactional
     public void execute(Long evidenceId, String title, String content, MultipartFile file, EvidenceType evidenceType, String imageUrl) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
         ActivityEvidence activityEvidence = activityEvidencePersistencePort.findActivityEvidenceById(evidenceId);
