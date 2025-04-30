@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
 
     private final S3Port s3Port;
@@ -38,17 +39,15 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    @Transactional
     public void execute(String categoryName, MultipartFile file) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
         score.plusValue(1);
 
         EvidenceType evidenceType = categoryMap.get(categoryName);
         Evidence evidence = createEvidence(score, evidenceType);
-        String fileUrl = uploadFile(file);
-        OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUrl);
+        OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
         scorePersistencePort.saveScore(score);
         otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
@@ -66,10 +65,11 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
                 .build();
     }
 
-    private OtherEvidence createOtherEvidence(Evidence evidence, String fileUrl) {
+    private OtherEvidence createOtherEvidence(Evidence evidence, MultipartFile file) {
+        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
         return OtherEvidence.builder()
                 .id(evidence)
-                .fileUri(fileUrl)
+                .fileUri(imageUrl)
                 .build();
     }
 

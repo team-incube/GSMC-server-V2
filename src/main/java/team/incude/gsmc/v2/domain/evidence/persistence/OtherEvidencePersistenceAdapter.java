@@ -37,13 +37,13 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     @Override
-    public List<OtherEvidence> findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.studentCode.eq(studentCode)).fetchJoin()
-                .join(studentDetailJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
                 .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
                 .where(
                         studentCodeEq(studentCode),
@@ -63,6 +63,7 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
                 .where(memberEmailEq(email))
                 .fetch()
                 .stream()

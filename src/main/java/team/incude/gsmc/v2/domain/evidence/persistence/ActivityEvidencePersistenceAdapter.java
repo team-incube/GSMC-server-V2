@@ -50,12 +50,13 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<ActivityEvidence> searchActivityEvidence(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
                 .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.studentCode.eq(studentCode)).fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
                 .where(
                         studentCodeEq(studentCode),
                         evidenceTypeEq(evidenceType),

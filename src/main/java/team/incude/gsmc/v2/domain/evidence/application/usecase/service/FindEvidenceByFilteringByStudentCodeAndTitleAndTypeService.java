@@ -20,6 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implements FindEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase {
 
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
@@ -27,14 +28,13 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
 
     @Override
-    @Transactional(readOnly = true)
     public GetEvidencesResponse execute(String studentCode, String title, EvidenceType evidenceType) {
-        List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(studentCode, evidenceType, title, null, null, null);
+        List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.searchActivityEvidence(studentCode, evidenceType, title, null, null, null);
 
         List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, EvidenceType.MAJOR);
         List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, EvidenceType.HUMANITIES);
-        List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(studentCode, evidenceType, null, null, null);
-        List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByStudentCodeAndTitleAndTypeAndStatusAndGradeAndClassNumber(studentCode, title, evidenceType, null, null, null);
+        List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.searchOtherEvidence(studentCode, evidenceType, null, null, null);
+        List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.searchReadingEvidence(studentCode, title, evidenceType, null, null, null);
 
         List<GetActivityEvidenceResponse> majorEvidenceDtos = createActivityEvidenceDtos(majorEvidences);
         List<GetActivityEvidenceResponse> humanitiesEvidenceDtos = createActivityEvidenceDtos(humanitiesEvidences);
