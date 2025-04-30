@@ -10,8 +10,6 @@ import java.util.List;
 public interface CertificatePersistencePort {
     Certificate findCertificateByIdWithLock(Long id);
 
-    List<Certificate> findCertificateByMemberEmail(String email);
-
     List<Certificate> findCertificateByStudentDetailStudentCode(String studentCode);
 
     Certificate saveCertificate(Certificate certificate);
