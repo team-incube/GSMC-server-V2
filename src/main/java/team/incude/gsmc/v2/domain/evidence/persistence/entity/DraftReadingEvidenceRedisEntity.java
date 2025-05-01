@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 @RedisHash(value = "readingEvidence")
 @Getter
-public class ReadingEvidenceRedisEntity {
+public class DraftReadingEvidenceRedisEntity {
     @Id
     private UUID id;
     private String title;
@@ -22,7 +22,7 @@ public class ReadingEvidenceRedisEntity {
     private Long ttl;
 
     @Builder
-    public ReadingEvidenceRedisEntity(UUID id, String title, String author, Integer page, String content, Long ttl) {
+    public DraftReadingEvidenceRedisEntity(UUID id, String title, String author, Integer page, String content, Long ttl) {
         this.id = id;
         this.title = title;
         this.author = author;
