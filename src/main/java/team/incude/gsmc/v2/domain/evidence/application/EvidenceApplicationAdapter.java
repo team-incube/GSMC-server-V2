@@ -6,6 +6,7 @@ import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationP
 import team.incude.gsmc.v2.domain.evidence.application.usecase.*;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetActivityEvidenceResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetReadingEvidenceResponse;
@@ -31,6 +32,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final UpdateReviewStatusUseCase updateReviewStatusUseCase;
     private final CreateOtherScoringEvidenceUseCase createOtherScoringUseCase;
     private final UpdateOtherScoringEvidenceByCurrentUserUseCase updateOtherScoringUseCase;
+    private final CreateDraftActivityEvidenceUseCase createDraftActivityEvidenceUseCase;
+    private final CreateDraftReadingEvidenceUseCase createDraftReadingEvidenceUseCase;
 
 
     @Override
@@ -104,13 +107,13 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public void createDraftActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId) {
-
+    public CreateDraftEvidenceResponse createDraftActivityEvidence(UUID draftId, String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType) {
+        return createDraftActivityEvidenceUseCase.execute(draftId, categoryName, title, content, file, imageUrl, activityType);
     }
 
     @Override
-    public void createDraftReadingEvidence(String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId) {
-
+    public CreateDraftEvidenceResponse createDraftReadingEvidence(UUID draftId, String title, String author, Integer page, String content) {
+        return createDraftReadingEvidenceUseCase.execute(draftId, title, author, page, content);
     }
 
     @Override

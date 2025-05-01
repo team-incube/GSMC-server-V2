@@ -3,6 +3,7 @@ package team.incude.gsmc.v2.domain.evidence.application.port;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetActivityEvidenceResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetReadingEvidenceResponse;
@@ -41,9 +42,9 @@ public interface EvidenceApplicationPort {
 
     void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value, String imageUrl);
 
-    void createDraftActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId);
+    CreateDraftEvidenceResponse createDraftActivityEvidence(UUID draftId, String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType);
 
-    void createDraftReadingEvidence(String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId);
+    CreateDraftEvidenceResponse createDraftReadingEvidence(UUID draftId, String title, String author, Integer page, String content);
 
     GetActivityEvidenceResponse findDraftActivityEvidence(UUID draftId);
 
