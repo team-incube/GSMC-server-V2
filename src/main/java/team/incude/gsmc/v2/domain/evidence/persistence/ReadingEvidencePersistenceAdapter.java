@@ -4,12 +4,13 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
-import team.incude.gsmc.v2.domain.evidence.persistence.repository.DraftActivityEvidenceRedisRepository;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.DraftReadingEvidenceRedisRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -33,7 +34,7 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private final JPAQueryFactory jpaQueryFactory;
     private final ReadingEvidenceMapper readingEvidenceMapper;
     private final MemberMapper memberMapper;
-    private final DraftActivityEvidenceRedisRepository draftActivityEvidenceRedisRepository;
+    private final DraftReadingEvidenceRedisRepository draftReadingEvidenceRedisRepository;
 
     @Override
     public List<ReadingEvidence> findReadingEvidenceByEmail(String email) {
@@ -103,7 +104,12 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
 
     @Override
     public void deleteDraftReadingEvidenceById(UUID draftId) {
-        draftActivityEvidenceRedisRepository.deleteById(draftId);
+        draftReadingEvidenceRedisRepository.deleteById(draftId);
+    }
+
+    @Override
+    public DraftReadingEvidence saveDraftReadingEvidence(DraftReadingEvidence draftReadingEvidence) {
+        return readingEvidenceMapper.toDraftDomain(draftReadingEvidenceRedisRepository.save(readingEvidenceMapper.toDraftEntity(draftReadingEvidence)));
     }
 
     private BooleanExpression memberEmailEq(String email) {

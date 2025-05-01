@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.application.port;
 
+import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
@@ -22,4 +23,6 @@ public interface ReadingEvidencePersistencePort {
     ReadingEvidence findReadingEvidenceById(Long id);
 
     void deleteDraftReadingEvidenceById(UUID draftId);
+
+    DraftReadingEvidence saveDraftReadingEvidence(DraftReadingEvidence draftReadingEvidence);
 }
