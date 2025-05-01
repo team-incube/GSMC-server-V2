@@ -18,7 +18,7 @@ import javax.crypto.SecretKey;
 @RequiredArgsConstructor
 public class JwtParserService implements JwtParserUseCase {
     @Value("${jwt.access-token.secret}")
-    private String acessTokenSecret;
+    private String accessTokenSecret;
     @Value("${jwt.refresh-token.secret}")
     private String refreshTokenSecret;
     private SecretKey accessTokenKey;
@@ -27,7 +27,7 @@ public class JwtParserService implements JwtParserUseCase {
 
     @PostConstruct
     public void init() {
-        accessTokenKey = Keys.hmacShaKeyFor(acessTokenSecret.getBytes());
+        accessTokenKey = Keys.hmacShaKeyFor(accessTokenSecret.getBytes());
         refreshTokenKey = Keys.hmacShaKeyFor(refreshTokenSecret.getBytes());
     }
 
