@@ -25,4 +25,6 @@ public interface ActivityEvidencePersistencePort {
     void deleteDraftActivityEvidenceById(UUID draftId);
 
     DraftActivityEvidence saveDraftActivityEvidence(DraftActivityEvidence draftActivityEvidence);
+
+    DraftActivityEvidence findDraftActivityEvidenceById(UUID draftId);
 }

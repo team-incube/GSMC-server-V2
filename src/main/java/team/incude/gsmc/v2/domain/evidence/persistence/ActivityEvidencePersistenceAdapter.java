@@ -9,6 +9,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.DraftActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
+import team.incude.gsmc.v2.domain.evidence.exception.DraftActivityEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ActivityEvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.DraftActivityEvidenceRedisRepository;
@@ -118,6 +119,13 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     @Override
     public DraftActivityEvidence saveDraftActivityEvidence(DraftActivityEvidence draftActivityEvidence) {
         return activityEvidenceMapper.toDraftDomain(draftActivityEvidenceRedisRepository.save(activityEvidenceMapper.toDraftEntity(draftActivityEvidence)));
+    }
+
+    @Override
+    public DraftActivityEvidence findDraftActivityEvidenceById(UUID draftId) {
+        return draftActivityEvidenceRedisRepository.findById(draftId)
+                .map(activityEvidenceMapper::toDraftDomain)
+                .orElseThrow(DraftActivityEvidenceNotFoundException::new);
     }
 
     private BooleanExpression memberEmailEq(String email) {

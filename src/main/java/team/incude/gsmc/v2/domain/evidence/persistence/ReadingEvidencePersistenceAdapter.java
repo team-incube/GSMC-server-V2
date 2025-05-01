@@ -8,6 +8,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
+import team.incude.gsmc.v2.domain.evidence.exception.DraftReadingEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.DraftReadingEvidenceRedisRepository;
@@ -110,6 +111,13 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     @Override
     public DraftReadingEvidence saveDraftReadingEvidence(DraftReadingEvidence draftReadingEvidence) {
         return readingEvidenceMapper.toDraftDomain(draftReadingEvidenceRedisRepository.save(readingEvidenceMapper.toDraftEntity(draftReadingEvidence)));
+    }
+
+    @Override
+    public DraftReadingEvidence findDraftReadingEvidenceById(UUID draftId) {
+        return draftReadingEvidenceRedisRepository.findById(draftId)
+                .map(readingEvidenceMapper::toDraftDomain)
+                .orElseThrow(DraftReadingEvidenceNotFoundException::new);
     }
 
     private BooleanExpression memberEmailEq(String email) {
