@@ -38,7 +38,7 @@ public class SignUpService implements SignUpUseCase {
             throw new MemberExistException();
         }
 
-        StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCode(parsingEmail(email));
+        StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCodeWithLock(parsingEmail(email));
 
         Member member = Member.builder()
                 .email(email)
@@ -67,11 +67,8 @@ public class SignUpService implements SignUpUseCase {
         if (!email.startsWith("s") || !email.endsWith("@gsm.hs.kr")) {
             throw new EmailFormatInvalidException();
         }
-
         String studentId = email.substring(1, email.indexOf("@"));
         try {
-            //Integer studentCode = Integer.parseInt(studentId);
-            //return studentCode;
             return studentId;
         } catch (NumberFormatException e) {
             throw new EmailFormatInvalidException();

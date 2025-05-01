@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.member.persistence;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -38,6 +39,17 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                 jpaQueryFactory
                         .selectFrom(studentDetailJpaEntity)
                         .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .fetchOne()
+        ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
+    }
+
+    @Override
+    public StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(studentDetailJpaEntity)
+                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne()
         ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
     }
