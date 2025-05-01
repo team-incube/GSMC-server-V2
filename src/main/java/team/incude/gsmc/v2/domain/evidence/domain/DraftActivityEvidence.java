@@ -1,13 +1,13 @@
 package team.incude.gsmc.v2.domain.evidence.domain;
 
-import jakarta.persistence.Entity;
+import lombok.Builder;
 import lombok.Getter;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 
 import java.util.UUID;
 
 @Getter
-@Entity
+@Builder
 public class DraftActivityEvidence {
     private UUID id;
     private String categoryName;
@@ -15,4 +15,5 @@ public class DraftActivityEvidence {
     private String content;
     private String imageUrl;
     private EvidenceType evidenceType;
+    private Long ttl;
 }
