@@ -3,10 +3,7 @@ package team.incude.gsmc.v2.domain.evidence.application.port;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetActivityEvidenceResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetReadingEvidenceResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.*;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
 
@@ -46,7 +43,7 @@ public interface EvidenceApplicationPort {
 
     CreateDraftEvidenceResponse createDraftReadingEvidence(UUID draftId, String title, String author, Integer page, String content);
 
-    GetActivityEvidenceResponse findDraftActivityEvidence(UUID draftId);
+    GetDraftActivityEvidenceResponse findDraftActivityEvidenceByDraftId(UUID draftId);
 
-    GetReadingEvidenceResponse findDraftReadingEvidence(UUID draftId);
+    GetDraftReadingEvidenceResponse findDraftReadingEvidenceByDraftId(UUID draftId);
 }

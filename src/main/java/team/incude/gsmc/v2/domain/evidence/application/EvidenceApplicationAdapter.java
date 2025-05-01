@@ -6,10 +6,7 @@ import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationP
 import team.incude.gsmc.v2.domain.evidence.application.usecase.*;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetActivityEvidenceResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetReadingEvidenceResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.*;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
@@ -34,7 +31,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final UpdateOtherScoringEvidenceByCurrentUserUseCase updateOtherScoringUseCase;
     private final CreateDraftActivityEvidenceUseCase createDraftActivityEvidenceUseCase;
     private final CreateDraftReadingEvidenceUseCase createDraftReadingEvidenceUseCase;
-
+    private final FindDraftActivityEvidenceByDraftIdUseCase findDraftActivityEvidenceUseCase;
+    private final FindDraftReadingEvidenceByDraftIdUseCase findDraftReadingEvidenceUseCase;
 
     @Override
     public GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType) {
@@ -117,12 +115,12 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public GetActivityEvidenceResponse findDraftActivityEvidence(UUID draftId) {
-        return null;
+    public GetDraftActivityEvidenceResponse findDraftActivityEvidenceByDraftId(UUID draftId) {
+        return findDraftActivityEvidenceUseCase.execute(draftId);
     }
 
     @Override
-    public GetReadingEvidenceResponse findDraftReadingEvidence(UUID draftId) {
-        return null;
+    public GetDraftReadingEvidenceResponse findDraftReadingEvidenceByDraftId(UUID draftId) {
+        return findDraftReadingEvidenceUseCase.execute(draftId);
     }
 }
