@@ -3,9 +3,9 @@ package team.incude.gsmc.v2.domain.evidence.persistence;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import team.incude.gsmc.v2.domain.auth.persistence.repository.AuthenticationRedisRepository;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
+import team.incude.gsmc.v2.domain.evidence.domain.DraftActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
@@ -113,6 +113,11 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     @Override
     public void deleteDraftActivityEvidenceById(UUID draftId) {
         draftActivityEvidenceRedisRepository.deleteById(draftId);
+    }
+
+    @Override
+    public DraftActivityEvidence saveDraftActivityEvidence(DraftActivityEvidence draftActivityEvidence) {
+        return activityEvidenceMapper.toDraftDomain(draftActivityEvidenceRedisRepository.save(activityEvidenceMapper.toDraftEntity(draftActivityEvidence)));
     }
 
     private BooleanExpression memberEmailEq(String email) {
