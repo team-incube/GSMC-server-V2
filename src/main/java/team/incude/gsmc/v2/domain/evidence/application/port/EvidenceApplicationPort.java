@@ -29,7 +29,7 @@ public interface EvidenceApplicationPort {
 
     void deleteEvidence(Long evidenceId);
 
-    void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId);
+    void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType, UUID draftId);
 
     void createReadingEvidence(String title, String author, int page, String content, UUID draftId);
 

@@ -74,8 +74,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId) {
-        createActivityEvidenceUseCase.execute(categoryName, title, content, file, activityType, draftId);
+    public void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType, UUID draftId) {
+        createActivityEvidenceUseCase.execute(categoryName, title, content, file, imageUrl, activityType, draftId);
     }
 
     @Override

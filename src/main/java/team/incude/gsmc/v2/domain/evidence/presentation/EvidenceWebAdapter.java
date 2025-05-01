@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationPort;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
@@ -47,13 +46,13 @@ public class EvidenceWebAdapter {
 
     @PostMapping("/current/activity")
     public ResponseEntity<Void> createActivityEvidence(@ModelAttribute CreateActivityEvidenceRequest request) {
-        evidenceApplicationPort.createActivityEvidence(request.categoryName(), request.title(), request.content(), request.file(), request.activityType());
+        evidenceApplicationPort.createActivityEvidence(request.categoryName(), request.title(), request.content(), request.file(), request.imageUrl(), request.activityType(), request.draftId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/current/reading")
     public ResponseEntity<Void> createReadingEvidence(@RequestBody CreateReadingEvidenceRequest request) {
-        evidenceApplicationPort.createReadingEvidence(request.title(), request.author(), request.page(), request.content());
+        evidenceApplicationPort.createReadingEvidence(request.title(), request.author(), request.page(), request.content(), request.draftId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
