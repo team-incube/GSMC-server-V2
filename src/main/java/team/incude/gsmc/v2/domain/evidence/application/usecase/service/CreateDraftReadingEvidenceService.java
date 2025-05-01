@@ -11,7 +11,6 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraf
 import java.util.UUID;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CreateDraftReadingEvidenceService implements CreateDraftReadingEvidenceUseCase {
 

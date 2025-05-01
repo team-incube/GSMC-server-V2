@@ -17,7 +17,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class CreateDraftActivityEvidenceService implements CreateDraftActivityEvidenceUseCase {
 
     private static final Long DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60L;
