@@ -50,12 +50,14 @@ public enum ErrorCode {
 
     // Activity Evidence
     ACTIVITY_EVIDENCE_NOT_FOUNT("Activity Evidence Not Found", HttpStatus.NOT_FOUND.value()),
+    DRAFT_ACTIVITY_EVIDENCE_NOT_FOUND("Draft Activity Not Found", HttpStatus.NOT_FOUND.value()),
 
     // Other Evidence
     OTHER_EVIDENCE_NOT_FOUND("Other Evidence Not Found", HttpStatus.NOT_FOUND.value()),
 
     // Reading Evidence
     READING_EVIDENCE_NOT_FOUND("Reading Evidence Not Found", HttpStatus.NOT_FOUND.value()),
+    DRAFT_READING_EVIDENCE_NOT_FOUND("Draft Reading Not Found", HttpStatus.NOT_FOUND.value()),
 
     // Sheet
     SHEET_GENERATION_FAILED("Sheet Generation Failed", HttpStatus.INTERNAL_SERVER_ERROR.value());
