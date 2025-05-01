@@ -10,6 +10,17 @@ import team.incude.gsmc.v2.domain.evidence.persistence.mapper.OtherEvidenceMappe
 import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.global.mapper.GenericMapper;
 
+/**
+ * 자격증 도메인과 JPA 엔티티 간 매핑을 담당하는 Mapper 클래스입니다.
+ * <p>{@link Certificate}와 {@link CertificateJpaEntity}, {@link CertificateProjection} 간의 변환 로직을 제공합니다.
+ * <ul>
+ *   <li>toEntity: 도메인 객체 → JPA 엔티티</li>
+ *   <li>toDomain: JPA 엔티티 → 도메인 객체</li>
+ *   <li>fromProjection: Projection → 도메인 객체</li>
+ * </ul>
+ * <p>{@link MemberMapper}, {@link OtherEvidenceMapper}를 통해 연관된 객체도 함께 변환합니다.
+ * @author snowykte0426
+ */
 @Component
 @RequiredArgsConstructor
 public class CertificateMapper implements GenericMapper<CertificateJpaEntity, Certificate> {
@@ -17,6 +28,11 @@ public class CertificateMapper implements GenericMapper<CertificateJpaEntity, Ce
     private final MemberMapper memberMapper;
     private final OtherEvidenceMapper otherEvidenceMapper;
 
+    /**
+     * 도메인 객체를 JPA 엔티티로 변환합니다.
+     * @param certificate 변환할 자격증 도메인 객체
+     * @return 변환된 JPA 엔티티
+     */
     @Override
     public CertificateJpaEntity toEntity(Certificate certificate) {
         return CertificateJpaEntity.builder()
@@ -28,6 +44,11 @@ public class CertificateMapper implements GenericMapper<CertificateJpaEntity, Ce
                 .build();
     }
 
+    /**
+     * JPA 엔티티를 도메인 객체로 변환합니다.
+     * @param certificateJpaEntity 변환할 자격증 JPA 엔티티
+     * @return 변환된 도메인 객체
+     */
     @Override
     public Certificate toDomain(CertificateJpaEntity certificateJpaEntity) {
         return Certificate.builder()
@@ -39,6 +60,12 @@ public class CertificateMapper implements GenericMapper<CertificateJpaEntity, Ce
                 .build();
     }
 
+    /**
+     * Projection 객체를 도메인 객체로 변환합니다.
+     * <p>쿼리 최적화를 위해 조회된 최소 필드 데이터를 도메인 객체로 매핑할 때 사용됩니다.
+     * @param projection 변환할 자격증 Projection 객체
+     * @return 변환된 도메인 객체
+     */
     public Certificate fromProjection(CertificateProjection projection) {
         return Certificate.builder()
                 .id(projection.id())

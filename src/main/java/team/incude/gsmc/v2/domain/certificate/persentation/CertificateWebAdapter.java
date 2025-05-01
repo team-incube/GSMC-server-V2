@@ -12,6 +12,20 @@ import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCert
 
 import java.time.LocalDate;
 
+/**
+ * 자격증 관련 HTTP 요청을 처리하는 Web 어댑터 클래스입니다.
+ * <p>RESTful API 엔드포인트를 통해 자격증의 생성, 조회, 수정, 삭제 기능을 제공합니다.
+ * <ul>
+ *   <li>{@code GET /api/v2/certificates/current} - 현재 로그인한 사용자 기준 자격증 목록 조회</li>
+ *   <li>{@code GET /api/v2/certificates/{studentCode}} - 특정 학생의 자격증 목록 조회</li>
+ *   <li>{@code POST /api/v2/certificates} - 자격증 등록</li>
+ *   <li>{@code PATCH /api/v2/certificates/current/{certificateId}} - 현재 로그인한 사용자의 자격증 수정</li>
+ *   <li>{@code DELETE /api/v2/certificates/{studentCode}/{certificateId}} - 특정 학생의 자격증 삭제</li>
+ *   <li>{@code DELETE /api/v2/certificates/current/{certificateId}} - 현재 로그인한 사용자의 자격증 삭제</li>
+ * </ul>
+ * <p>{@link team.incude.gsmc.v2.domain.certificate.application.port.CertificateApplicationPort}를 통해 비즈니스 로직을 위임하며, 계층 간의 의존성을 분리합니다.
+ * @author snowykte0426
+ */
 @RestController
 @RequestMapping("/api/v2/certificates")
 @RequiredArgsConstructor

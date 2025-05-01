@@ -16,6 +16,33 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * {@code HttpLoggingAspect}는 {@code @RestController}가 적용된 클래스의 메서드에 대해
+ * HTTP 요청과 응답 정보를 로깅하는 AOP 클래스입니다.
+ * <p>요청 시 다음의 정보를 로깅합니다:
+ * <ul>
+ *   <li>클라이언트 IP</li>
+ *   <li>세션 ID</li>
+ *   <li>요청 URI</li>
+ *   <li>HTTP 메서드</li>
+ *   <li>쿼리 파라미터</li>
+ *   <li>Content-Type</li>
+ *   <li>User-Agent</li>
+ *   <li>헤더 목록</li>
+ *   <li>메서드 파라미터</li>
+ * </ul>
+ * <p>응답 시 다음의 정보를 로깅합니다:
+ * <ul>
+ *   <li>클라이언트 IP</li>
+ *   <li>세션 ID</li>
+ *   <li>응답 헤더</li>
+ *   <li>응답 본문</li>
+ *   <li>HTTP 상태 코드</li>
+ * </ul>
+ * <p>요청과 응답 로그에는 트래킹을 위한 UUID 코드가 함께 포함됩니다.
+ * <p>응답 객체가 {@code ResponseEntity}가 아닌 경우 {@code RuntimeException}을 발생시킵니다.
+ * @author snowykte0426
+ */
 @Aspect
 @Component
 @Slf4j
