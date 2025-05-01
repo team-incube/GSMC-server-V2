@@ -12,6 +12,7 @@ public record CreateActivityEvidenceRequest(
         @NotNull @Size(max = 100) String title,
         @NotNull @Size(max = 1500) String content,
         MultipartFile file,
+        String imageUrl,
         @NotNull EvidenceType activityType,
         UUID draftId
 ) {

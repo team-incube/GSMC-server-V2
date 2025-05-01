@@ -39,7 +39,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId) {
+    public void execute(String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType, UUID draftId) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
@@ -47,7 +47,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         score.plusValue(1);
 
         Evidence evidence = createEvidence(score, activityType);
-        ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file);
+        ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file, imageUrl);
 
         scorePersistencePort.saveScore(score);
         activityEvidencePersistencePort.saveActivityEvidence(activityEvidence);
@@ -65,8 +65,15 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
                 .build();
     }
 
-    private ActivityEvidence createActivityEvidence(Evidence evidence, String title, String content, MultipartFile file) {
-        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
+    private ActivityEvidence createActivityEvidence(Evidence evidence, String title, String content, MultipartFile file, String imageUrlParam) {
+        String imageUrl = null;
+
+        if (file != null && !file.isEmpty()) {
+            imageUrl = uploadFile(file);
+        } else if (imageUrlParam != null && !imageUrlParam.isBlank()) {
+            imageUrl = imageUrlParam;
+        }
+
         return ActivityEvidence.builder()
                 .id(evidence)
                 .title(title)
