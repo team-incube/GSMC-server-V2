@@ -33,7 +33,7 @@ public interface EvidenceApplicationPort {
 
     void createReadingEvidence(String title, String author, int page, String content, UUID draftId);
 
-    void createOtherEvidence(String categoryName, MultipartFile file, UUID draftId);
+    void createOtherEvidence(String categoryName, MultipartFile file);
 
     void updateReviewStatus(Long evidenceId, ReviewStatus reviewStatus);
 
@@ -41,9 +41,9 @@ public interface EvidenceApplicationPort {
 
     void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value, String imageUrl);
 
-    void createDraftActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType);
+    void createDraftActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId);
 
-    void createDraftReadingEvidence(String title, String content, MultipartFile file, EvidenceType activityType);
+    void createDraftReadingEvidence(String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId);
 
     GetActivityEvidenceResponse findDraftActivityEvidence(UUID draftId);
 
