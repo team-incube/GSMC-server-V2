@@ -9,6 +9,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.DraftActivityEvidenceRedisRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -16,6 +17,7 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QReadingEvidenceJpaEntity.readingEvidenceJpaEntity;
@@ -31,6 +33,7 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private final JPAQueryFactory jpaQueryFactory;
     private final ReadingEvidenceMapper readingEvidenceMapper;
     private final MemberMapper memberMapper;
+    private final DraftActivityEvidenceRedisRepository draftActivityEvidenceRedisRepository;
 
     @Override
     public List<ReadingEvidence> findReadingEvidenceByEmail(String email) {
@@ -96,6 +99,11 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
                                 .where(readingEvidenceJpaEntity.id.eq(id))
                                 .fetchOne()
                 ).map(readingEvidenceMapper::toDomain).orElseThrow(ReadingEvidenceNotFoundException::new);
+    }
+
+    @Override
+    public void deleteDraftReadingEvidenceById(UUID draftId) {
+        draftActivityEvidenceRedisRepository.deleteById(draftId);
     }
 
     private BooleanExpression memberEmailEq(String email) {

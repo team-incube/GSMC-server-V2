@@ -7,6 +7,7 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
 
 import java.util.List;
+import java.util.UUID;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface ReadingEvidencePersistencePort {
@@ -19,4 +20,6 @@ public interface ReadingEvidencePersistencePort {
     void deleteReadingEvidenceById(Long evidenceId);
 
     ReadingEvidence findReadingEvidenceById(Long id);
+
+    void deleteDraftReadingEvidenceById(UUID draftId);
 }
