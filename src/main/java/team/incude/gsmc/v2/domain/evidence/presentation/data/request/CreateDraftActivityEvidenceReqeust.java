@@ -12,6 +12,7 @@ public record CreateDraftActivityEvidenceReqeust(
         @NotNull String title,
         @NotNull String content,
         MultipartFile file,
+        String imageUrl,
         @NotNull EvidenceType activityType
 ) {
 }
