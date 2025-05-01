@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvidenceUseCase {
 
@@ -37,22 +38,29 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
 
     @Override
-    @Transactional
     public void execute(String categoryName, MultipartFile file, int value) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
 
-        score.plusValue(value);
+        Score newScore = createScore(score, value);
 
-        EvidenceType evidenceType = findEvidenceType(categoryName);
+        EvidenceType evidenceType = categoryMap.get(categoryName);
         Evidence evidence = createEvidence(score, evidenceType);
-        String fileUrl = uploadFile(file);
-        OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUrl);
+        OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
-        scorePersistencePort.saveScore(score);
+        scorePersistencePort.saveScore(newScore);
         otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+    }
+
+    private Score createScore(Score score, int value) {
+        return Score.builder()
+                .id(score.getId())
+                .value(value)
+                .category(score.getCategory())
+                .member(score.getMember())
+                .build();
     }
 
     private Evidence createEvidence(Score score, EvidenceType evidenceType) {
@@ -63,10 +71,6 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-    }
-
-    private EvidenceType findEvidenceType(String categoryName) {
-        return categoryMap.get(categoryName);
     }
 
     private String uploadFile(MultipartFile file) {
@@ -81,10 +85,11 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
         }
     }
 
-    private OtherEvidence createOtherEvidence(Evidence evidence, String fileUrl) {
+    private OtherEvidence createOtherEvidence(Evidence evidence, MultipartFile file) {
+        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
         return OtherEvidence.builder()
                 .id(evidence)
-                .fileUri(fileUrl)
+                .fileUri(imageUrl)
                 .build();
     }
 

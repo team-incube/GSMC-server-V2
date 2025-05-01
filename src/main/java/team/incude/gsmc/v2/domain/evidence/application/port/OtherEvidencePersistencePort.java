@@ -14,9 +14,9 @@ public interface OtherEvidencePersistencePort {
 
     List<OtherEvidence> findOtherEvidenceByEmail(String email);
 
-    List<OtherEvidence> findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber);
+    List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber);
 
     void deleteOtherEvidenceById(Long evidenceId);
 
-    Boolean existsOtherEvidenceByEvidenceId(Long evidenceId);
+    OtherEvidence findOtherEvidenceById(Long id);
 }

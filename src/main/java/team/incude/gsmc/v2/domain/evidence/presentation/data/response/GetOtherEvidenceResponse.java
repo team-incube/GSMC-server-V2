@@ -1,9 +1,9 @@
-package team.incude.gsmc.v2.domain.evidence.presentation.data;
+package team.incude.gsmc.v2.domain.evidence.presentation.data.response;
 
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 
-public record GetOtherEvidenceDto(
+public record GetOtherEvidenceResponse(
         Long id,
         String fileUri,
         EvidenceType evidenceType,

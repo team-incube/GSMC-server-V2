@@ -11,15 +11,16 @@ import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.GetActivityEvidenceDto;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.GetOtherEvidenceDto;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.GetReadingEvidenceDto;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetActivityEvidenceResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetOtherEvidenceResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetReadingEvidenceResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implements FindEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase {
 
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
@@ -27,19 +28,18 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
 
     @Override
-    @Transactional(readOnly = true)
     public GetEvidencesResponse execute(String studentCode, String title, EvidenceType evidenceType) {
-        List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(studentCode, evidenceType, title, null, null, null);
+        List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.searchActivityEvidence(studentCode, evidenceType, title, null, null, null);
 
         List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, EvidenceType.MAJOR);
         List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, EvidenceType.HUMANITIES);
-        List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByStudentCodeAndTypeAndStatusAndGradeAndClassNumber(studentCode, evidenceType, null, null, null);
-        List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByStudentCodeAndTitleAndTypeAndStatusAndGradeAndClassNumber(studentCode, title, evidenceType, null, null, null);
+        List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.searchOtherEvidence(studentCode, evidenceType, null, null, null);
+        List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.searchReadingEvidence(studentCode, title, evidenceType, null, null, null);
 
-        List<GetActivityEvidenceDto> majorEvidenceDtos = createActivityEvidenceDtos(majorEvidences);
-        List<GetActivityEvidenceDto> humanitiesEvidenceDtos = createActivityEvidenceDtos(humanitiesEvidences);
-        List<GetOtherEvidenceDto> otherEvidenceDtos = createOtherEvidenceDtos(otherEvidences);
-        List<GetReadingEvidenceDto> readingEvidenceDtos = createReadingEvidenceDtos(readingEvidences);
+        List<GetActivityEvidenceResponse> majorEvidenceDtos = createActivityEvidenceDtos(majorEvidences);
+        List<GetActivityEvidenceResponse> humanitiesEvidenceDtos = createActivityEvidenceDtos(humanitiesEvidences);
+        List<GetOtherEvidenceResponse> otherEvidenceDtos = createOtherEvidenceDtos(otherEvidences);
+        List<GetReadingEvidenceResponse> readingEvidenceDtos = createReadingEvidenceDtos(readingEvidences);
 
         return new GetEvidencesResponse(majorEvidenceDtos, humanitiesEvidenceDtos, readingEvidenceDtos, otherEvidenceDtos);
     }
@@ -50,9 +50,9 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
                 .toList();
     }
 
-    private List<GetActivityEvidenceDto> createActivityEvidenceDtos(List<ActivityEvidence> evidences) {
+    private List<GetActivityEvidenceResponse> createActivityEvidenceDtos(List<ActivityEvidence> evidences) {
         return evidences.stream()
-                .map(e -> new GetActivityEvidenceDto(
+                .map(e -> new GetActivityEvidenceResponse(
                         e.getId().getId(),
                         e.getTitle(),
                         e.getContent(),
@@ -63,9 +63,9 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
                 .toList();
     }
 
-    private List<GetOtherEvidenceDto> createOtherEvidenceDtos(List<OtherEvidence> evidences) {
+    private List<GetOtherEvidenceResponse> createOtherEvidenceDtos(List<OtherEvidence> evidences) {
         return evidences.stream()
-                .map(e -> new GetOtherEvidenceDto(
+                .map(e -> new GetOtherEvidenceResponse(
                         e.getId().getId(),
                         e.getFileUri(),
                         e.getId().getEvidenceType(),
@@ -75,9 +75,9 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
                 .toList();
     }
 
-    private List<GetReadingEvidenceDto> createReadingEvidenceDtos(List<ReadingEvidence> evidences) {
+    private List<GetReadingEvidenceResponse> createReadingEvidenceDtos(List<ReadingEvidence> evidences) {
         return evidences.stream()
-                .map(e -> new GetReadingEvidenceDto(
+                .map(e -> new GetReadingEvidenceResponse(
                         e.getId().getId(),
                         e.getTitle(),
                         e.getAuthor(),

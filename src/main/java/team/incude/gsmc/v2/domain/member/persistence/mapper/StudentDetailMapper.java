@@ -2,8 +2,11 @@ package team.incude.gsmc.v2.domain.member.persistence.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
+import team.incude.gsmc.v2.domain.member.domain.StudentDetailWithEvidence;
 import team.incude.gsmc.v2.domain.member.persistence.entity.StudentDetailJpaEntity;
+import team.incude.gsmc.v2.domain.member.persistence.projection.StudentProjection;
 import team.incude.gsmc.v2.global.mapper.GenericMapper;
 
 @Component
@@ -18,7 +21,7 @@ public class StudentDetailMapper implements GenericMapper<StudentDetailJpaEntity
                 .id(studentDetail.getId())
                 .member(
                         studentDetail.getMember() != null
-                        ? memberMapper.toEntity(studentDetail.getMember())
+                                ? memberMapper.toEntity(studentDetail.getMember())
                                 : null
                 )
                 .grade(studentDetail.getGrade())
@@ -35,7 +38,7 @@ public class StudentDetailMapper implements GenericMapper<StudentDetailJpaEntity
                 .id(studentDetailJpaEntity.getId())
                 .member(
                         studentDetailJpaEntity.getMember() != null
-                        ? memberMapper.toDomain(studentDetailJpaEntity.getMember())
+                                ? memberMapper.toDomain(studentDetailJpaEntity.getMember())
                                 : null
                 )
                 .grade(studentDetailJpaEntity.getGrade())
@@ -43,6 +46,26 @@ public class StudentDetailMapper implements GenericMapper<StudentDetailJpaEntity
                 .number(studentDetailJpaEntity.getNumber())
                 .totalScore(studentDetailJpaEntity.getTotalScore())
                 .studentCode(studentDetailJpaEntity.getStudentCode())
+                .build();
+    }
+
+    public StudentDetailWithEvidence fromProjection(StudentProjection studentProjection) {
+        return StudentDetailWithEvidence.builder()
+                .studentDetail(
+                        StudentDetail.builder()
+                                .member(Member.builder()
+                                        .email(studentProjection.email())
+                                        .name(studentProjection.name())
+                                        .role(studentProjection.role())
+                                        .build()
+                                )
+                                .grade(studentProjection.grade())
+                                .classNumber(studentProjection.classNumber())
+                                .number(studentProjection.number())
+                                .totalScore(studentProjection.totalScore())
+                                .build()
+                )
+                .hasPendingEvidence(studentProjection.hasPendingEvidence())
                 .build();
     }
 }

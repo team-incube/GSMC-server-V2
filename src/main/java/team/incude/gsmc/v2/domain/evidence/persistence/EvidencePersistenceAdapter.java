@@ -1,5 +1,7 @@
 package team.incude.gsmc.v2.domain.evidence.persistence;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
@@ -9,12 +11,17 @@ import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRep
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
+import java.util.Optional;
+
+import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
+
 @Adapter(direction = PortDirection.OUTBOUND)
 @RequiredArgsConstructor
 public class EvidencePersistenceAdapter implements EvidencePersistencePort {
 
     private final EvidenceJpaRepository evidenceJpaRepository;
     private final EvidenceMapper evidenceMapper;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public Evidence saveEvidence(Evidence evidence) {
@@ -31,5 +38,17 @@ public class EvidencePersistenceAdapter implements EvidencePersistencePort {
     @Override
     public void deleteEvidenceById(Long id) {
         evidenceJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public Evidence findEvidenceByIdWithLock(Long id) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(evidenceJpaEntity)
+                        .where(evidenceJpaEntity.id.eq(id))
+                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                        .fetchOne()
+                ).map(evidenceMapper::toDomain).orElseThrow(EvidenceNotFoundException::new);
+
     }
 }

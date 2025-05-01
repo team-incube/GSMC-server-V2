@@ -23,9 +23,12 @@ import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedExcepti
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
 
     private final S3Port s3Port;
@@ -36,36 +39,37 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    @Transactional
     public void execute(String categoryName, MultipartFile file) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(categoryName, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
         score.plusValue(1);
 
-        Evidence evidence = createEvidence(score);
-        String fileUrl = uploadFile(file);
-        OtherEvidence otherEvidence = createOtherEvidence(evidence, fileUrl);
+        EvidenceType evidenceType = categoryMap.get(categoryName);
+        Evidence evidence = createEvidence(score, evidenceType);
+        OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
         scorePersistencePort.saveScore(score);
         otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
 
-    private Evidence createEvidence(Score score) {
+
+    private Evidence createEvidence(Score score, EvidenceType evidenceType) {
         return Evidence.builder()
                 .score(score)
                 .reviewStatus(ReviewStatus.PENDING)
-                .evidenceType(EvidenceType.READ_A_THON)
+                .evidenceType(evidenceType)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
 
-    private OtherEvidence createOtherEvidence(Evidence evidence, String fileUrl) {
+    private OtherEvidence createOtherEvidence(Evidence evidence, MultipartFile file) {
+        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
         return OtherEvidence.builder()
                 .id(evidence)
-                .fileUri(fileUrl)
+                .fileUri(imageUrl)
                 .build();
     }
 
@@ -79,4 +83,12 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
             throw new S3UploadFailedException();
         }
     }
+
+    private static final Map<String, EvidenceType> categoryMap = Map.ofEntries(
+            Map.entry("HUMANITIES-CERTIFICATE-CHINESE_CHARACTER", EvidenceType.CERTIFICATE),
+            Map.entry("HUMANITIES-CERTIFICATE-KOREAN_HISTORY", EvidenceType.CERTIFICATE),
+            Map.entry("HUMANITIES-READING-READ_A_THON-TURTLE", EvidenceType.READ_A_THON),
+            Map.entry("HUMANITIES-READING-READ_A_THON-CROCODILE", EvidenceType.READ_A_THON),
+            Map.entry("HUMANITIES-READING-READ_A_THON-RABBIT_OVER", EvidenceType.READ_A_THON)
+    );
 }

@@ -11,4 +11,6 @@ public interface EvidencePersistencePort {
     Evidence saveEvidence(Evidence evidence);
 
     void deleteEvidenceById(Long evidenceId);
+
+    Evidence findEvidenceByIdWithLock(Long evidenceId);
 }

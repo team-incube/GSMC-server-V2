@@ -40,26 +40,6 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
     }
 
     @Override
-    @Deprecated
-    public List<Certificate> findCertificateByMemberEmail(String email) {
-        return jpaQueryFactory
-                .select(Projections.constructor(
-                        CertificateProjection.class,
-                        certificateJpaEntity.id,
-                        certificateJpaEntity.name,
-                        certificateJpaEntity.acquisitionDate,
-                        certificateJpaEntity.evidence.fileUri
-                ))
-                .from(certificateJpaEntity)
-                .join(certificateJpaEntity.member, memberJpaEntity)
-                .where(memberJpaEntity.email.eq(email))
-                .fetch()
-                .stream()
-                .map(certificateMapper::fromProjection)
-                .toList();
-    }
-
-    @Override
     public List<Certificate> findCertificateByStudentDetailStudentCode(String studentCode) {
         return jpaQueryFactory
                 .select(Projections.constructor(

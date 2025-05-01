@@ -14,6 +14,7 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QActivityEvidenceJpaEntity.activityEvidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
@@ -34,10 +35,14 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     public List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
-                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
+                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.category, categoryJpaEntity)
+                .fetchJoin()
                 .where(
                         memberEmailEq(email),
                         evidenceTypeEq(evidenceType)
@@ -49,12 +54,17 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     @Override
-    public List<ActivityEvidence> findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<ActivityEvidence> searchActivityEvidence(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
-                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity).fetchJoin()
-                .join(evidenceJpaEntity.score, scoreJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.studentCode.eq(studentCode)).fetchJoin()
+                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity))
+                .fetchJoin()
                 .where(
                         studentCodeEq(studentCode),
                         evidenceTypeEq(evidenceType),
@@ -80,21 +90,20 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 .delete(activityEvidenceJpaEntity)
                 .where(activityEvidenceJpaEntity.id.eq(evidenceId))
                 .execute();
-
         if (deletedCount == 0) {
             throw new ActivityEvidenceNotFountException();
         }
     }
 
     @Override
-    public Boolean existsActivityEvidenceByEvidenceId(Long evidenceId) {
-        Integer result = jpaQueryFactory
-                .selectOne()
-                .from(activityEvidenceJpaEntity)
-                .where(activityEvidenceJpaEntity.id.eq(evidenceId))
-                .fetchFirst();
+    public ActivityEvidence findActivityEvidenceById(Long id) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(activityEvidenceJpaEntity)
+                        .where(activityEvidenceJpaEntity.id.eq(id))
+                        .fetchOne()
+                ).map(activityEvidenceMapper::toDomain).orElseThrow(ActivityEvidenceNotFountException::new);
 
-        return result != null;
     }
 
     private BooleanExpression memberEmailEq(String email) {

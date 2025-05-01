@@ -14,15 +14,15 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UpdateReadingEvidenceByCurrentUserService implements UpdateReadingEvidenceByCurrentUserUseCase {
 
     private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
     private final EvidencePersistencePort evidencePersistencePort;
 
     @Override
-    @Transactional
     public void execute(Long evidenceId, String title, String author, String content, int page) {
-        Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
+        Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
 
         Evidence newEvidence = createEvidence(evidence);
         ReadingEvidence newReadingEvidence = createReadingEvidence(newEvidence, title, author, content, page);

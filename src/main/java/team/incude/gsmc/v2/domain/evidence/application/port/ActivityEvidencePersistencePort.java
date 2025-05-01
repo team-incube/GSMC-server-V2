@@ -12,11 +12,11 @@ import java.util.List;
 public interface ActivityEvidencePersistencePort {
     List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType);
 
-    List<ActivityEvidence> findActivityEvidenceByStudentCodeAndTypeAndTitleAndStatusAndGradeAndClassNumber(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber);
+    List<ActivityEvidence> searchActivityEvidence(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber);
 
     ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence);
 
     void deleteActivityEvidenceById(Long evidenceId);
 
-    Boolean existsActivityEvidenceByEvidenceId(Long evidenceId);
+    ActivityEvidence findActivityEvidenceById(Long id);
 }
