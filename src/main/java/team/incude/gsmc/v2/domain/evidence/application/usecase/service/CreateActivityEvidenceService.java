@@ -17,6 +17,7 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
@@ -51,6 +52,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         scorePersistencePort.saveScore(score);
         activityEvidencePersistencePort.saveActivityEvidence(activityEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
     }
 
     private Evidence createEvidence(Score score, EvidenceType activityType) {

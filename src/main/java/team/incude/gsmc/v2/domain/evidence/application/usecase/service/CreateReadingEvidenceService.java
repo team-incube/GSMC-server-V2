@@ -15,6 +15,7 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 
@@ -48,6 +49,7 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
         scorePersistencePort.saveScore(score);
         readingEvidencePersistencePort.saveReadingEvidence(readingEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
     }
 
     private Evidence createEvidence(Score score) {
