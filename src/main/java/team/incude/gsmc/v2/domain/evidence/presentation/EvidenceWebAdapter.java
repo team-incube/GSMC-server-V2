@@ -8,7 +8,12 @@ import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationP
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.request.*;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetDraftActivityEvidenceResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetDraftReadingEvidenceResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v2/evidence")
@@ -21,7 +26,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<GetEvidencesResponse> getEvidencesByType(@RequestParam(name = "type", required = false) EvidenceType type) {
         GetEvidencesResponse response = evidenceApplicationPort
                 .findEvidenceByCurrentUserAndType(type);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{studentCode}")
@@ -31,7 +36,7 @@ public class EvidenceWebAdapter {
             @RequestParam(name = "status", required = false) ReviewStatus status) {
         GetEvidencesResponse response = evidenceApplicationPort
                 .findEvidenceByStudentCodeAndTypeAndStatus(studentCode, type, status);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/search")
@@ -41,7 +46,7 @@ public class EvidenceWebAdapter {
             @RequestParam(name = "type", required = false) EvidenceType type) {
         GetEvidencesResponse response = evidenceApplicationPort
                 .findEvidenceByStudentCodeAndTitleAndType(studentCode, title, type);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/current/activity")
@@ -120,5 +125,27 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> deleteEvidence(@PathVariable Long evidenceId) {
         evidenceApplicationPort.deleteEvidence(evidenceId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/current/draft/activity")
+    public ResponseEntity<CreateDraftEvidenceResponse> createDraftActivity(@RequestBody CreateDraftActivityEvidenceReqeust reqeust) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(evidenceApplicationPort.createDraftActivityEvidence(
+                reqeust.draftId(), reqeust.categoryName(), reqeust.title(), reqeust.content(), reqeust.file(), reqeust.imageUrl(), reqeust.activityType()));
+    }
+
+    @PostMapping("/current/draft/reading")
+    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@RequestBody CreateReadingEvidenceRequest reqeust) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(evidenceApplicationPort.createDraftReadingEvidence(
+                reqeust.draftId(), reqeust.title(), reqeust.author(), reqeust.page(), reqeust.content()));
+    }
+
+    @GetMapping("/draft/activity/{draftId}")
+    public ResponseEntity<GetDraftActivityEvidenceResponse> getDraftActivity(@PathVariable UUID draftId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftActivityEvidenceByDraftId(draftId));
+    }
+
+    @GetMapping("/draft/reading/{draftId}")
+    public ResponseEntity<GetDraftReadingEvidenceResponse> getDraftReading(@PathVariable UUID draftId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftReadingEvidenceByDraftId(draftId));
     }
 }
