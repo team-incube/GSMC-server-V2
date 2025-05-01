@@ -39,7 +39,7 @@ public enum ErrorCode {
     EMAIL_AUTH_ATTEMPT_EXCEEDED("Email Auth Attempt Exceeded", HttpStatus.TOO_MANY_REQUESTS.value()),
     PASSWORD_INVALID("Password Invalid", HttpStatus.UNAUTHORIZED.value()),
     AUTHENTICATION_NOT_FOUND("Authentication Object not found", HttpStatus.FORBIDDEN.value()),
-    MEMBER_INVALID("No Member Found", HttpStatus.UNAUTHORIZED.value()),
+    MEMBER_INVALID("Member Invalid", HttpStatus.UNAUTHORIZED.value()),
 
     // Email Authentication
     EMAIL_FORMAT_INVALID("Email Format Invalid", HttpStatus.UNAUTHORIZED.value()),
