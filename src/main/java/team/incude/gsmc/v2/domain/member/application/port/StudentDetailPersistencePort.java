@@ -13,6 +13,8 @@ import java.util.List;
 public interface StudentDetailPersistencePort {
     StudentDetail findStudentDetailByStudentCode(String studentCode);
 
+    StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode);
+
     StudentDetail findStudentDetailByMemberEmail(String email);
 
     List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber);
