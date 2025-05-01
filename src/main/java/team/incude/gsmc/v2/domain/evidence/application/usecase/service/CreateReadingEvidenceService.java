@@ -19,6 +19,7 @@ import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -34,7 +35,7 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
     private final static String HUMANITIES_READING = "HUMANITIES-READING";
 
     @Override
-    public void execute(String title, String author, int page, String content) {
+    public void execute(String title, String author, int page, String content, UUID draftId) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(HUMANITIES_READING, studentDetail.getStudentCode());

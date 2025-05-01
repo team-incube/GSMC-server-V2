@@ -23,6 +23,7 @@ import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedExcepti
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
+    public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType, UUID draftId) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
