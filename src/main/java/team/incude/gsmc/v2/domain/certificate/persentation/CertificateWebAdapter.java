@@ -23,7 +23,7 @@ import java.time.LocalDate;
  *   <li>{@code DELETE /api/v2/certificates/{studentCode}/{certificateId}} - 특정 학생의 자격증 삭제</li>
  *   <li>{@code DELETE /api/v2/certificates/current/{certificateId}} - 현재 로그인한 사용자의 자격증 삭제</li>
  * </ul>
- * <p>{@code CertificateApplicationPort}를 통해 비즈니스 로직을 위임하며, 계층 간의 의존성을 분리합니다.
+ * <p>{@link team.incude.gsmc.v2.domain.certificate.application.port.CertificateApplicationPort}를 통해 비즈니스 로직을 위임하며, 계층 간의 의존성을 분리합니다.
  * @author snowykte0426
  */
 @RestController
