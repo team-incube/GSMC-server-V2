@@ -5,6 +5,6 @@ import team.incude.gsmc.v2.global.error.exception.GsmcException;
 
 public class MemberInvalidException extends GsmcException {
     public MemberInvalidException() {
-        super(ErrorCode.MEMBER_INVALID);
+        super(ErrorCode.STUDENT_MEMBER_INVALID);
     }
 }
