@@ -21,6 +21,7 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProv
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCase {
 
@@ -33,11 +34,10 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
     private final static String HUMANITIES_READING = "HUMANITIES-READING";
 
     @Override
-    @Transactional
     public void execute(String title, String author, int page, String content) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmail(HUMANITIES_READING, member.getEmail());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(HUMANITIES_READING, studentDetail.getStudentCode());
 
         score.plusValue(1);
 

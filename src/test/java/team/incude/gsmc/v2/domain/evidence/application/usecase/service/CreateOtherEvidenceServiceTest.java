@@ -95,8 +95,7 @@ public class CreateOtherEvidenceServiceTest {
 
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(studentDetail);
-                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmail(category.getName(), member.getEmail()))
-                        .thenReturn(score);
+                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(category.getName(), studentDetail.getStudentCode())).thenReturn(score);
                 when(s3Port.uploadFile(Mockito.anyString(), Mockito.any()))
                         .thenReturn(CompletableFuture.completedFuture(fakeFileUrl));
 

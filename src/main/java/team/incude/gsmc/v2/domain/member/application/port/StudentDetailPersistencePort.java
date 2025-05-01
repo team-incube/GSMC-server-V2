@@ -13,6 +13,8 @@ import java.util.List;
 public interface StudentDetailPersistencePort {
     StudentDetail findStudentDetailByStudentCode(String studentCode);
 
+    StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode);
+
     StudentDetail findStudentDetailByMemberEmail(String email);
 
     List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber);
@@ -24,8 +26,6 @@ public interface StudentDetailPersistencePort {
     List<StudentDetailWithEvidence> findStudentDetailWithEvidenceReviewStatusNotNullMember();
 
     Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReiewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);
-
-    Integer findTotalScoreByMemberEmail(String email);
 
     Integer findTotalScoreByStudentCode(String studentCode);
 

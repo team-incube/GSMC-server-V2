@@ -20,6 +20,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UpdateReviewStatusService implements UpdateReviewStatusUseCase {
 
     private final StudentDetailPersistencePort studentDetailPersistencePort;
@@ -28,7 +29,6 @@ public class UpdateReviewStatusService implements UpdateReviewStatusUseCase {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    @Transactional
     public void execute(Long evidenceId, ReviewStatus reviewStatus) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
         Score score = evidence.getScore();

@@ -8,13 +8,9 @@ import java.util.List;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface ScorePersistencePort {
-    Score findScoreByCategoryNameAndMemberEmail(String name, String email);
-
     Score findScoreByCategoryNameAndMemberEmailWithLock(String name, String email);
 
     Score findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(String name, String studentCode);
-
-    List<Score> findScoreByMemberEmail(String email);
 
     List<Score> findScoreByStudentDetailStudentCode(String studentCode);
 

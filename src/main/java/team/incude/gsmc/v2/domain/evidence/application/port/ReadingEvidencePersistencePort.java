@@ -14,7 +14,7 @@ public interface ReadingEvidencePersistencePort {
 
     ReadingEvidence saveReadingEvidence(ReadingEvidence readingEvidence);
 
-    List<ReadingEvidence> findReadingEvidenceByStudentCodeAndTitleAndTypeAndStatusAndGradeAndClassNumber(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber);
+    List<ReadingEvidence> searchReadingEvidence(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber);
 
     void deleteReadingEvidenceById(Long evidenceId);
 

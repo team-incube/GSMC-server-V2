@@ -23,6 +23,7 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProv
 import java.util.Set;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class DeleteEvidenceService implements DeleteEvidenceUseCase {
 
@@ -37,7 +38,6 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
     private final S3Port s3Port;
 
     @Override
-    @Transactional
     public void execute(Long evidenceId) {
         Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
         Member member = currentMemberProvider.getCurrentUser();

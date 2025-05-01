@@ -22,6 +22,7 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProv
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCurrentUserAndTypeUseCase {
 
@@ -32,14 +33,13 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
     private final StudentDetailPersistencePort studentDetailPersistencePort;
 
     @Override
-    @Transactional(readOnly = true)
     public GetEvidencesResponse execute(EvidenceType type) {
         Member member = currentMemberProvider.getCurrentUser();
 
         List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByEmailAndEvidenceType(member.getEmail(), type);
 
-        List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, type);
-        List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, type);
+        List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, EvidenceType.MAJOR);
+        List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, EvidenceType.HUMANITIES);
         List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByEmail(member.getEmail());
         List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByEmail(member.getEmail());
 
