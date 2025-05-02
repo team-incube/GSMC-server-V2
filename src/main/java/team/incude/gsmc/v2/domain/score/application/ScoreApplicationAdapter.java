@@ -11,6 +11,19 @@ import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreSimul
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
+/**
+ * 점수 관련 유스케이스를 실행하는 애플리케이션 어댑터 클래스입니다.
+ * <p>{@link ScoreApplicationPort}를 구현하며, 점수 조회, 수정, 시뮬레이션 및 총합 계산 기능을 어댑터 계층에 제공합니다.
+ * 각 기능은 해당 유스케이스 인터페이스를 통해 실제 비즈니스 로직에 위임됩니다.
+ * <p>주요 책임:
+ * <ul>
+ *   <li>현재 사용자 및 특정 학생의 점수 조회</li>
+ *   <li>점수 수정 (현재 사용자 및 특정 학생)</li>
+ *   <li>모의 점수 계산 (입력값 기반)</li>
+ *   <li>총합 점수 계산 요청</li>
+ * </ul>
+ * @author snowykte0426
+ */
 @Adapter(direction = PortDirection.INBOUND)
 @RequiredArgsConstructor
 public class ScoreApplicationAdapter implements ScoreApplicationPort {
@@ -20,26 +33,51 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     private final SimulateScoreUseCase simulateScoreUseCase;
     private final CalculateTotalScoreUseCase calculateTotalScoreUseCase;
 
+    /**
+     * 현재 로그인한 사용자의 점수를 조회합니다.
+     * @return 점수 응답 DTO
+     */
     @Override
     public GetScoreResponse findCurrentScore() {
         return findScoreUseCase.execute();
     }
 
+    /**
+     * 특정 학생 코드에 해당하는 사용자의 점수를 조회합니다.
+     * @param studentCode 학생 고유 코드
+     * @return 점수 응답 DTO
+     */
     @Override
-    public GetScoreResponse findScoreByStudentCode(String stduentCode) {
-        return findScoreUseCase.execute(stduentCode);
+    public GetScoreResponse findScoreByStudentCode(String studentCode) {
+        return findScoreUseCase.execute(studentCode);
     }
 
+    /**
+     * 현재 로그인한 사용자의 특정 카테고리 점수를 수정합니다.
+     *
+     * @param categoryName 수정할 카테고리 이름
+     * @param value 수정할 점수 값
+     */
     @Override
     public void updateCurrentScore(String categoryName, Integer value) {
         updateScoreUseCase.execute(categoryName, value);
     }
 
+    /**
+     * 특정 학생의 특정 카테고리 점수를 수정합니다.
+     * @param studentCode 학생 고유 코드
+     * @param categoryName 수정할 카테고리 이름
+     * @param value 수정할 점수 값
+     */
     @Override
     public void updateScoreByStudentCode(String studentCode, String categoryName, Integer value) {
         updateScoreUseCase.execute(studentCode, categoryName, value);
     }
 
+    /**
+     * 입력된 데이터를 기반으로 모의 점수를 계산합니다.
+     * @return 시뮬레이션 점수 응답 DTO
+     */
     @Override
     public GetScoreSimulateResponse simulateScore(
             Integer majorAwardCareerOutSchoolOfficial,
@@ -129,6 +167,10 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
         );
     }
 
+    /**
+     * 특정 학생의 총합 점수를 계산합니다.
+     * @param studentCode 학생 고유 코드
+     */
     @Override
     public void calculateTotalScore(String studentCode) {
         calculateTotalScoreUseCase.execute(studentCode);
