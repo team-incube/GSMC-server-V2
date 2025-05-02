@@ -21,10 +21,4 @@ public interface ReadingEvidencePersistencePort {
     void deleteReadingEvidenceById(Long evidenceId);
 
     ReadingEvidence findReadingEvidenceById(Long id);
-
-    void deleteDraftReadingEvidenceById(UUID draftId);
-
-    DraftReadingEvidence saveDraftReadingEvidence(DraftReadingEvidence draftReadingEvidence);
-
-    DraftReadingEvidence findDraftReadingEvidenceById(UUID draftId);
 }

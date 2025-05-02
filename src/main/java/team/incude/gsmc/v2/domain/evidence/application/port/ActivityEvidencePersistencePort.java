@@ -1,7 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.application.port;
 
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
-import team.incude.gsmc.v2.domain.evidence.domain.DraftActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -21,10 +20,4 @@ public interface ActivityEvidencePersistencePort {
     void deleteActivityEvidenceById(Long evidenceId);
 
     ActivityEvidence findActivityEvidenceById(Long id);
-
-    void deleteDraftActivityEvidenceById(UUID draftId);
-
-    DraftActivityEvidence saveDraftActivityEvidence(DraftActivityEvidence draftActivityEvidence);
-
-    DraftActivityEvidence findDraftActivityEvidenceById(UUID draftId);
 }

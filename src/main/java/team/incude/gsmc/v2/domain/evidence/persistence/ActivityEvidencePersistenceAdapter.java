@@ -111,23 +111,6 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
 
     }
 
-    @Override
-    public void deleteDraftActivityEvidenceById(UUID draftId) {
-        draftActivityEvidenceRedisRepository.deleteById(draftId);
-    }
-
-    @Override
-    public DraftActivityEvidence saveDraftActivityEvidence(DraftActivityEvidence draftActivityEvidence) {
-        return activityEvidenceMapper.toDraftDomain(draftActivityEvidenceRedisRepository.save(activityEvidenceMapper.toDraftEntity(draftActivityEvidence)));
-    }
-
-    @Override
-    public DraftActivityEvidence findDraftActivityEvidenceById(UUID draftId) {
-        return draftActivityEvidenceRedisRepository.findById(draftId)
-                .map(activityEvidenceMapper::toDraftDomain)
-                .orElseThrow(DraftActivityEvidenceNotFoundException::new);
-    }
-
     private BooleanExpression memberEmailEq(String email) {
         if (email == null) return null;
         return memberJpaEntity.email.eq(email);

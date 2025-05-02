@@ -103,23 +103,6 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
                 ).map(readingEvidenceMapper::toDomain).orElseThrow(ReadingEvidenceNotFoundException::new);
     }
 
-    @Override
-    public void deleteDraftReadingEvidenceById(UUID draftId) {
-        draftReadingEvidenceRedisRepository.deleteById(draftId);
-    }
-
-    @Override
-    public DraftReadingEvidence saveDraftReadingEvidence(DraftReadingEvidence draftReadingEvidence) {
-        return readingEvidenceMapper.toDraftDomain(draftReadingEvidenceRedisRepository.save(readingEvidenceMapper.toDraftEntity(draftReadingEvidence)));
-    }
-
-    @Override
-    public DraftReadingEvidence findDraftReadingEvidenceById(UUID draftId) {
-        return draftReadingEvidenceRedisRepository.findById(draftId)
-                .map(readingEvidenceMapper::toDraftDomain)
-                .orElseThrow(DraftReadingEvidenceNotFoundException::new);
-    }
-
     private BooleanExpression memberEmailEq(String email) {
         if (email == null) return null;
         return memberJpaEntity.email.eq(email);
