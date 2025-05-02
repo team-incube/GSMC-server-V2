@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CreateDraftActivityEvidenceService implements CreateDraftActivityEvidenceUseCase {
 
-    private static final Long DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60L;
+    private static final Long DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60L; // 7일
 
     private final DraftActivityEvidencePersistencePort draftActivityEvidencePersistencePort;
     private final S3Port s3Port;

@@ -15,7 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CreateDraftReadingEvidenceService implements CreateDraftReadingEvidenceUseCase {
 
-    private static final Long DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60L;
+    private static final Long DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60L; // 7일
 
     private final DraftReadingEvidencePersistencePort draftReadingEvidencePersistencePort;
 
