@@ -13,6 +13,17 @@ import team.incude.gsmc.v2.global.util.SnakeKebabToCamelCaseConverterUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 모의 점수 계산 유스케이스의 구현체입니다.
+ * <p>{@link SimulateScoreUseCase}를 구현하며, 입력된 전공,인문/인성,외국어 항목을 기반으로 {@link SimulateScoreUtil}을 통해 점수를 계산하고 반환합니다.
+ * <p>처리 절차:
+ * <ul>
+ *   <li>전체 카테고리 조회 및 가중치 매핑</li>
+ *   <li>입력값과 가중치를 바탕으로 점수 계산</li>
+ *   <li>계산된 총합 점수를 응답 객체로 포장</li>
+ * </ul>
+ * @author snowykte0426
+ */
 @Service
 @RequiredArgsConstructor
 public class SimulateScoreService implements SimulateScoreUseCase {
