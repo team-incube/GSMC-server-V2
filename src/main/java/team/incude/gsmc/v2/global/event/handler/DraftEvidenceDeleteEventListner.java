@@ -5,6 +5,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.application.port.DraftActivityEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.application.port.DraftReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
 
@@ -12,8 +14,8 @@ import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
 @RequiredArgsConstructor
 public class DraftEvidenceDeleteEventListner{
 
-    private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
-    private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
+    private final DraftActivityEvidencePersistencePort activityEvidencePersistencePort;
+    private final DraftReadingEvidencePersistencePort readingEvidencePersistencePort;
 
     @Async
     @EventListener(DraftEvidenceDeleteEvent.class)
