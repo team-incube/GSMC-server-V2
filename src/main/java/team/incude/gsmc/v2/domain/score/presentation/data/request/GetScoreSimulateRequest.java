@@ -2,6 +2,19 @@ package team.incude.gsmc.v2.domain.score.presentation.data.request;
 
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * 모의 점수 계산을 위한 요청 DTO입니다.
+ * <p>각 영역별 입력 데이터를 기반으로 점수를 계산하기 위한 시뮬레이션 요청에 사용되며,
+ * 전송되는 모든 필드는 필수이며 {@code @NotNull}로 검증됩니다.
+ * <p>항목 구성:
+ * <ul>
+ *   <li>전공 - 수상/자격증/동아리/외부활동 등</li>
+ *   <li>인문/인성 - 수상/독서/봉사/자격증/활동</li>
+ *   <li>외국어 - 공인시험 점수 및 토익사관학교 수강 여부</li>
+ * </ul>
+ * <p>본 DTO는 시뮬레이션 결과와 무관하게 단순 점수 계산 요청의 입력 포맷을 정의합니다.
+ * @author snowykte0426
+ */
 public record GetScoreSimulateRequest(
         @NotNull Integer majorAwardCareerOutSchoolOfficial,
         @NotNull Integer majorAwardCareerOutSchoolUnofficial,
