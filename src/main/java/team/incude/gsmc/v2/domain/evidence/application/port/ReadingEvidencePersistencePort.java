@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.application.port;
 
+import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
@@ -7,6 +8,7 @@ import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
 
 import java.util.List;
+import java.util.UUID;
 
 @Port(direction = PortDirection.OUTBOUND)
 public interface ReadingEvidencePersistencePort {

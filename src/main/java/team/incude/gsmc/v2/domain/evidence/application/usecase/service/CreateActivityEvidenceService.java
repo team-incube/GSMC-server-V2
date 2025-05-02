@@ -17,12 +17,14 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public void execute(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
+    public void execute(String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType, UUID draftId) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
@@ -45,11 +47,12 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         score.plusValue(1);
 
         Evidence evidence = createEvidence(score, activityType);
-        ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file);
+        ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file, imageUrl);
 
         scorePersistencePort.saveScore(score);
         activityEvidencePersistencePort.saveActivityEvidence(activityEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
     }
 
     private Evidence createEvidence(Score score, EvidenceType activityType) {
@@ -62,8 +65,15 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
                 .build();
     }
 
-    private ActivityEvidence createActivityEvidence(Evidence evidence, String title, String content, MultipartFile file) {
-        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
+    private ActivityEvidence createActivityEvidence(Evidence evidence, String title, String content, MultipartFile file, String imageUrlParam) {
+        String imageUrl = null;
+
+        if (file != null && !file.isEmpty()) {
+            imageUrl = uploadFile(file);
+        } else if (imageUrlParam != null && !imageUrlParam.isBlank()) {
+            imageUrl = imageUrlParam;
+        }
+
         return ActivityEvidence.builder()
                 .id(evidence)
                 .title(title)
