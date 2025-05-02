@@ -109,7 +109,7 @@ public class CreateOtherScoringEvidenceServiceTest {
                 verify(otherEvidencePersistencePort).saveOtherEvidence(any(OtherEvidence.class));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).getStudentCode().equals(studentDetail.getStudentCode())
+                                ((ScoreUpdatedEvent) event).studentCode().equals(studentDetail.getStudentCode())
                 ));
             }
         }
