@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.application.port.DraftActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateDraftActivityEvidenceUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.DraftActivityEvidence;
@@ -21,7 +22,7 @@ public class CreateDraftActivityEvidenceService implements CreateDraftActivityEv
 
     private static final Long DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60L;
 
-    private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
+    private final DraftActivityEvidencePersistencePort draftActivityEvidencePersistencePort;
     private final S3Port s3Port;
 
     @Override
@@ -30,7 +31,7 @@ public class CreateDraftActivityEvidenceService implements CreateDraftActivityEv
 
         DraftActivityEvidence draftActivityEvidence = createActivityEvidence(draftId, categoryName, title, content, file, imageUrl, activityType);
 
-        activityEvidencePersistencePort.saveDraftActivityEvidence(draftActivityEvidence);
+        draftActivityEvidencePersistencePort.saveDraftActivityEvidence(draftActivityEvidence);
         return new CreateDraftEvidenceResponse(draftId);
     }
 

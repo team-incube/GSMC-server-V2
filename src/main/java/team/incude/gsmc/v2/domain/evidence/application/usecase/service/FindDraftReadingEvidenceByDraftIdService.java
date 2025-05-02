@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import team.incude.gsmc.v2.domain.evidence.application.port.DraftReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.FindDraftReadingEvidenceByDraftIdUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
@@ -13,11 +14,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FindDraftReadingEvidenceByDraftIdService implements FindDraftReadingEvidenceByDraftIdUseCase {
 
-    private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
+    private final DraftReadingEvidencePersistencePort draftReadingEvidencePersistencePort;
 
     @Override
     public GetDraftReadingEvidenceResponse execute(UUID draftId) {
-        DraftReadingEvidence evidence = readingEvidencePersistencePort.findDraftReadingEvidenceById(draftId);
+        DraftReadingEvidence evidence = draftReadingEvidencePersistencePort.findDraftReadingEvidenceById(draftId);
 
         return new GetDraftReadingEvidenceResponse(
                 evidence.getId(),
