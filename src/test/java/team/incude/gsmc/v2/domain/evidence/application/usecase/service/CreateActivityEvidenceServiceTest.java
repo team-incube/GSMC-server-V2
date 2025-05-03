@@ -99,7 +99,7 @@ class CreateActivityEvidenceServiceTest {
                         .thenReturn(CompletableFuture.completedFuture("https://s3.com/fake.png"));
 
                 // when
-                createActivityEvidenceService.execute(categoryName, title, content, file, activityType);
+                createActivityEvidenceService.execute(categoryName, title, content, file, null, activityType, null);
 
                 // then
                 verify(scorePersistencePort).saveScore(any());
