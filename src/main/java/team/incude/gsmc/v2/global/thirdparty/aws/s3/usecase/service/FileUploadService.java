@@ -17,6 +17,19 @@ import java.io.InputStream;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * 파일을 AWS S3에 비동기 방식으로 업로드하는 유스케이스 구현 클래스입니다.
+ * <p>{@link FileUploadUseCase}를 구현하며, 업로드 대상 파일을 S3에 저장한 후 접근 가능한 URL을 반환합니다.
+ * <p>처리 흐름:
+ * <ul>
+ *   <li>파일 이름에 UUID를 추가해 중복 방지</li>
+ *   <li>{@link FileValidationUtil}을 통해 유효성 검증 수행</li>
+ *   <li>{@link S3AsyncClient}를 사용해 비동기 업로드 실행</li>
+ *   <li>업로드 완료 후, 접근 가능한 S3 URL을 반환</li>
+ * </ul>
+ * <p>예외 발생 시 {@link S3UploadFailedException}을 던지며, 파일 스트림에서의 오류 또는 S3 전송 실패를 감지합니다.
+ * @author snowykte0426
+ */
 @Service
 @RequiredArgsConstructor
 public class FileUploadService implements FileUploadUseCase {
