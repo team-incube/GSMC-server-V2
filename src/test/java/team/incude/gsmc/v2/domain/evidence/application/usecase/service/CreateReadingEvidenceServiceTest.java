@@ -94,7 +94,7 @@ public class CreateReadingEvidenceServiceTest {
                 verify(readingEvidencePersistencePort).saveReadingEvidence(any(ReadingEvidence.class));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).getStudentCode().equals(studentDetail.getStudentCode())
+                                ((ScoreUpdatedEvent) event).studentCode().equals(studentDetail.getStudentCode())
                 ));
             }
         }
