@@ -12,10 +12,6 @@ import team.incude.gsmc.v2.domain.member.presentation.data.response.GetStudentRe
 import team.incude.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
 
 import java.util.List;
-import team.incude.gsmc.v2.domain.member.presentation.data.response.GetStudentResponse;
-import team.incude.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
-
-import java.util.List;
 
 /**
  * 사용자 관련 HTTP 요청을 처리하는 Web 어댑터 클래스입니다.
