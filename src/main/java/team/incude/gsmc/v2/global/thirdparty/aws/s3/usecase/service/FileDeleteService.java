@@ -40,9 +40,8 @@ public class FileDeleteService implements FileDeleteUseCase {
                 .bucket(bucketName)
                 .key(uniqueFileName)
                 .build();
-        return s3AsyncClient.deleteObject(deleteObjectRequest).thenAccept(response -> {
-            log.info("File deleted successfully: {}", uniqueFileName);
-        }).exceptionally(throwable -> {
+        return s3AsyncClient.deleteObject(deleteObjectRequest).thenAccept(response -> log.info("File deleted successfully: {}", uniqueFileName)
+        ).exceptionally(throwable -> {
             log.error("Failed to delete file: {}", uniqueFileName, throwable);
             throw new S3DeleteFailedException();
         });
