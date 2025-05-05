@@ -18,7 +18,7 @@ public class DraftEvidenceDeleteEventListener {
     @Async
     @EventListener(DraftEvidenceDeleteEvent.class)
     public void handleDraftEvidenceDeleteEvent(DraftEvidenceDeleteEvent event) {
-        activityEvidencePersistencePort.deleteDraftActivityEvidenceById(event.getDraftId());
-        readingEvidencePersistencePort.deleteDraftReadingEvidenceById(event.getDraftId());
+        activityEvidencePersistencePort.deleteDraftActivityEvidenceById(event.draftId());
+        readingEvidencePersistencePort.deleteDraftReadingEvidenceById(event.draftId());
     }
 }
