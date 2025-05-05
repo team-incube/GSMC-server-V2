@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.incude.gsmc.v2.domain.member.application.port.MemberApplicationPort;
+import team.incude.gsmc.v2.domain.member.presentation.data.response.GetStudentResponse;
+import team.incude.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
+
+import java.util.List;
 
 /**
  * 사용자 관련 HTTP 요청을 처리하는 Web 어댑터 클래스입니다.
@@ -30,13 +34,13 @@ public class MemberWebAdapter {
     private final MemberApplicationPort memberApplicationPort;
 
     @GetMapping("/students")
-    public ResponseEntity<Object> getAllStudents() {
+    public ResponseEntity<List<GetStudentResponse>> getAllStudents() {
         return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.findAllStudents());
     }
 
     @GetMapping("/students/search")
     @Validated
-    public ResponseEntity<Object> searchStudents(
+    public ResponseEntity<SearchStudentResponse> searchStudents(
             @RequestParam(value = "grade", required = false) Integer grade,
             @RequestParam(value = "classNumber", required = false) Integer classNumber,
             @RequestParam(value = "name", required = false) String name,
@@ -47,12 +51,12 @@ public class MemberWebAdapter {
     }
 
     @GetMapping("/students/current")
-    public ResponseEntity<Object> getCurrentStudent() {
+    public ResponseEntity<GetStudentResponse> getCurrentStudent() {
         return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.findCurrentStudent());
     }
 
     @GetMapping("/students/{studentCode}")
-    public ResponseEntity<Object> getStudent(@PathVariable(value = "studentCode") String studentCode) {
+    public ResponseEntity<GetStudentResponse> getStudent(@PathVariable(value = "studentCode") String studentCode) {
         return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.findMemberByStudentCode(studentCode));
     }
 }
