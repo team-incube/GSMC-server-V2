@@ -60,6 +60,7 @@ public enum ErrorCode {
     // Email Authentication
     EMAIL_FORMAT_INVALID("Email Format Invalid", HttpStatus.UNAUTHORIZED.value()),
     VERIFICATION_INVALID("Verification Invalid", HttpStatus.UNAUTHORIZED.value()),
+    EMAIL_SEND_FAILED("Email Send Failed", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 
     // Evidence
     EVIDENCE_NOT_FOUND("Evidence Not Found", HttpStatus.NOT_FOUND.value()),

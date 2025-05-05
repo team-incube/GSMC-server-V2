@@ -75,7 +75,7 @@ class SearchStudentServiceTest {
                         1
                 );
 
-                when(studentDetailPersistencePort.searchStudentDetailWithEvidenceReiewStatusNotNullMember(
+                when(studentDetailPersistencePort.searchStudentDetailWithEvidenceReviewStatusNotNullMember(
                         name, grade, classNumber, PageRequest.ofSize(size)
                 )).thenReturn(studentPage);
 
@@ -117,7 +117,7 @@ class SearchStudentServiceTest {
                         0
                 );
 
-                when(studentDetailPersistencePort.searchStudentDetailWithEvidenceReiewStatusNotNullMember(
+                when(studentDetailPersistencePort.searchStudentDetailWithEvidenceReviewStatusNotNullMember(
                         name, grade, classNumber, PageRequest.ofSize(size)
                 )).thenReturn(emptyPage);
 
