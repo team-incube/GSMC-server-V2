@@ -19,6 +19,18 @@ import team.incude.gsmc.v2.domain.score.exception.InvalidScoreValueException;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ExtractFileKeyUtil;
 
+/**
+ * 자격증 삭제 유스케이스를 구현한 서비스 클래스입니다.
+ * <p>{@link DeleteCertificateUseCase}를 구현하며, 현재 사용자 또는 특정 사용자의 자격증을 삭제합니다.
+ * <p>삭제 시 관련된 S3 파일, Evidence, OtherEvidence, Score 정보도 함께 처리됩니다.
+ * <ul>
+ *   <li>자격증 소유자 검증</li>
+ *   <li>S3 파일 삭제</li>
+ *   <li>Score 차감 및 저장</li>
+ *   <li>Evidence 및 자격증 삭제</li>
+ * </ul>
+ * @author snowykte0426
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -36,17 +48,34 @@ public class DeleteCertificateService implements DeleteCertificateUseCase {
     private static final String HUMANITIES_CERTIFICATE_KOREAN_HISTORY_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-KOREAN_HISTORY";
     private static final String HUMANITIES_CERTIFICATE_CHINESE_CHARACTER_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-CHINESE_CHARACTER";
 
+    /**
+     * 현재 로그인한 사용자의 자격증을 삭제합니다.
+     * @param id 삭제할 자격증의 ID
+     */
     @Override
     public void execute(Long id) {
         deleteCertificate(currentMemberProvider.getCurrentUser(), id);
     }
 
+    /**
+     * 특정 사용자의 자격증을 삭제합니다.
+     * @param studentCode 자격증을 삭제할 사용자의 학생 코드
+     * @param id 삭제할 자격증의 ID
+     */
     @Override
-    public void execute(String email, Long id) {
-        Member member = memberPersistencePort.findMemberByEmail(email);
+    public void execute(String studentCode, Long id) {
+        Member member = memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode);
         deleteCertificate(member, id);
     }
 
+    /**
+     * 주어진 사용자와 자격증 ID를 기반으로 자격증과 관련된 모든 리소스를 삭제합니다.
+     * <p>자격증 소유자 검증, S3 파일 삭제, 점수 차감 및 저장, 자격증 및 증빙 삭제 등의 처리를 포함합니다.
+     * @param member 자격증 소유자
+     * @param id 자격증 ID
+     * @throws CertificateNotBelongToMemberException 자격증이 해당 사용자 소유가 아닌 경우
+     * @throws InvalidScoreValueException 점수가 0 이하인 경우
+     */
     private void deleteCertificate(Member member, Long id) {
         Certificate certificate = certificatePersistencePort.findCertificateByIdWithLock(id);
         if (!certificate.getMember().getId().equals(member.getId())) {

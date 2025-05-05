@@ -88,7 +88,7 @@ class UpdateScoreServiceTest {
                 verify(scorePersistencePort).saveScore(any(Score.class));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).getStudentCode().equals(studentCode)
+                                ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
                 ));
             }
         }
@@ -138,7 +138,7 @@ class UpdateScoreServiceTest {
                 ));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).getStudentCode().equals(studentCode)
+                                ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
                 ));
             }
         }
@@ -180,7 +180,7 @@ class UpdateScoreServiceTest {
                 ));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).getStudentCode().equals(studentCode)
+                                ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
                 ));
             }
         }
@@ -222,7 +222,7 @@ class UpdateScoreServiceTest {
                 ));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).getStudentCode().equals(studentCode)
+                                ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
                 ));
             }
         }

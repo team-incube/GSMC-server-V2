@@ -3,9 +3,11 @@ package team.incude.gsmc.v2.domain.evidence.application.port;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.*;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
+
+import java.util.UUID;
 
 @Port(direction = PortDirection.INBOUND)
 public interface EvidenceApplicationPort {
@@ -25,9 +27,9 @@ public interface EvidenceApplicationPort {
 
     void deleteEvidence(Long evidenceId);
 
-    void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType);
+    void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType, UUID draftId);
 
-    void createReadingEvidence(String title, String author, int page, String content);
+    void createReadingEvidence(String title, String author, int page, String content, UUID draftId);
 
     void createOtherEvidence(String categoryName, MultipartFile file);
 
@@ -36,4 +38,12 @@ public interface EvidenceApplicationPort {
     void createOtherScoringEvidence(String categoryName, MultipartFile file, int value);
 
     void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value, String imageUrl);
+
+    CreateDraftEvidenceResponse createDraftActivityEvidence(UUID draftId, String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType);
+
+    CreateDraftEvidenceResponse createDraftReadingEvidence(UUID draftId, String title, String author, Integer page, String content);
+
+    GetDraftActivityEvidenceResponse findDraftActivityEvidenceByDraftId(UUID draftId);
+
+    GetDraftReadingEvidenceResponse findDraftReadingEvidenceByDraftId(UUID draftId);
 }

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("현재 로그인된 학생 조회 서비스 클래스의")
-class FindCurrentCurrentStudentServiceTest {
+class FindCurrentStudentServiceTest {
 
     @Mock
     private StudentDetailPersistencePort studentDetailPersistencePort;
@@ -29,7 +29,7 @@ class FindCurrentCurrentStudentServiceTest {
     private CurrentMemberProvider currentMemberProvider;
 
     @InjectMocks
-    private FindCurrentCurrentStudentService findCurrentCurrentStudentService;
+    private FindCurrentStudentService findCurrentStudentService;
 
     @Nested
     @DisplayName("execute() 메서드는")
@@ -66,7 +66,7 @@ class FindCurrentCurrentStudentServiceTest {
                         .thenReturn(studentDetailWithEvidence);
 
                 // when
-                GetStudentResponse response = findCurrentCurrentStudentService.execute();
+                GetStudentResponse response = findCurrentStudentService.execute();
 
                 // then
                 assertThat(response.email()).isEqualTo(email);

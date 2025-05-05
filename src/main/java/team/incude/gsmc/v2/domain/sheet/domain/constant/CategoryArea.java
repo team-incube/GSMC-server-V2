@@ -11,7 +11,4 @@ public enum CategoryArea {
         this.displayName = d;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
 }

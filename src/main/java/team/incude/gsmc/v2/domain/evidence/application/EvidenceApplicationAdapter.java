@@ -6,9 +6,11 @@ import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationP
 import team.incude.gsmc.v2.domain.evidence.application.usecase.*;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.*;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
+
+import java.util.UUID;
 
 @Adapter(direction = PortDirection.INBOUND)
 @RequiredArgsConstructor
@@ -27,7 +29,10 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final UpdateReviewStatusUseCase updateReviewStatusUseCase;
     private final CreateOtherScoringEvidenceUseCase createOtherScoringUseCase;
     private final UpdateOtherScoringEvidenceByCurrentUserUseCase updateOtherScoringUseCase;
-
+    private final CreateDraftActivityEvidenceUseCase createDraftActivityEvidenceUseCase;
+    private final CreateDraftReadingEvidenceUseCase createDraftReadingEvidenceUseCase;
+    private final FindDraftActivityEvidenceByDraftIdUseCase findDraftActivityEvidenceUseCase;
+    private final FindDraftReadingEvidenceByDraftIdUseCase findDraftReadingEvidenceUseCase;
 
     @Override
     public GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType) {
@@ -70,13 +75,13 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     @Override
-    public void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, EvidenceType activityType) {
-        createActivityEvidenceUseCase.execute(categoryName, title, content, file, activityType);
+    public void createActivityEvidence(String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType, UUID draftId) {
+        createActivityEvidenceUseCase.execute(categoryName, title, content, file, imageUrl, activityType, draftId);
     }
 
     @Override
-    public void createReadingEvidence(String title, String author, int page, String content) {
-        createReadingEvidenceUseCase.execute(title, author, page, content);
+    public void createReadingEvidence(String title, String author, int page, String content, UUID draftId) {
+        createReadingEvidenceUseCase.execute(title, author, page, content, draftId);
     }
 
     @Override
@@ -97,5 +102,25 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     @Override
     public void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value, String imageUrl) {
         updateOtherScoringUseCase.execute(evidenceId, file, value, imageUrl);
+    }
+
+    @Override
+    public CreateDraftEvidenceResponse createDraftActivityEvidence(UUID draftId, String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType) {
+        return createDraftActivityEvidenceUseCase.execute(draftId, categoryName, title, content, file, imageUrl, activityType);
+    }
+
+    @Override
+    public CreateDraftEvidenceResponse createDraftReadingEvidence(UUID draftId, String title, String author, Integer page, String content) {
+        return createDraftReadingEvidenceUseCase.execute(draftId, title, author, page, content);
+    }
+
+    @Override
+    public GetDraftActivityEvidenceResponse findDraftActivityEvidenceByDraftId(UUID draftId) {
+        return findDraftActivityEvidenceUseCase.execute(draftId);
+    }
+
+    @Override
+    public GetDraftReadingEvidenceResponse findDraftReadingEvidenceByDraftId(UUID draftId) {
+        return findDraftReadingEvidenceUseCase.execute(draftId);
     }
 }

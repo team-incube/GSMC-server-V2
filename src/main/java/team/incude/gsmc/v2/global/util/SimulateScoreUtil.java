@@ -1,3 +1,4 @@
+
 package team.incude.gsmc.v2.global.util;
 
 import lombok.experimental.UtilityClass;
@@ -6,6 +7,16 @@ import reactor.util.function.Tuple4;
 
 import java.util.Map;
 
+
+/**
+ * 전공, 인문, 외국어 영역별 입력 데이터를 기반으로 모의 점수를 계산하는 유틸리티 클래스입니다.
+ * <p>{@link #simulateScore(...)} 메서드를 중심으로 가중치 맵을 활용하여 세부 항목을 정량화하고,
+ * 총합 점수 및 영역별 점수를 튜플 형태로 반환합니다.
+ * <p>클라이언트에서의 시뮬레이션 요청 처리 및 점수 예측 기능 구현에 활용됩니다.
+ * 계산 방식은 각 영역의 기준 점수, 상한값, 가중치 등을 고려하여 설계되어 있습니다.
+ * {@code @UtilityClass}로 선언되어 인스턴스화가 불가능하며, 모든 메서드는 정적(static)으로 제공됩니다.
+ * @author snowykte0426
+ */
 @UtilityClass
 public class SimulateScoreUtil {
 
