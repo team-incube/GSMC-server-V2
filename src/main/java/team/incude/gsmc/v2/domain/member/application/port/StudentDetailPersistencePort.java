@@ -42,7 +42,7 @@ public interface StudentDetailPersistencePort {
 
     List<StudentDetailWithEvidence> findStudentDetailWithEvidenceReviewStatusNotNullMember();
 
-    Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReiewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);
+    Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);
 
     Integer findTotalScoreByStudentCode(String studentCode);
 

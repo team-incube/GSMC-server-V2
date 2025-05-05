@@ -26,7 +26,7 @@ public class SearchStudentService implements SearchStudentUseCase {
 
     @Override
     public SearchStudentResponse execute(String name, Integer grade, Integer classNumber, Integer page, Integer size) {
-        Page<StudentDetailWithEvidence> studentDetails = studentDetailPersistencePort.searchStudentDetailWithEvidenceReiewStatusNotNullMember(name, grade, classNumber, Pageable.ofSize(size));
+        Page<StudentDetailWithEvidence> studentDetails = studentDetailPersistencePort.searchStudentDetailWithEvidenceReviewStatusNotNullMember(name, grade, classNumber, Pageable.ofSize(size));
         return new SearchStudentResponse(
                 studentDetails.getTotalPages(),
                 studentDetails.getTotalElements(),

@@ -222,7 +222,7 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
      * @return 페이징된 학생 상세 정보 목록
      */
     @Override
-    public Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReiewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable) {
+    public Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable) {
         List<StudentProjection> content = jpaQueryFactory
                 .select(
                         Projections.constructor(
