@@ -20,6 +20,19 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * 총합 점수 계산 유스케이스의 구현체입니다.
+ * <p>{@link CalculateTotalScoreUseCase}를 구현하며, 특정 학생의 모든 점수를 기반으로 총합 점수를 계산하고 저장합니다.
+ * <p>처리 절차:
+ * <ul>
+ *   <li>카테고리 목록 조회 및 정렬</li>
+ *   <li>학생의 점수를 카테고리별로 매핑</li>
+ *   <li>정렬된 순서에 맞춰 점수 목록 생성</li>
+ *   <li>{@link SimulateScoreUtil}을 통해 총합 점수 계산</li>
+ *   <li>계산된 총합 점수를 {@link StudentDetail}에 저장</li>
+ * </ul>
+ * @author snowykte0426
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -29,6 +42,10 @@ public class CalculateTotalScoreService implements CalculateTotalScoreUseCase {
     private final CategoryPersistencePort categoryPersistencePort;
     private final StudentDetailPersistencePort studentDetailPersistencePort;
 
+    /**
+     * 특정 학생의 총합 점수를 계산하여 {@link StudentDetail}에 저장합니다.
+     * @param studentCode 총합 점수를 계산할 학생의 고유 코드
+     */
     @Override
     public void execute(String studentCode) {
         List<Score> scores = scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode);

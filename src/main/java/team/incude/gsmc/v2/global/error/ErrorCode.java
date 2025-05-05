@@ -4,6 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+/**
+ * 애플리케이션 전반에서 사용되는 표준 오류 코드 열거형입니다.
+ * <p>각 오류 항목은 오류 메시지와 HTTP 상태 코드를 함께 정의하며,
+ * {@link team.incude.gsmc.v2.global.error.handler.GlobalExceptionHandler}에서 참조되어 일관된 오류 응답을 제공합니다.
+ * <p>분류:
+ * <ul>
+ *   <li>AWS S3: 업로드/삭제/파일 유효성 오류</li>
+ *   <li>Certificate: 자격증 도메인 관련 오류</li>
+ *   <li>Score: 점수 유효성, 증빙자료 요구 등 도메인 제약 오류</li>
+ *   <li>Member/Auth: 사용자 인증/인가 및 관련 서비스 오류</li>
+ *   <li>Evidence: 각 증빙자료 유형별 처리 오류</li>
+ *   <li>Sheet: 시트 생성 실패</li>
+ * </ul>
+ * 이 Enum은 API 오류 응답의 표준화 및 유지보수성을 향상시키기 위해 사용됩니다.
+ * @author snowykte0426, jihoonwjj, suuuuuuminnnnnn
+ */
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
@@ -44,6 +60,7 @@ public enum ErrorCode {
     // Email Authentication
     EMAIL_FORMAT_INVALID("Email Format Invalid", HttpStatus.UNAUTHORIZED.value()),
     VERIFICATION_INVALID("Verification Invalid", HttpStatus.UNAUTHORIZED.value()),
+    EMAIL_SEND_FAILED("Email Send Failed", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 
     // Evidence
     EVIDENCE_NOT_FOUND("Evidence Not Found", HttpStatus.NOT_FOUND.value()),

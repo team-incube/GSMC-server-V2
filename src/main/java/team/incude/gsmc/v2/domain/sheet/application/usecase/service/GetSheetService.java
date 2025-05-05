@@ -27,6 +27,15 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 학년/반별 점수표 시트 파일을 생성하는 유스케이스의 구현체입니다.
+ * <p>{@link GetSheetUseCase}를 구현하며, 입력받은 학년과 반 정보를 기반으로 학생 목록과 점수 데이터를 조회하여
+ * Excel 형식의 시트 파일을 동적으로 생성합니다.
+ * <p>Apache POI를 사용하여 다중 시트, 계층적 헤더, 영역별 합계, 총합, 순위 등을 포함한 포맷을 구성하며,
+ * 생성된 시트는 {@link InMemoryMultipartFile}로 반환됩니다.
+ * 예외 발생 시 {@link GenerationSheetFailedException}을 통해 오류를 처리합니다.
+ * @author snowykte0426
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,6 +45,13 @@ public class GetSheetService implements GetSheetUseCase {
     private final CategoryPersistencePort categoryPersistencePort;
     private final StudentDetailPersistencePort studentDetailPersistencePort;
 
+    /**
+     * 주어진 학년과 반 번호를 기준으로 학생 목록 및 점수를 조회하여 Excel 시트 파일을 생성합니다.
+     * @param grade 학년
+     * @param classNumber 반 번호
+     * @return 생성된 Excel 시트를 포함한 MultipartFile 객체
+     * @throws GenerationSheetFailedException 파일 생성 중 오류 발생 시
+     */
     @Override
     public MultipartFile execute(Integer grade, Integer classNumber) {
         List<Category> allCats = categoryPersistencePort.findAllCategory();
@@ -105,6 +121,11 @@ public class GetSheetService implements GetSheetUseCase {
         }
     }
 
+    /**
+     * 학생들의 총점을 기준으로 반 내 순위를 계산합니다.
+     * @param students 학생 리스트
+     * @return 학생 코드별 순위 맵
+     */
     private Map<String, Integer> calculateRanks(List<StudentDetail> students) {
         Map<String, Integer> rankMap = new HashMap<>();
         List<StudentDetail> sorted = new ArrayList<>(students);
@@ -122,6 +143,19 @@ public class GetSheetService implements GetSheetUseCase {
         return rankMap;
     }
 
+    /**
+     * 주어진 정보를 바탕으로 워크북 내의 하나의 시트를 구성합니다.
+     * @param wb Excel 워크북
+     * @param title 시트 이름
+     * @param allCats 전체 카테고리 목록
+     * @param cats 해당 영역의 카테고리 목록
+     * @param students 학생 목록
+     * @param scoreMap 학생별 점수 맵
+     * @param weights 카테고리 가중치 맵
+     * @param rankMap 학생별 반 내 순위 맵
+     * @param headerStyle 헤더 셀 스타일
+     * @param sectionStyle 상위 섹션 셀 스타일
+     */
     private void buildSheet(Workbook wb, String title, List<Category> allCats, List<Category> cats, List<StudentDetail> students,
                             Map<String, List<Score>> scoreMap, Map<String, Float> weights, Map<String, Integer> rankMap,
                             CellStyle headerStyle, CellStyle sectionStyle) {
@@ -281,6 +315,11 @@ public class GetSheetService implements GetSheetUseCase {
         }
     }
 
+    /**
+     * 기본 헤더 셀 스타일을 생성합니다.
+     * @param wb Excel 워크북
+     * @return 생성된 셀 스타일
+     */
     private CellStyle createHeaderStyle(Workbook wb) {
         CellStyle s = wb.createCellStyle();
         Font f = wb.createFont();
@@ -298,12 +337,23 @@ public class GetSheetService implements GetSheetUseCase {
         return s;
     }
 
+    /**
+     * 섹션 구분용 셀 스타일을 생성합니다.
+     * @param wb Excel 워크북
+     * @return 생성된 셀 스타일
+     */
     private CellStyle createSectionStyle(Workbook wb) {
         CellStyle s = createHeaderStyle(wb);
         s.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
         return s;
     }
 
+    /**
+     * 카테고리 이름 접두어를 기반으로 해당 카테고리가 속한 영역을 판별합니다.
+     * @param c 카테고리
+     * @return 해당 카테고리의 영역 (전공, 인문, 외국어)
+     * @throws InvalidCategoryException 알 수 없는 영역일 경우
+     */
     private CategoryArea resolveArea(Category c) {
         String name = c.getName().toLowerCase();
         if (name.startsWith("major")) return CategoryArea.MAJOR;

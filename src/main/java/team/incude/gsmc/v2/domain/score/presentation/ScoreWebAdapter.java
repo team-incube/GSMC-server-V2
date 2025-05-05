@@ -11,6 +11,19 @@ import team.incude.gsmc.v2.domain.score.presentation.data.request.PatchScoreRequ
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
 
+/**
+ * 점수 관련 HTTP 요청을 처리하는 Web 어댑터 클래스입니다.
+ * <p>{@link ScoreApplicationPort}를 통해 점수 조회, 수정, 시뮬레이션 기능을 제공합니다.
+ * <p>제공하는 API:
+ * <ul>
+ *   <li>{@code GET /api/v2/score/current} - 현재 사용자의 점수 조회</li>
+ *   <li>{@code GET /api/v2/score/{studentCode}} - 특정 학생의 점수 조회</li>
+ *   <li>{@code PATCH /api/v2/score/current} - 현재 사용자의 점수 수정</li>
+ *   <li>{@code PATCH /api/v2/score/{studentCode}} - 특정 학생의 점수 수정</li>
+ *   <li>{@code POST /api/v2/score/simulate} - 모의 점수 계산</li>
+ * </ul>
+ * @author snowykte0426
+ */
 @RestController
 @RequestMapping("/api/v2/score")
 @RequiredArgsConstructor

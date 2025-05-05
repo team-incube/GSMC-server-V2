@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import team.incude.gsmc.v2.global.thirdparty.email.application.usecase.EmailSendUseCase;
+import team.incude.gsmc.v2.global.thirdparty.email.exception.EmailSendFailedException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class EmailSendService implements EmailSendUseCase {
             helper.setText(html, true);
             mailSender.send(message);
         } catch (MessagingException e) {
+            throw new EmailSendFailedException();
         }
     }
 }
