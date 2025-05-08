@@ -1,7 +1,8 @@
 package team.incude.gsmc.v2.domain.certificate.persentation.data.request;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.annotations.NotNull;
+import team.incude.gsmc.v2.global.annotation.validator.NotEmptyFile;
 
 import java.time.LocalDate;
 
@@ -12,13 +13,12 @@ import java.time.LocalDate;
  *   <li>{@code acquisitionDate} - 자격증 취득일 (필수)</li>
  *   <li>{@code file} - 자격증 이미지 또는 PDF 파일 (필수)</li>
  * </ul>
- * 모든 필드는 {@code @NotNull}로 선언되어 있으며, 유효성 검증을 통해 필수 입력임을 보장합니다.
- *
+ * 이 DTO는 {@link NotNull} 및 {@link NotEmptyFile} 어노테이션을 사용하여 유효성을 검사합니다.
  * @author snowykte0426
  */
 public record CreateCertificateRequest(
         @NotNull String name,
         @NotNull LocalDate acquisitionDate,
-        @NotNull MultipartFile file
+        @NotEmptyFile MultipartFile file
 ) {
 }
