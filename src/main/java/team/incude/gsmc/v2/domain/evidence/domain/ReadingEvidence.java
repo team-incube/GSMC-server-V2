@@ -1,9 +1,7 @@
 package team.incude.gsmc.v2.domain.evidence.domain;
 
-import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
-import team.incude.gsmc.v2.domain.evidence.persistence.entity.EvidenceJpaEntity;
 
 @Getter
 @Builder
