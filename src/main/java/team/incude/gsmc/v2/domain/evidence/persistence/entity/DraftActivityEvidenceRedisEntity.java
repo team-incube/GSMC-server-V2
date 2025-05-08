@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.Indexed;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 
 import java.util.UUID;
@@ -22,9 +23,11 @@ public class DraftActivityEvidenceRedisEntity {
     private EvidenceType evidenceType;
     @TimeToLive(unit = TimeUnit.SECONDS)
     private Long ttl;
+    @Indexed
+    private String email;
 
     @Builder
-    public DraftActivityEvidenceRedisEntity(UUID id, String categoryName, String title, String content, String imageUrl, EvidenceType evidenceType, Long ttl) {
+    public DraftActivityEvidenceRedisEntity(UUID id, String categoryName, String title, String content, String imageUrl, EvidenceType evidenceType, Long ttl, String email) {
         this.id = id;
         this.categoryName = categoryName;
         this.title = title;
@@ -32,5 +35,6 @@ public class DraftActivityEvidenceRedisEntity {
         this.imageUrl = imageUrl;
         this.evidenceType = evidenceType;
         this.ttl = ttl;
+        this.email = email;
     }
 }
