@@ -64,14 +64,14 @@ class RefreshServiceTest {
                         .build();
                 LocalDateTime accessTokenExpiration = LocalDateTime.now().plusHours(1);
                 LocalDateTime refreshTokenExpiration = LocalDateTime.now().plusDays(7);
-                TokenDto newAccessToken = new TokenDto("new_accessToken", accessTokenExpiration);
-                TokenDto newRefreshToken = new TokenDto("new_refreshToken", refreshTokenExpiration);
+                TokenDto newAccessToken = new TokenDto("newAccessToken", accessTokenExpiration);
+                TokenDto newRefreshToken = new TokenDto("newRefreshToken", refreshTokenExpiration);
 
                 when(jwtParserService.validateRefreshToken(refreshToken)).thenReturn(true);
                 when(jwtParserService.getEmailFromRefreshToken(refreshToken)).thenReturn(email);
                 when(memberPersistencePort.findMemberByEmail(email)).thenReturn(member);
                 when(jwtIssueService.issueAccessToken(email, role)).thenReturn(newAccessToken);
-                when(jwtIssueService.issueRefreshToken(refreshToken)).thenReturn(newRefreshToken);
+                when(jwtIssueService.issueRefreshToken(email)).thenReturn(newRefreshToken);
 
                 // when
                 AuthTokenResponse response = refreshService.execute(refreshToken);

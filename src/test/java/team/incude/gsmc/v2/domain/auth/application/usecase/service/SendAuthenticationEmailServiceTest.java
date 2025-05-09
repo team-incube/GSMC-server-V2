@@ -11,10 +11,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import team.incude.gsmc.v2.domain.auth.application.port.AuthCodePersistencePort;
 import team.incude.gsmc.v2.domain.auth.application.port.AuthenticationPersistencePort;
+import team.incude.gsmc.v2.domain.auth.application.port.EmailPort;
 import team.incude.gsmc.v2.domain.auth.domain.AuthCode;
 import team.incude.gsmc.v2.domain.auth.domain.Authentication;
 import team.incude.gsmc.v2.domain.auth.exception.EmailAuthAttemptExceededException;
-import team.incude.gsmc.v2.global.thirdparty.email.application.usecase.service.EmailSendService;
+import team.incude.gsmc.v2.global.thirdparty.email.usecase.service.EmailSendService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,7 +31,7 @@ class SendAuthenticationEmailServiceTest {
     private AuthCodePersistencePort authCodePersistencePort;
 
     @Mock
-    private EmailSendService emailSendService;
+    private EmailPort emailPort;
 
     @InjectMocks
     private SendAuthenticationEmailService sendAuthenticationEmailService;
@@ -71,7 +72,7 @@ class SendAuthenticationEmailServiceTest {
                                 auth.getTtl().equals(ttl)
                 ));
                 verify(authCodePersistencePort).saveAuthCode(any(AuthCode.class));
-                verify(emailSendService).sendEmail(eq(email), anyString());
+                verify(emailPort).sendEmail(eq(email), anyString());
             }
         }
 
@@ -99,7 +100,7 @@ class SendAuthenticationEmailServiceTest {
 
                 // then
                 verify(authCodePersistencePort).saveAuthCode(any(AuthCode.class));
-                verify(emailSendService).sendEmail(eq(email), anyString());
+                verify(emailPort).sendEmail(eq(email), anyString());
             }
 
             @Test
@@ -124,7 +125,7 @@ class SendAuthenticationEmailServiceTest {
 
                 // then
                 verify(authCodePersistencePort, never()).saveAuthCode(any());
-                verify(emailSendService, never()).sendEmail(any(), any());
+                verify(emailPort, never()).sendEmail(any(), any());
             }
         }
     }

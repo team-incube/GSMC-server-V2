@@ -1,6 +1,5 @@
-package team.incude.gsmc.v2.domain.auth.presentation.data;
+package team.incude.gsmc.v2.domain.auth.presentation;
 
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
