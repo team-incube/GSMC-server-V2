@@ -46,4 +46,6 @@ public interface EvidenceApplicationPort {
     GetDraftActivityEvidenceResponse findDraftActivityEvidenceByDraftId(UUID draftId);
 
     GetDraftReadingEvidenceResponse findDraftReadingEvidenceByDraftId(UUID draftId);
+
+    GetDraftEvidenceResponse findDraftEvidenceByCurrentUser();
 }
