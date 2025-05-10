@@ -8,10 +8,7 @@ import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationP
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.request.*;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetDraftActivityEvidenceResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetDraftReadingEvidenceResponse;
-import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
+import team.incude.gsmc.v2.domain.evidence.presentation.data.response.*;
 
 import java.util.UUID;
 
@@ -147,5 +144,10 @@ public class EvidenceWebAdapter {
     @GetMapping("/draft/reading/{draftId}")
     public ResponseEntity<GetDraftReadingEvidenceResponse> getDraftReading(@PathVariable UUID draftId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftReadingEvidenceByDraftId(draftId));
+    }
+
+    @GetMapping("/current/draft")
+    public ResponseEntity<GetDraftEvidenceResponse> getCurrentDraft() {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftEvidenceByCurrentUser());
     }
 }

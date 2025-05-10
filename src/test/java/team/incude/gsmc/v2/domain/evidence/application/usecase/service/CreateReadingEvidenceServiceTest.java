@@ -87,7 +87,7 @@ public class CreateReadingEvidenceServiceTest {
                 when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(category.getName(), studentDetail.getStudentCode())).thenReturn(score);
 
                 // when
-                createReadingEvidenceService.execute(title, author, page, content);
+                createReadingEvidenceService.execute(title, author, page, content, null);
 
                 // then
                 verify(scorePersistencePort).saveScore(any(Score.class));

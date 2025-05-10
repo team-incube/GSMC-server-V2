@@ -9,6 +9,7 @@ import team.incude.gsmc.v2.domain.evidence.persistence.repository.DraftActivityE
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Adapter(direction = PortDirection.OUTBOUND)
@@ -34,6 +35,14 @@ public class DraftActivityEvidencePersistenceAdapter implements DraftActivityEvi
     @Override
     public void deleteDraftActivityEvidenceById(UUID draftId) {
         draftActivityEvidenceRedisRepository.deleteById(draftId);
+    }
+
+    @Override
+    public List<DraftActivityEvidence> findAllDraftActivityEvidenceByEmail(String email) {
+        return draftActivityEvidenceRedisRepository.findByEmail(email)
+                .stream()
+                .map(activityEvidenceMapper::toDraftDomain)
+                .toList();
     }
 
 }
