@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.index.Indexed;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@RedisHash(value = "readingEvidence")
+@RedisHash(value = "draftReadingEvidence")
 @Getter
 public class DraftReadingEvidenceRedisEntity {
     @Id

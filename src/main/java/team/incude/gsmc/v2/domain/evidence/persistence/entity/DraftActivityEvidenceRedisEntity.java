@@ -11,7 +11,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@RedisHash(value = "activityEvidence")
+@RedisHash(value = "draftActivityEvidence")
 @Getter
 public class DraftActivityEvidenceRedisEntity {
     @Id
