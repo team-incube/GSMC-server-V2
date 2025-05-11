@@ -2,10 +2,11 @@ package team.incude.gsmc.v2.domain.evidence.presentation.data.request;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
+import team.incude.gsmc.v2.global.annotation.validator.NotEmptyFile;
 
 public record CreateOtherScoringEvidenceRequest(
         @NotNull String categoryName,
         @NotNull Integer value,
-        MultipartFile file
+        @NotEmptyFile MultipartFile file
 ) {
 }
