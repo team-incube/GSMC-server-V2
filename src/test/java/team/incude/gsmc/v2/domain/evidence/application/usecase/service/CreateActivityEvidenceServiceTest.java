@@ -78,6 +78,7 @@ class CreateActivityEvidenceServiceTest {
 
                 Category category = Category.builder()
                         .name(categoryName)
+                        .maximumValue(6)
                         .build();
 
                 Score score = Score.builder()
