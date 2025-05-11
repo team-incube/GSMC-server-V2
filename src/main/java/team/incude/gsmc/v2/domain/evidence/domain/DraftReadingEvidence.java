@@ -14,4 +14,5 @@ public class DraftReadingEvidence {
     private Integer page;
     private String content;
     private Long ttl;
+    private String email;
 }
