@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.presentation;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,25 +51,25 @@ public class EvidenceWebAdapter {
     }
 
     @PostMapping("/current/activity")
-    public ResponseEntity<Void> createActivityEvidence(@ModelAttribute CreateActivityEvidenceRequest request) {
+    public ResponseEntity<Void> createActivityEvidence(@Valid @ModelAttribute CreateActivityEvidenceRequest request) {
         evidenceApplicationPort.createActivityEvidence(request.categoryName(), request.title(), request.content(), request.file(), request.imageUrl(), request.activityType(), request.draftId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/current/reading")
-    public ResponseEntity<Void> createReadingEvidence(@RequestBody CreateReadingEvidenceRequest request) {
+    public ResponseEntity<Void> createReadingEvidence(@Valid @RequestBody CreateReadingEvidenceRequest request) {
         evidenceApplicationPort.createReadingEvidence(request.title(), request.author(), request.page(), request.content(), request.draftId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/current/other")
-    public ResponseEntity<Void> createOtherEvidence(@ModelAttribute CreateOtherEvidenceRequest request) {
+    public ResponseEntity<Void> createOtherEvidence(@Valid @ModelAttribute CreateOtherEvidenceRequest request) {
         evidenceApplicationPort.createOtherEvidence(request.categoryName(), request.file());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/current/scoring")
-    public ResponseEntity<Void> createOtherScoringEvidence(@ModelAttribute CreateOtherScoringEvidenceRequest request) {
+    public ResponseEntity<Void> createOtherScoringEvidence(@Valid @ModelAttribute CreateOtherScoringEvidenceRequest request) {
         evidenceApplicationPort.createOtherScoringEvidence(request.categoryName(), request.file(), request.value());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -76,7 +77,7 @@ public class EvidenceWebAdapter {
     @PatchMapping("/major/{evidenceId}")
     public ResponseEntity<Void> patchMajorEvidence(
             @PathVariable Long evidenceId,
-            @ModelAttribute PatchActivityEvidenceRequest request) {
+            @Valid @ModelAttribute PatchActivityEvidenceRequest request) {
         evidenceApplicationPort.updateMajorEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file(), request.imageUrl());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -84,7 +85,7 @@ public class EvidenceWebAdapter {
     @PatchMapping("/humanities/{evidenceId}")
     public ResponseEntity<Void> patchHumanityEvidence(
             @PathVariable Long evidenceId,
-            @ModelAttribute PatchActivityEvidenceRequest request) {
+            @Valid @ModelAttribute PatchActivityEvidenceRequest request) {
         evidenceApplicationPort.updateHumanitiesEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file(), request.imageUrl());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -92,7 +93,7 @@ public class EvidenceWebAdapter {
     @PatchMapping("/reading/{evidenceId}")
     public ResponseEntity<Void> patchReadingEvidence(
             @PathVariable Long evidenceId,
-            @RequestBody PatchReadingEvidenceRequest request) {
+            @Valid @RequestBody PatchReadingEvidenceRequest request) {
         evidenceApplicationPort.updateReadingEvidenceByCurrentUser(evidenceId, request.title(), request.author(), request.content(), request.page());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -116,7 +117,7 @@ public class EvidenceWebAdapter {
     @PatchMapping("/{evidenceId}/status")
     public ResponseEntity<Void> patchStatusEvidence(
             @PathVariable Long evidenceId,
-            @RequestBody PatchStatusEvidenceRequest request) {
+            @Valid @RequestBody PatchStatusEvidenceRequest request) {
         evidenceApplicationPort.updateReviewStatus(evidenceId, request.status());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
