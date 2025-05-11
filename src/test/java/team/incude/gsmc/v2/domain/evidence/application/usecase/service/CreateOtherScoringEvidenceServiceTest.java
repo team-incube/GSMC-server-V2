@@ -18,6 +18,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
+import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
@@ -51,6 +52,9 @@ public class CreateOtherScoringEvidenceServiceTest {
 
     @Mock
     private OtherEvidencePersistencePort otherEvidencePersistencePort;
+
+    @Mock
+    private CategoryPersistencePort categoryPersistencePort;
 
     @InjectMocks
     private CreateOtherScoringEvidenceService createOtherScoringEvidenceService;
@@ -87,7 +91,7 @@ public class CreateOtherScoringEvidenceServiceTest {
 
                 Category category = Category.builder()
                         .name(categoryName)
-                        .maximumValue(6)
+                        .maximumValue(1000)
                         .build();
 
                 Score score = Score.builder()
@@ -101,6 +105,8 @@ public class CreateOtherScoringEvidenceServiceTest {
                 when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(category.getName(), studentDetail.getStudentCode())).thenReturn(score);
                 when(s3Port.uploadFile(Mockito.anyString(), Mockito.any()))
                         .thenReturn(CompletableFuture.completedFuture(fakeFileUrl));
+                when(categoryPersistencePort.findCategoryByName(categoryName)).thenReturn(category);
+
                 // when
                 createOtherScoringEvidenceService.execute(categoryName, file, value);
 
