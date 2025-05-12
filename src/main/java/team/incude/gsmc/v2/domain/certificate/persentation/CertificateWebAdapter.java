@@ -1,5 +1,6 @@
 package team.incude.gsmc.v2.domain.certificate.persentation;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class CertificateWebAdapter {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createCertificates(@ModelAttribute CreateCertificateRequest request) {
+    public ResponseEntity<Void> createCertificates(@Valid @ModelAttribute CreateCertificateRequest request) {
         certificateApplicationPort.createCertificate(request.name(), request.acquisitionDate(), request.file());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -52,7 +53,7 @@ public class CertificateWebAdapter {
     @PatchMapping("/current/{certificateId}")
     public ResponseEntity<Void> updateCurrentCertificates(
             @PathVariable(value = "certificateId") Long certificateId,
-            @ModelAttribute PatchCertificateRequest request
+            @Valid @ModelAttribute PatchCertificateRequest request
     ) {
         certificateApplicationPort.updateCurrentCertificate(certificateId, request.name(), request.acquisitionDate(), request.file());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
