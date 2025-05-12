@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.domain.auth.application.usecase.service;
+package team.incude.gsmc.v2.domain.member.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
