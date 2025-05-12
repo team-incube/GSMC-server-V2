@@ -33,30 +33,6 @@ jobs:
 
       - name: Build and run unit tests
         run: ./gradlew clean test --no-daemon
-        env:
-          SPRING_PROFILES_ACTIVE: test
-          JPA_DDL_AUTO: create
-          SERVER_PORT: 8080
-          AWS_ACCESS_KEY_ID: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ap-northeast-2
-          AWS_S3_BUCKET: test-gsm-certification-system
-          JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
-          JWT_ACCESS_TOKEN_EXPIRATION: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}
-          JWT_REFRESH_TOKEN_SECRET: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
-          JWT_REFRESH_TOKEN_EXPIRATION: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}
-          EMAIL_HOST: smtp.gmail.com
-          EMAIL_USERNAME: test@gsm.hs.kr
-          EMAIL_PASSWORD: test-password
-          EMAIL_TTL: 300
-          RDB_TYPE: h2
-          RDB_HOST: localhost
-          RDB_PORT: 3306
-          RDB_SCHEMA: testdb
-          RDB_USERNAME: sa
-          RDB_PASSWORD: ""
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
 
   deploy:
     runs-on: ubuntu-latest
