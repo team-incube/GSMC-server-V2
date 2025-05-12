@@ -34,29 +34,29 @@ jobs:
       - name: Build and run unit tests
         run: ./gradlew clean test --no-daemon
         env:
-          SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
-          JPA_DDL_AUTO: ${{ secrets.JPA_DDL_AUTO }}
-          SERVER_PORT: ${{ secrets.SERVER_PORT }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          SPRING_PROFILES_ACTIVE: test
+          JPA_DDL_AUTO: create
+          SERVER_PORT: 8080
+          AWS_ACCESS_KEY_ID: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
+          AWS_S3_BUCKET: test-gsm-certification-system
           JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
           JWT_ACCESS_TOKEN_EXPIRATION: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}
           JWT_REFRESH_TOKEN_SECRET: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
           JWT_REFRESH_TOKEN_EXPIRATION: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}
-          EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-          EMAIL_TTL: ${{ secrets.EMAIL_TTL }}
-          RDB_TYPE: ${{ secrets.RDB_TYPE }}
-          RDB_HOST: ${{ secrets.RDB_HOST }}
-          RDB_PORT: ${{ secrets.RDB_PORT }}
-          RDB_SCHEMA: ${{ secrets.RDB_SCHEMA }}
-          RDB_USERNAME: ${{ secrets.RDB_USERNAME }}
-          RDB_PASSWORD: ${{ secrets.RDB_PASSWORD }}
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          EMAIL_HOST: smtp.gmail.com
+          EMAIL_USERNAME: test@gsm.hs.kr
+          EMAIL_PASSWORD: test-password
+          EMAIL_TTL: 300
+          RDB_TYPE: h2
+          RDB_HOST: localhost
+          RDB_PORT: 3306
+          RDB_SCHEMA: testdb
+          RDB_USERNAME: sa
+          RDB_PASSWORD: ""
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
 
   deploy:
     runs-on: ubuntu-latest
@@ -84,7 +84,7 @@ jobs:
               ports: "8080"
               env:
                 - name: SPRING_PROFILES_ACTIVE
-                  value: ${{ secrets.SPRING_PROFILES_ACTIVE }}
+                  value: prod
                 - name: JPA_DDL_AUTO
                   value: ${{ secrets.JPA_DDL_AUTO }}
                 - name: SERVER_PORT
