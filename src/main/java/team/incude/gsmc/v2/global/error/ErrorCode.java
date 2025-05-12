@@ -35,6 +35,7 @@ public enum ErrorCode {
     CERTIFICATE_NOT_FOUND("Certificate Not Found", HttpStatus.NOT_FOUND.value()),
     CERTIFICATE_NOT_BELONG_TO_MEMBER("Certificate Not Belong To Member", HttpStatus.FORBIDDEN.value()),
     DUPLICATE_CERTIFICATE("Duplicate Certificate", HttpStatus.CONFLICT.value()),
+    CERTIFICATE_CATEGORY_MISMATCH("Certificate Category Mismatch", HttpStatus.UNPROCESSABLE_ENTITY.value()),
 
     // Score
     SCORE_MAXIMUM_VALUE_EXCEEDED("Score Maximum Value Exceeded", HttpStatus.UNPROCESSABLE_ENTITY.value()),
