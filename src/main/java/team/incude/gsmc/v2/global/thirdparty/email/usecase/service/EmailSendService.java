@@ -3,6 +3,7 @@ package team.incude.gsmc.v2.global.thirdparty.email.usecase.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -22,7 +23,6 @@ public class EmailSendService implements EmailSendUseCase {
 
     @Async
     public void execute(String to, String authCode) {
-
         try {
             Context context = new Context();
             context.setVariable("authCode", authCode);
@@ -32,6 +32,8 @@ public class EmailSendService implements EmailSendUseCase {
             helper.setTo(to);
             helper.setSubject(EMAIL_SUBJECT);
             helper.setText(html, true);
+            ClassPathResource logoImage = new ClassPathResource("static/image/GSMC_logo.png");
+            helper.addInline("gsmcLogo", logoImage);
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new EmailSendFailedException();
