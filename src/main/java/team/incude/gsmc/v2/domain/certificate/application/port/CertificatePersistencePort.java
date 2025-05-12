@@ -33,6 +33,13 @@ public interface CertificatePersistencePort {
     List<Certificate> findCertificateByStudentDetailStudentCode(String studentCode);
 
     /**
+     * 주어진 사용자 ID에 해당하는 자격증 목록을 조회하며 비관적 락(Pessimistic Lock)을 걸어 반환합니다.
+     * @param memberId 사용자의 고유 ID
+     * @return 해당 사용자가 소유한 자격증 목록
+     */
+    List<Certificate> findCertificateByMemberIdWithLock(Long memberId);
+
+    /**
      * 자격증 정보를 저장합니다.
      * <p>신규 자격증 등록뿐 아니라 수정된 자격증 정보를 반영할 때도 사용됩니다.
      * @param certificate 저장할 자격증 엔티티
