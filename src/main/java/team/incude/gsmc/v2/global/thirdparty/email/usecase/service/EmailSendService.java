@@ -17,7 +17,8 @@ import team.incude.gsmc.v2.global.thirdparty.email.exception.EmailSendFailedExce
 @RequiredArgsConstructor
 public class EmailSendService implements EmailSendUseCase {
 
-    private static final String EMAIL_SUBJECT = "gsmc 이메일 인증";
+    private static final String EMAIL_SUBJECT = "GSMC 이메일 인증";
+    private static final String CONTACT_EMAIL = "GSMC.OfficialEmail@gmail.com";
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
@@ -26,6 +27,7 @@ public class EmailSendService implements EmailSendUseCase {
         try {
             Context context = new Context();
             context.setVariable("authCode", authCode);
+            context.setVariable("officialEmail", CONTACT_EMAIL);
             String html = templateEngine.process("MailTemplate", context);
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
