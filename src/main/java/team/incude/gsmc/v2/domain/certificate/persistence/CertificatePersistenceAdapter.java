@@ -85,6 +85,18 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
                 .toList();
     }
 
+    @Override
+    public List<Certificate> findCertificateByMemberIdWithLock(Long memberId) {
+        return jpaQueryFactory
+                .selectFrom(certificateJpaEntity)
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .where(certificateJpaEntity.member.id.eq(memberId))
+                .fetch()
+                .stream()
+                .map(certificateMapper::toDomain)
+                .toList();
+    }
+
     /**
      * 자격증 도메인 객체를 저장합니다.
      * @param certificate 저장할 자격증 도메인 객체
