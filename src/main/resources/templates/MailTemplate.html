@@ -84,7 +84,7 @@
     <div class="auth-code" th:text="${authCode}"></div>
     <div class="footer">
         본 메일은 <strong>GSMC</strong>에 의해 요청된 사용자에게만 발송되었습니다.<br/>
-        문의사항이 있으시면 <a href="mailto:GSMC.OfficialEmail@gmail.com">GSMC.OfficialEmail@gmail.com</a> 으로 연락해 주세요.<br/>
+        문의사항이 있으시면 <a href="mailto:${officialEmail}" th:text="${officialEmail}"></a> 으로 연락해 주세요.<br/>
         ⓒ GSMC. All rights reserved.
     </div>
 </div>
