@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
+import team.incude.gsmc.v2.domain.certificate.domain.Certificate;
+import team.incude.gsmc.v2.domain.certificate.exception.DuplicateCertificateException;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.member.domain.Member;
@@ -22,6 +24,7 @@ import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedExcepti
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -163,6 +166,31 @@ class CreateCertificateServiceTest {
             assertThatThrownBy(() ->
                     createCertificateService.execute(certificateName, acquisitionDate, file)
             ).isInstanceOf(S3UploadFailedException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("중복된 한자/한국사 자격증이 등록된 경우")
+    class Context_with_duplicate_certificate {
+
+        @Test
+        @DisplayName("이미 등록된 한국사 자격증이 있으면 DuplicateCertificateException을 던진다")
+        void it_throws_when_duplicate_korean_history_exists() {
+            // given
+            String certificateName = "한국사 능력검정 1급";
+            LocalDate date = LocalDate.of(2024, 5, 1);
+            MockMultipartFile file = new MockMultipartFile("file", "cert.pdf", "application/pdf", "dummy".getBytes());
+            Member member = Member.builder().id(1L).email("test@gsm.hs.kr").build();
+            when(currentMemberProvider.getCurrentUser()).thenReturn(member);
+            when(certificatePersistencePort.findCertificateByMemberIdWithLock(1L))
+                    .thenReturn(List.of(
+                            Certificate.builder().name("한국사 능력검정 2급").build()
+                    ));
+
+            // when & then
+            assertThatThrownBy(() -> createCertificateService.execute(certificateName, date, file))
+                    .isInstanceOf(DuplicateCertificateException.class);
+            verify(certificatePersistencePort, never()).saveCertificate(any());
         }
     }
 }
