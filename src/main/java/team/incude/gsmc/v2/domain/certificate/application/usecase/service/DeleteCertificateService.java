@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.domain.certificate.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
@@ -16,6 +17,7 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.InvalidScoreValueException;
+import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.util.ExtractFileKeyUtil;
 
@@ -43,6 +45,7 @@ public class DeleteCertificateService implements DeleteCertificateUseCase {
     private final MemberPersistencePort memberPersistencePort;
     private final S3Port s3Port;
     private final CurrentMemberProvider currentMemberProvider;
+    private final ApplicationContext applicationContext;
 
     private static final String CATEGORY_NAME = "MAJOR-CERTIFICATE_NUM";
     private static final String HUMANITIES_CERTIFICATE_KOREAN_HISTORY_CATEGORY_NAME = "HUMANITIES-CERTIFICATE-KOREAN_HISTORY";
@@ -66,6 +69,7 @@ public class DeleteCertificateService implements DeleteCertificateUseCase {
     public void execute(String studentCode, Long id) {
         Member member = memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode);
         deleteCertificate(member, id);
+        applicationContext.publishEvent(new ScoreUpdatedEvent(studentCode));
     }
 
     /**
