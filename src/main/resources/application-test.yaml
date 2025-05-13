@@ -31,10 +31,10 @@ spring:
 
 jwt:
   access-token:
-    secret: 0123456789abcdef0123456789abcdef  # 32자 (256비트)
+    secret: 0123456789abcdef0123456789abcdef
     expiration: 3600
   refresh-token:
-    secret: fedcba9876543210fedcba9876543210  # 32자
+    secret: fedcba9876543210fedcba9876543210
     expiration: 86400
 
 aws:
