@@ -78,6 +78,7 @@ class CreateActivityEvidenceServiceTest {
 
                 Category category = Category.builder()
                         .name(categoryName)
+                        .maximumValue(6)
                         .build();
 
                 Score score = Score.builder()
@@ -99,7 +100,7 @@ class CreateActivityEvidenceServiceTest {
                         .thenReturn(CompletableFuture.completedFuture("https://s3.com/fake.png"));
 
                 // when
-                createActivityEvidenceService.execute(categoryName, title, content, file, activityType);
+                createActivityEvidenceService.execute(categoryName, title, content, file, null, activityType, null);
 
                 // then
                 verify(scorePersistencePort).saveScore(any());

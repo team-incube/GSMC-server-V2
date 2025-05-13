@@ -16,4 +16,5 @@ public class DraftActivityEvidence {
     private String imageUrl;
     private EvidenceType evidenceType;
     private Long ttl;
+    private String email;
 }

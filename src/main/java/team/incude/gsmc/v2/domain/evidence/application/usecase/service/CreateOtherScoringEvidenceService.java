@@ -15,11 +15,15 @@ import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
+import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
+import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
+import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -36,22 +40,44 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
+    private final CategoryPersistencePort categoryPersistencePort;
 
     @Override
     public void execute(String categoryName, MultipartFile file, int value) {
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
+        Category category = categoryPersistencePort.findCategoryByName(categoryName);
+        checkValueByMaximumValue(category, value);
 
-        Score newScore = createScore(score, value);
+        if (score == null) {
+            score = createScore(value, category, member);
+        } else {
+            score = createScore(score, value);
+        }
+
+        score = scorePersistencePort.saveScore(score);
 
         EvidenceType evidenceType = categoryMap.get(categoryName);
         Evidence evidence = createEvidence(score, evidenceType);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
-        scorePersistencePort.saveScore(newScore);
         otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+    }
+
+    private void checkValueByMaximumValue(Category category, int value) {
+        if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
+            throw new ScoreLimitExceededException();
+        }
+    }
+
+    private Score createScore(int value, Category category, Member member) {
+        return Score.builder()
+                .value(value)
+                .category(category)
+                .member(member)
+                .build();
     }
 
     private Score createScore(Score score, int value) {

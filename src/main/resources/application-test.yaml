@@ -1,0 +1,56 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  sql:
+    init:
+      mode: never
+
+  security:
+    user:
+      name: test-user
+      password: test-password
+    cors:
+      allowed-origins: http://localhost:3000,http://localhost:3001
+
+jwt:
+  access-token:
+    secret: 0123456789abcdef0123456789abcdef
+    expiration: 3600
+  refresh-token:
+    secret: fedcba9876543210fedcba9876543210
+    expiration: 86400
+
+aws:
+  access-key-id: TEST_AWS_ACCESS_KEY_ID
+  secret-access-key: TEST_AWS_SECRET_ACCESS_KEY
+  bucket:
+    name: test-gsm-certification-system
+    region: ap-northeast-2
+
+mail:
+  host: localhost
+  port: 1025
+  username: dummy
+  password: dummy
+  ttl: 300
+  attempt-limits: 5
+
+server:
+  port: 8080

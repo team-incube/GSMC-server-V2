@@ -33,6 +33,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final CreateDraftReadingEvidenceUseCase createDraftReadingEvidenceUseCase;
     private final FindDraftActivityEvidenceByDraftIdUseCase findDraftActivityEvidenceUseCase;
     private final FindDraftReadingEvidenceByDraftIdUseCase findDraftReadingEvidenceUseCase;
+    private final FindDraftEvidenceByCurrentUserUseCase findDraftEvidenceByCurrentUserUseCase;
 
     @Override
     public GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType) {
@@ -122,5 +123,10 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     @Override
     public GetDraftReadingEvidenceResponse findDraftReadingEvidenceByDraftId(UUID draftId) {
         return findDraftReadingEvidenceUseCase.execute(draftId);
+    }
+
+    @Override
+    public GetDraftEvidenceResponse findDraftEvidenceByCurrentUser() {
+        return findDraftEvidenceByCurrentUserUseCase.execute();
     }
 }

@@ -2,9 +2,7 @@ package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.evidence.application.port.DraftReadingEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateDraftReadingEvidenceUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
