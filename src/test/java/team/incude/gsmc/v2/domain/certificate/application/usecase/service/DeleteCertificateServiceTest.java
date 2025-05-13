@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationContext;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incude.gsmc.v2.domain.certificate.domain.Certificate;
 import team.incude.gsmc.v2.domain.certificate.exception.CertificateNotBelongToMemberException;
@@ -15,7 +16,6 @@ import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersist
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
-import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
@@ -31,18 +31,24 @@ class DeleteCertificateServiceTest {
 
     @Mock
     private ScorePersistencePort scorePersistencePort;
+
     @Mock
     private CertificatePersistencePort certificatePersistencePort;
+
     @Mock
     private EvidencePersistencePort evidencePersistencePort;
+
     @Mock
     private OtherEvidencePersistencePort otherEvidencePersistencePort;
-    @Mock
-    private MemberPersistencePort memberPersistencePort;
+
     @Mock
     private S3Port s3Port;
+
     @Mock
     private CurrentMemberProvider currentMemberProvider;
+
+    @Mock
+    private ApplicationContext applicationContext;
 
     @InjectMocks
     private DeleteCertificateService deleteCertificateService;
@@ -61,7 +67,6 @@ class DeleteCertificateServiceTest {
                 Long certId = 1L;
                 String email = "test@gsm.hs.kr";
                 Member member = Member.builder().id(10L).email(email).build();
-
                 Certificate certificate = Certificate.builder()
                         .id(certId)
                         .member(member)
