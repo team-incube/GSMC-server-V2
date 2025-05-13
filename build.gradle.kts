@@ -52,6 +52,7 @@ dependencies {
 	runtimeOnly("com.mysql:mysql-connector-j")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("com.h2database:h2")
 
 	// jwt
 	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
