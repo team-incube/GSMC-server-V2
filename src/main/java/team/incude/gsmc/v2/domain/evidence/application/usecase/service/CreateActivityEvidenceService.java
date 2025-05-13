@@ -56,7 +56,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         }
 
         score.plusValue(1);
-        scorePersistencePort.saveScore(score);
+        score =  scorePersistencePort.saveScore(score);
 
         Evidence evidence = createEvidence(score, activityType);
         ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file, imageUrl);
