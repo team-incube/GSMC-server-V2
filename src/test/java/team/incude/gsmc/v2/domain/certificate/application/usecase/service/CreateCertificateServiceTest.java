@@ -7,14 +7,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockMultipartFile;
 import team.incude.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incude.gsmc.v2.domain.certificate.domain.Certificate;
 import team.incude.gsmc.v2.domain.certificate.exception.DuplicateCertificateException;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
+import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
+import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
@@ -35,12 +37,26 @@ import static org.mockito.Mockito.*;
 @DisplayName("자격증 생성 서비스 클래스의")
 class CreateCertificateServiceTest {
 
-    @Mock private CertificatePersistencePort certificatePersistencePort;
-    @Mock private OtherEvidencePersistencePort otherEvidencePersistencePort;
-    @Mock private CategoryPersistencePort categoryPersistencePort;
-    @Mock private ScorePersistencePort scorePersistencePort;
-    @Mock private S3Port s3Port;
-    @Mock private CurrentMemberProvider currentMemberProvider;
+    @Mock
+    private CertificatePersistencePort certificatePersistencePort;
+
+    @Mock
+    private OtherEvidencePersistencePort otherEvidencePersistencePort;
+
+    @Mock
+    private StudentDetailPersistencePort studentDetailPersistencePort;
+
+    @Mock
+    private ScorePersistencePort scorePersistencePort;
+
+    @Mock
+    private S3Port s3Port;
+
+    @Mock
+    private CurrentMemberProvider currentMemberProvider;
+
+    @Mock
+    private ApplicationContext applicationContext;
 
     @InjectMocks
     private CreateCertificateService createCertificateService;
@@ -69,6 +85,7 @@ class CreateCertificateServiceTest {
                 when(scorePersistencePort.saveScore(any())).thenAnswer(invocation -> invocation.getArgument(0));
                 when(s3Port.uploadFile(any(), any())).thenReturn(CompletableFuture.completedFuture("https://s3.com/cert.pdf"));
                 when(otherEvidencePersistencePort.saveOtherEvidence(any())).thenAnswer(invocation -> invocation.getArgument(0));
+                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(StudentDetail.builder().studentCode("24058").build());
 
                 // when
                 createCertificateService.execute(certificateName, date, file);
@@ -100,6 +117,7 @@ class CreateCertificateServiceTest {
                 when(scorePersistencePort.saveScore(any())).thenAnswer(invocation -> invocation.getArgument(0));
                 when(s3Port.uploadFile(any(), any())).thenReturn(CompletableFuture.completedFuture("https://s3.com/cert.pdf"));
                 when(otherEvidencePersistencePort.saveOtherEvidence(any())).thenAnswer(invocation -> invocation.getArgument(0));
+                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(StudentDetail.builder().studentCode("24058").build());
 
                 // when
                 createCertificateService.execute(certificateName, date, file);
@@ -124,14 +142,12 @@ class CreateCertificateServiceTest {
                 Member member = Member.builder().email("max@test.com").build();
                 Category category = Category.builder().name("MAJOR-CERTIFICATE_NUM").maximumValue(2).build();
                 Score score = Score.builder().value(2).category(category).member(member).build();
-
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock("MAJOR-CERTIFICATE_NUM", member.getEmail())).thenReturn(score);
 
                 // when & then
                 assertThatThrownBy(() -> createCertificateService.execute(certificateName, date, file))
                         .isInstanceOf(ScoreLimitExceededException.class);
-
                 verify(scorePersistencePort, never()).saveScore(any());
                 verify(certificatePersistencePort, never()).saveCertificate(any());
             }
