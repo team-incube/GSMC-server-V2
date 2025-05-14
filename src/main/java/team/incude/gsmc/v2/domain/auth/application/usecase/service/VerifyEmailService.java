@@ -15,7 +15,7 @@ import team.incude.gsmc.v2.domain.auth.exception.VerificationInvalidException;
  * 해당 이메일의 인증 상태를 true로 갱신합니다.
  * <p>인증 코드는 검증 후 즉시 삭제되며, 인증 상태는 {@link AuthenticationPersistencePort}를 통해 갱신됩니다.
  * 코드가 존재하지 않는 경우 {@link VerificationInvalidException}을 발생시킵니다.
- * @author snowykte0426
+ * @author jihoonwjj
  */
 @Service
 @RequiredArgsConstructor

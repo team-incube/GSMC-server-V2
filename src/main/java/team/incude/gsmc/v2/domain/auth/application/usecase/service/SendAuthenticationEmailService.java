@@ -21,7 +21,7 @@ import team.incude.gsmc.v2.global.thirdparty.email.usecase.EmailSendUseCase;
  * <p>기존 인증 기록이 존재하면 시도 횟수를 증가시키고, 초과 시 {@link EmailAuthAttemptExceededException}을 발생시킵니다.
  * 새로운 인증 기록이 없을 경우 초기 시도 기록과 함께 저장합니다.
  * 이메일은 {@link EmailPort}를 통해 실제 발송되며, 인증 코드는 {@link GenerationAuthCode}에서 생성됩니다.
- * @author snowykte0426
+ * @author jihoonwjj
  */
 @Service
 @RequiredArgsConstructor

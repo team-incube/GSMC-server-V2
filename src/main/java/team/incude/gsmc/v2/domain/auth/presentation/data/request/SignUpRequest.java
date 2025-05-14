@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
  * @param name 사용자 이름 (최대 20자)
  * @param email 사용자 이메일 (이메일 형식, 최대 50자)
  * @param password 사용자 비밀번호 (최대 30자)
+ * @author jihoonwjj
  */
 public record SignUpRequest(
         @NotBlank @Size(max=20) String name,

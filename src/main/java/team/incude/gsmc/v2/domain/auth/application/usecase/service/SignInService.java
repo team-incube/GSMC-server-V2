@@ -19,7 +19,7 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.JwtIssueUseCase;
  * 실패 시 {@link PasswordInvalidException}을 발생시킵니다.
  * <p>토큰 발급은 {@link JwtIssueUseCase}를 통해 처리되며,
  * 최종 응답은 {@link AuthTokenResponse} 형태로 반환됩니다.
- * @author snowykte0426
+ * @author jihoonwjj
  */
 @Service
 @RequiredArgsConstructor

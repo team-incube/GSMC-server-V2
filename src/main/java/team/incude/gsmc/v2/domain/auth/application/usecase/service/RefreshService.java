@@ -18,7 +18,7 @@ import team.incude.gsmc.v2.global.security.jwt.usecase.JwtRefreshManagementUseCa
  * 이메일을 추출하고 새로운 액세스 및 리프레시 토큰을 발급한 후 기존 토큰은 폐기합니다.
  * <p>발급된 토큰은 {@link AuthTokenResponse} 형태로 반환되며, 사용자의 권한 정보도 포함됩니다.
  * 예외 발생 시 {@link RefreshTokenInvalidException}을 던집니다.
- * @author snowykte0426
+ * @author jihoonwjj
  */
 @Service
 @RequiredArgsConstructor

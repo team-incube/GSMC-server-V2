@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
  * @param accessTokenExpiresAt 액세스 토큰 만료 시각
  * @param refreshTokenExpiresAt 리프레시 토큰 만료 시각
  * @param role 사용자 권한 정보
+ * @author jihoonwjj
  */
 public record AuthTokenResponse(
         String accessToken,

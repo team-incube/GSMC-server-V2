@@ -30,7 +30,7 @@ import team.incude.gsmc.v2.domain.member.persistence.mapper.StudentDetailMapper;
  *   <li>{@link MemberExistException} - 이미 존재하는 회원</li>
  *   <li>{@link EmailFormatInvalidException} - 형식이 잘못된 이메일</li>
  * </ul>
- * @author snowykte0426
+ * @author jihoonwjj
  */
 @Service
 @Transactional

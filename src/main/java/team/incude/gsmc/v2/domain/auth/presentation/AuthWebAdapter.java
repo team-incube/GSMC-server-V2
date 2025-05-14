@@ -15,7 +15,7 @@ import team.incude.gsmc.v2.domain.auth.presentation.data.request.ChangePasswordR
  * <p>회원 가입, 로그인, 토큰 갱신, 이메일 인증, 비밀번호 변경 등의 요청을 수신하고
  * {@link AuthApplicationPort}를 통해 도메인 유스케이스를 실행합니다.
  * <p>기본 경로: {@code /api/v2/auth}
- * @author snowykte0426
+ * @author jihoonwjj, snowykte0426
  */
 @RequestMapping("/api/v2/auth")
 @RequiredArgsConstructor

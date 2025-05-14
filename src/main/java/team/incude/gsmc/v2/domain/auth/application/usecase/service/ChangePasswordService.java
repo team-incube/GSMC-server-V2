@@ -19,8 +19,7 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
  * @see MemberPersistencePort
  * @see BCryptPasswordEncoder
  * @see MemberForbiddenException
- *
- * author snowykte0426
+ * author jihoonwjj
  */
 @Service
 @Transactional
