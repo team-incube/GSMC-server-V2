@@ -30,7 +30,6 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
     private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
 
     @Override
     public GetEvidencesResponse execute(EvidenceType type) {
