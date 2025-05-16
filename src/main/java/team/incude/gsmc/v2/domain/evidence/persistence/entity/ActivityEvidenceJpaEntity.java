@@ -11,12 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ActivityEvidenceJpaEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "evidence_id")
     private Long id;
 
     @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "evidence_id", unique = true)
+    @MapsId
     private EvidenceJpaEntity evidence;
 
     @Column(name = "title", nullable = false)
