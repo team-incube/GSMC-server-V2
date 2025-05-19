@@ -1,0 +1,47 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:${RDB_TYPE}://${RDB_HOST}:${RDB_PORT}/${RDB_SCHEMA}
+    username: ${RDB_USERNAME}
+    password: ${RDB_PASSWORD}
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  sql:
+    init:
+      mode: never
+  security:
+    user:
+      name: prometheus
+      password: prometheus
+    cors:
+      allowed-origins: ${ALLOWED_ORIGINS}
+jwt:
+  access-token:
+    secret: ${JWT_ACCESS_TOKEN_SECRET}
+    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+  refresh-token:
+    secret: ${JWT_REFRESH_TOKEN_SECRET}
+    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+webhook:
+  discord:
+    url: ${DISCORD_WEBHOOK_URL}
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+  bucket:
+    name: ${AWS_S3_BUCKET}
+    region: ${AWS_REGION}
+mail:
+  host: ${EMAIL_HOST}
+  port: 587
+  username: ${EMAIL_USERNAME}
+  password: ${EMAIL_PASSWORD}
+  ttl: ${EMAIL_TTL}
+  attempt-limits: 5
