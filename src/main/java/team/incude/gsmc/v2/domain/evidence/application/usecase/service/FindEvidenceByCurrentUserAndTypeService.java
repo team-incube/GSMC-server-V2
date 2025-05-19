@@ -17,7 +17,7 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetReading
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidencesResponse;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 import java.util.List;
 

@@ -21,7 +21,7 @@ import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
-import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 

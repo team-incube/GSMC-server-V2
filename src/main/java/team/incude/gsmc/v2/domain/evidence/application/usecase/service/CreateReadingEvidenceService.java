@@ -17,7 +17,7 @@ import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
-import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
