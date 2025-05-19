@@ -101,7 +101,7 @@ public class DiscordLogbackService extends AppenderBase<ILoggingEvent> {
     }
 
     /**
-     * Discord 웹훅 제한을 고려해 메시지를 최대 길이(850자)로 잘라냅니다.
+     * Discord 웹훅 제한을 고려해 메시지를 최대 길이(950자)로 잘라냅니다.
      * @param str 자를 문자열
      * @return 자른 문자열
      */
