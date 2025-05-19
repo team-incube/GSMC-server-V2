@@ -20,6 +20,15 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
+
+/**
+ * Logback의 ERROR 로그를 Discord 웹훅을 통해 전송하는 커스텀 Appender 클래스입니다.
+ * <p>{@link AppenderBase}를 상속하여 Spring Boot 애플리케이션에서 발생하는 예외 로그를
+ * Discord 채널로 실시간 알림 형태로 전송합니다.
+ * <p>생성된 메시지는 임베드 형태로 전송되며, 예외 이름, 발생 위치, 메시지, 스택 트레이스 일부를 포함합니다.
+ * <p>운영 환경에서만 활성화되며, {@code !dev & !test} 프로필 조건으로 제한됩니다.
+ * @author snowykte0426
+ */
 @Profile("!dev & !test")
 @Slf4j
 public class DiscordLogbackService extends AppenderBase<ILoggingEvent> {
@@ -35,6 +44,11 @@ public class DiscordLogbackService extends AppenderBase<ILoggingEvent> {
         this.objectMapper = new ObjectMapper();
     }
 
+    /**
+     * ERROR 수준 이상의 로그 이벤트가 발생했을 때 Discord 웹훅으로 로그 정보를 전송합니다.
+     * <p>예외 정보가 포함된 경우, 예외 클래스명, 발생 위치, 메시지, 스택 트레이스 일부를 포함한 임베드 메시지를 구성합니다.
+     * @param event 로그 이벤트 객체
+     */
     @Override
     protected void append(ILoggingEvent event) {
         if (!event.getLevel().isGreaterOrEqual(Level.ERROR)) return;
@@ -86,7 +100,12 @@ public class DiscordLogbackService extends AppenderBase<ILoggingEvent> {
         }
     }
 
+    /**
+     * Discord 웹훅 제한을 고려해 메시지를 최대 길이(850자)로 잘라냅니다.
+     * @param str 자를 문자열
+     * @return 자른 문자열
+     */
     private String truncate(String str) {
-        return str.length() > 800 ? str.substring(0, 900) + "..." : str;
+        return str.length() > 850 ? str.substring(0, 850) + "..." : str;
     }
 }
