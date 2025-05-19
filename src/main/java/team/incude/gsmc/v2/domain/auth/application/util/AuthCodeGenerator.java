@@ -12,7 +12,7 @@ import java.security.SecureRandom;
  * @author jihoonwjj
  */
 @UtilityClass
-public class GenerationAuthCode {
+public class AuthCodeGenerator {
 
     public String generateAuthCode() {
         return String.valueOf(10000000 + new SecureRandom().nextInt(90000000));
