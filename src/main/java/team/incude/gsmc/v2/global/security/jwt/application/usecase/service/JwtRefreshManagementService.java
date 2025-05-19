@@ -1,9 +1,9 @@
-package team.incude.gsmc.v2.global.security.jwt.usecase.service;
+package team.incude.gsmc.v2.global.security.jwt.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import team.incude.gsmc.v2.global.security.jwt.persistence.repository.RefreshTokenRedisRepository;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtRefreshManagementUseCase;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtRefreshManagementUseCase;
 
 @Service
 @RequiredArgsConstructor

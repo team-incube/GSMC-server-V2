@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.usecase.service;
+package team.incude.gsmc.v2.global.security.jwt.application.usecase.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
 import team.incude.gsmc.v2.global.security.jwt.persistence.repository.RefreshTokenRedisRepository;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtParserUseCase;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
 
 import javax.crypto.SecretKey;
 

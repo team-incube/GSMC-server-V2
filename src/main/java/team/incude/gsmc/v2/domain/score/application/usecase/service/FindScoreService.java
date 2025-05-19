@@ -10,7 +10,7 @@ import team.incude.gsmc.v2.domain.score.application.usecase.FindScoreUseCase;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.presentation.data.GetScoreDto;
 import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
-import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 import java.util.List;
 

@@ -7,10 +7,10 @@ import team.incude.gsmc.v2.domain.auth.exception.RefreshTokenInvalidException;
 import team.incude.gsmc.v2.domain.auth.presentation.data.response.AuthTokenResponse;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtIssueUseCase;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtParserUseCase;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtRefreshManagementUseCase;
+import team.incude.gsmc.v2.global.security.jwt.presentation.dto.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtIssueUseCase;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtRefreshManagementUseCase;
 
 /**
  * 리프레시 토큰을 검증하고 새로운 인증 토큰을 발급하는 유스케이스 구현 클래스입니다.

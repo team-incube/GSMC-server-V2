@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtParserUseCase;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
 
 import java.io.IOException;
 import java.util.List;
