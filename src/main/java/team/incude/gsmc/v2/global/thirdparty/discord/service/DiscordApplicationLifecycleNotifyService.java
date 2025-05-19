@@ -28,7 +28,7 @@ import java.util.List;
  * Discord 메시지는 임베드 형식으로 전송되며, 색상 및 타임스탬프를 포함합니다.
  * @author snowykte0426
  */
-@Profile("!dev & !test")
+@Profile("!test") // TODO: 나중에 dev 프로필도 제외
 @Slf4j
 @Service
 public class DiscordApplicationLifecycleNotifyService implements SmartLifecycle {
