@@ -29,7 +29,7 @@ import java.util.Objects;
  * <p>운영 환경에서만 활성화되며, {@code !dev & !test} 프로필 조건으로 제한됩니다.
  * @author snowykte0426
  */
-@Profile("!test")  // TODO: 나중에 dev 프로필도 제외
+@Profile("!dev & !test")
 @Slf4j
 public class DiscordLogbackService extends AppenderBase<ILoggingEvent> {
 

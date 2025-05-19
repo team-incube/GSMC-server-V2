@@ -5,7 +5,7 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <springProfile name="!dev(나중에 수정) &amp; !test">
+    <springProfile name="!dev &amp; !test">
         <appender name="DISCORD" class="team.incude.gsmc.v2.global.thirdparty.discord.service.DiscordLogbackService">
             <webhookUrl>${discordWebhook}</webhookUrl>
         </appender>
