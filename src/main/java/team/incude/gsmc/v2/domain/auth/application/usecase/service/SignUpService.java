@@ -62,7 +62,7 @@ public class SignUpService implements SignUpUseCase {
             throw new MemberExistException();
         }
 
-        StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCodeWithLock(parsingEmail(email));
+        StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCodeWithLock(parseEmail(email));
 
         Member member = Member.builder()
                 .email(email)
@@ -93,7 +93,7 @@ public class SignUpService implements SignUpUseCase {
      * @return 학번 문자열
      * @throws EmailFormatInvalidException 형식이 올바르지 않은 경우
      */
-    private String parsingEmail(String email) {
+    private String parseEmail(String email) {
 
         if (!email.startsWith("s") || !email.endsWith("@gsm.hs.kr")) {
             throw new EmailFormatInvalidException();
