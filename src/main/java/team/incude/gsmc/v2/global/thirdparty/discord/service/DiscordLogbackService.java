@@ -106,6 +106,6 @@ public class DiscordLogbackService extends AppenderBase<ILoggingEvent> {
      * @return 자른 문자열
      */
     private String truncate(String str) {
-        return str.length() > 850 ? str.substring(0, 850) + "..." : str;
+        return str.length() > 950 ? str.substring(0, 950) + "..." : str;
     }
 }
