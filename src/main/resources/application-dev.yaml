@@ -29,7 +29,9 @@ jwt:
   refresh-token:
     secret: ${JWT_REFRESH_TOKEN_SECRET:f1b1ce8f8c978ab7b6bab79cf406c51fdf2383d1cd1b10bd1080dad3ceb1dda3}
     expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800}
-
+webhook:
+  discord:
+    url: ${DISCORD_WEBHOOK_URL}
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
@@ -40,7 +42,7 @@ aws:
 mail:
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  username: ${EMAIL_USERNAME:s}
-  password: ${EMAIL_PASSWORD:s}
+  username: ${EMAIL_USERNAME:wangjajihooon@gmail.com}
+  password: ${EMAIL_PASSWORD:glaqmpwiqtuwalps}
   ttl: ${EMAIL_TTL:300}
   attempt-limits: 5

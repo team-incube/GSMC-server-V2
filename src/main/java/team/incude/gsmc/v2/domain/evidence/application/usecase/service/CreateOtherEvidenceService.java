@@ -54,7 +54,7 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
             throw new ScoreLimitExceededException();
         }
         score.plusValue(1);
-        scorePersistencePort.saveScore(score);
+        score = scorePersistencePort.saveScore(score);
 
         EvidenceType evidenceType = categoryMap.get(categoryName);
         Evidence evidence = createEvidence(score, evidenceType);

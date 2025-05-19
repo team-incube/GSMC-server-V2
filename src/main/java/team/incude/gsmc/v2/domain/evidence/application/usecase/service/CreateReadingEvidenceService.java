@@ -13,11 +13,15 @@ import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
+import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
+import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
-import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -32,6 +36,7 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
     private final ScorePersistencePort scorePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final CategoryPersistencePort categoryPersistencePort;
 
     private final static String HUMANITIES_READING = "HUMANITIES-READING";
 
@@ -41,15 +46,30 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(HUMANITIES_READING, studentDetail.getStudentCode());
 
+        if (score == null) {
+            score = createScore(member);
+        } else if (ValueLimiterUtil.isExceedingLimit(score.getValue() + 1, score.getCategory().getMaximumValue())) {
+            throw new ScoreLimitExceededException();
+        }
+
         score.plusValue(1);
+        score = scorePersistencePort.saveScore(score);
 
         Evidence evidence = createEvidence(score);
         ReadingEvidence readingEvidence = createReadingEvidence(evidence, title, author, page, content);
 
-        scorePersistencePort.saveScore(score);
         readingEvidencePersistencePort.saveReadingEvidence(readingEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
         applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
+    }
+
+    private Score createScore(Member member) {
+        Category category = categoryPersistencePort.findCategoryByName(HUMANITIES_READING);
+        return Score.builder()
+                .category(category)
+                .value(0)
+                .member(member)
+                .build();
     }
 
     private Evidence createEvidence(Score score) {

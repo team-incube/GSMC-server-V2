@@ -13,6 +13,14 @@ import org.thymeleaf.context.Context;
 import team.incude.gsmc.v2.global.thirdparty.email.usecase.EmailSendUseCase;
 import team.incude.gsmc.v2.global.thirdparty.email.exception.EmailSendFailedException;
 
+/**
+ * 인증 코드를 포함한 이메일을 전송하는 서비스 클래스입니다.
+ * <p>{@link EmailSendUseCase}를 구현하며, Thymeleaf 템플릿을 렌더링하여
+ * HTML 기반 인증 이메일을 구성하고 발송합니다.
+ * <p>비동기 방식으로 실행되며, SMTP 전송 실패 시 {@link EmailSendFailedException}이 발생합니다.
+ * 이메일에는 GSMC 로고 이미지와 함께 인증 코드가 포함됩니다.
+ * @author jihoonwjj, snowykte0426
+ */
 @Service
 @RequiredArgsConstructor
 public class EmailSendService implements EmailSendUseCase {
