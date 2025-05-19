@@ -29,6 +29,10 @@ spring:
     cors:
       allowed-origins: http://localhost:3000,http://localhost:3001
 
+webhook:
+    discord:
+        url: dummy
+
 jwt:
   access-token:
     secret: 0123456789abcdef0123456789abcdef
