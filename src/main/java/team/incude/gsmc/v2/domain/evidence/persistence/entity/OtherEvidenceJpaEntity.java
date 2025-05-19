@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OtherEvidenceJpaEntity {
     @Id
+    @Column(name = "evidence_id", unique = true)
     private Long id;
 
     @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
