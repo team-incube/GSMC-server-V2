@@ -50,4 +50,8 @@ public class JwtAdapter implements JwtPort {
     public String resolveToken(HttpServletRequest request) {
         return jwtParserUseCase.resolveToken(request);
     }
+
+    public void deleteRefreshToken(String refreshToken) {
+        jwtRefreshManagementUseCase.deleteRefreshToken(refreshToken);
+    }
 }
