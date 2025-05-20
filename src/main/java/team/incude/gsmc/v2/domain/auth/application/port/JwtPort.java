@@ -17,7 +17,6 @@ import team.incude.gsmc.v2.global.security.jwt.data.TokenDto;
  *   <li>Refresh Token 삭제</li>
  * </ul>
  * 해당 포트를 구현하는 클래스는 실제 JWT 처리 로직을 담고 있어야 합니다.
- *
  * @author jihoonwjj
  */
 public interface JwtPort {

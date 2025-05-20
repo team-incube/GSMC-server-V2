@@ -37,7 +37,6 @@ public class JwtAdapter implements JwtPort {
 
     /**
      * 주어진 이메일과 권한을 기반으로 액세스토큰을 발급합니다.
-     *
      * @param email 사용자 이메일
      * @param roles 사용자 권한
      * @return 발급된 액세스토큰 DTO
@@ -47,7 +46,6 @@ public class JwtAdapter implements JwtPort {
     }
     /**
      * 주어진 이메일을 기반으로 리프레시토큰을 발급합니다.
-     *
      * @param email 사용자 이메일
      * @return 발급된 리프레시토큰 DTO
      */
@@ -56,7 +54,6 @@ public class JwtAdapter implements JwtPort {
     }
     /**
      * 주어진 액세스토큰의 유효성을 검증합니다.
-     *
      * @param token 검증할 액세스토큰
      * @return 유효 여부
      */
@@ -65,7 +62,6 @@ public class JwtAdapter implements JwtPort {
     }
     /**
      * 주어진 리프레시토큰의 유효성을 검증합니다.
-     *
      * @param token 검증할 리프레시토큰
      * @return 유효 여부
      */
@@ -74,7 +70,6 @@ public class JwtAdapter implements JwtPort {
     }
     /**
      * 액세스토큰으로부터 사용자 이메일을 추출합니다.
-     *
      * @param token 액세스토큰
      * @return 추출된 이메일
      */
@@ -83,7 +78,6 @@ public class JwtAdapter implements JwtPort {
     }
     /**
      * 리프레시토큰으로부터 사용자 이메일을 추출합니다.
-     *
      * @param token 리프레시토큰
      * @return 추출된 이메일
      */
@@ -101,7 +95,6 @@ public class JwtAdapter implements JwtPort {
     }
     /**
      * HTTP 요청 헤더에서 JWT를 추출합니다.
-     *
      * @param request HTTP 요청 객체
      * @return 추출된 JWT 문자열
      */
@@ -110,7 +103,6 @@ public class JwtAdapter implements JwtPort {
     }
     /**
      * 주어진 리프레시토큰을 삭제합니다.
-     *
      * @param refreshToken 삭제할 리프레시토큰
      */
     public void deleteRefreshToken(String refreshToken) {
