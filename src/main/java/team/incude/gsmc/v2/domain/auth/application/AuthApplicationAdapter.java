@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.domain.auth.persistence;
+package team.incude.gsmc.v2.domain.auth.application;
 
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.auth.application.port.AuthApplicationPort;

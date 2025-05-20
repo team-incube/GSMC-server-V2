@@ -11,8 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import team.incude.gsmc.v2.domain.auth.application.port.JwtPort;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtParserUseCase;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,19 +21,19 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
-    private final JwtParserUseCase jwtParserUseCase;
+    private final JwtPort jwtPort;
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String token = jwtParserUseCase.resolveToken(request);
+        String token = jwtPort.resolveToken(request);
         String uri = request.getRequestURI();
         if (uri.startsWith("/api/v2/auth") || uri.startsWith("/actuator/prometheus") || uri.startsWith("/api/v2/health")) {
             filterChain.doFilter(request, response);
             return;
         }
-        if (token != null && jwtParserUseCase.validateAccessToken(token)) {
-            String email = jwtParserUseCase.getEmailFromAccessToken(token);
-            MemberRole roles = jwtParserUseCase.getRolesFromAccessToken(token);
+        if (token != null && jwtPort.validateAccessToken(token)) {
+            String email = jwtPort.getEmailFromAccessToken(token);
+            MemberRole roles = jwtPort.getRolesFromAccessToken(token);
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roles.name()));
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
