@@ -1,19 +1,19 @@
-package team.incude.gsmc.v2.global.security.jwt.persistence;
+package team.incude.gsmc.v2.global.security.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
-import team.incude.gsmc.v2.global.security.jwt.application.port.JwtPersistencePort;
+import team.incude.gsmc.v2.domain.auth.application.port.JwtPort;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtIssueUseCase;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtRefreshManagementUseCase;
-import team.incude.gsmc.v2.global.security.jwt.presentation.dto.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
 
 @Adapter(direction = PortDirection.INBOUND)
 @RequiredArgsConstructor
-public class JwtPersistenceAdapter implements JwtPersistencePort {
+public class JwtAdapter implements JwtPort {
 
     private final JwtIssueUseCase jwtIssueUseCase;
     private final JwtParserUseCase jwtParserUseCase;
