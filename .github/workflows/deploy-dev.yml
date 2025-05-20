@@ -155,6 +155,10 @@ jobs:
                   value: ${{ secrets.REDIS_HOST }}
                 - name: REDIS_PORT
                   value: ${{ secrets.REDIS_PORT }}
+                - name: CACHE_EXPIRE_AFTER_WRITE
+                  value: ${{ secrets.CACHE_EXPIRE_AFTER_WRITE }}
+                - name: DISCORD_WEBHOOK_URL
+                  value: ${{ secrets.DISCORD_WEBHOOK_URL }}
               buildenv: []
             context:
               git:
