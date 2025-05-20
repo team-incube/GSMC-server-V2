@@ -1,7 +1,7 @@
 package team.incude.gsmc.v2.global.security.jwt.application.usecase;
 
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.presentation.dto.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
 
 public interface JwtIssueUseCase {
     TokenDto issueAccessToken(String email, MemberRole roles);

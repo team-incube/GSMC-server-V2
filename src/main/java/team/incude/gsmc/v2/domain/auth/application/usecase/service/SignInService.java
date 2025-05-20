@@ -8,7 +8,7 @@ import team.incude.gsmc.v2.domain.auth.exception.PasswordInvalidException;
 import team.incude.gsmc.v2.domain.auth.presentation.data.response.AuthTokenResponse;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.global.security.jwt.presentation.dto.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtIssueUseCase;
 
 /**

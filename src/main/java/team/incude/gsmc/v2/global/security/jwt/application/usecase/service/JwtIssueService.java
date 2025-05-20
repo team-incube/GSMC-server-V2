@@ -10,7 +10,7 @@ import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtIssueUseCase;
 import team.incude.gsmc.v2.global.security.jwt.persistence.entity.RefreshTokenRedisEntity;
 import team.incude.gsmc.v2.global.security.jwt.persistence.repository.RefreshTokenRedisRepository;
-import team.incude.gsmc.v2.global.security.jwt.presentation.dto.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
