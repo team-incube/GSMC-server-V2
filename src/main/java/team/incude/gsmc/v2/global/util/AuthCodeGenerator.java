@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.domain.auth.application.util;
+package team.incude.gsmc.v2.global.util;
 
 import lombok.experimental.UtilityClass;
 

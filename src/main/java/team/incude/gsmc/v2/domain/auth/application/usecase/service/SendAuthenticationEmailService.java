@@ -8,7 +8,7 @@ import team.incude.gsmc.v2.domain.auth.application.port.AuthCodePersistencePort;
 import team.incude.gsmc.v2.domain.auth.application.port.AuthenticationPersistencePort;
 import team.incude.gsmc.v2.domain.auth.application.port.EmailPort;
 import team.incude.gsmc.v2.domain.auth.application.usecase.SendAuthenticationEmailUseCase;
-import team.incude.gsmc.v2.domain.auth.application.util.AuthCodeGenerator;
+import team.incude.gsmc.v2.global.util.AuthCodeGenerator;
 import team.incude.gsmc.v2.domain.auth.domain.AuthCode;
 import team.incude.gsmc.v2.domain.auth.domain.Authentication;
 import team.incude.gsmc.v2.domain.auth.exception.EmailAuthAttemptExceededException;

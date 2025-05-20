@@ -17,7 +17,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 import team.incude.gsmc.v2.global.util.ExtractFileKeyUtil;
 

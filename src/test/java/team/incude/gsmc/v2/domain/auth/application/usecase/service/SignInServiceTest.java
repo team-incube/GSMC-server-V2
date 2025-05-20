@@ -13,8 +13,8 @@ import team.incude.gsmc.v2.domain.auth.presentation.data.response.AuthTokenRespo
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtIssueUseCase;
+import team.incude.gsmc.v2.global.security.jwt.data.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtIssueUseCase;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;

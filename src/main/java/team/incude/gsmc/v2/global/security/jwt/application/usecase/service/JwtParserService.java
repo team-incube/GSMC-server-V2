@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.usecase.service;
+package team.incude.gsmc.v2.global.security.jwt.application.usecase.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,9 +10,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
 import team.incude.gsmc.v2.global.security.jwt.persistence.repository.RefreshTokenRedisRepository;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtParserUseCase;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
 
 import javax.crypto.SecretKey;
+
+/**
+ * JWT 파싱 및 유효성 검증 기능을 제공하는 유스케이스 구현 클래스입니다.
+ * <p>{@link JwtParserUseCase}를 구현하며, 액세스 토큰 및 리프레시 토큰에서
+ * 이메일, 권한 정보 추출과 유효성 검사, HTTP 요청에서의 토큰 해석 등을 수행합니다.
+ * <p>기능 설명:
+ * <ul>
+ *   <li>토큰 유효성 검사</li>
+ *   <li>이메일 및 권한 추출</li>
+ *   <li>HTTP 요청에서 토큰 추출</li>
+ * </ul>
+ * <p>JJWT 라이브러리를 사용하여 서명된 JWT의 Claim을 파싱하며,
+ * 리프레시 토큰의 경우 Redis 저장 여부도 함께 확인합니다.
+ * @author jihoonwjj
+ */
 
 @Service
 @RequiredArgsConstructor
