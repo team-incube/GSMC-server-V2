@@ -2,11 +2,9 @@ package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.DraftActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.FindDraftActivityEvidenceByDraftIdUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.DraftActivityEvidence;
-import team.incude.gsmc.v2.domain.evidence.persistence.repository.DraftActivityEvidenceRedisRepository;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetDraftActivityEvidenceResponse;
 
 import java.util.UUID;
