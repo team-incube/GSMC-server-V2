@@ -1,3 +1,5 @@
+package team.incude.gsmc.v2.domain.auth.application.port;
+
 /**
  * 이메일 전송 기능을 추상화한 포트 인터페이스입니다.
  * <p>도메인 계층이 외부 이메일 발송 시스템에 직접 의존하지 않도록 하기 위해 설계되었으며,
@@ -8,8 +10,6 @@
  * 실제 구현은 SMTP 외부 시스템에 따라 어댑터 계층에서 이루어집니다.
  * @author jihoonwjj
  */
-package team.incude.gsmc.v2.domain.auth.application.port;
-
 public interface EmailPort {
     void sendEmail(String to, String authCode);
 }
