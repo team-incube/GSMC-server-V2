@@ -2,15 +2,13 @@ package team.incude.gsmc.v2.domain.auth.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import team.incude.gsmc.v2.domain.auth.application.port.JwtPort;
 import team.incude.gsmc.v2.domain.auth.application.usecase.RefreshUseCase;
 import team.incude.gsmc.v2.domain.auth.exception.RefreshTokenInvalidException;
 import team.incude.gsmc.v2.domain.auth.presentation.data.response.AuthTokenResponse;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
-import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtIssueUseCase;
-import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
-import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtRefreshManagementUseCase;
 
 /**
  * 리프레시 토큰을 검증하고 새로운 인증 토큰을 발급하는 유스케이스 구현 클래스입니다.
@@ -24,9 +22,7 @@ import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtRefreshMan
 @RequiredArgsConstructor
 public class RefreshService implements RefreshUseCase {
 
-    private final JwtIssueUseCase jwtIssueUseCase;
-    private final JwtParserUseCase jwtParserUseCase;
-    private final JwtRefreshManagementUseCase jwtRefreshManagementUseCase;
+    private final JwtPort jwtPort;
     private final MemberPersistencePort memberPersistencePort;
 
     /**
@@ -38,12 +34,12 @@ public class RefreshService implements RefreshUseCase {
      * @throws RefreshTokenInvalidException 토큰이 유효하지 않을 경우 발생
      */
     public AuthTokenResponse execute(String refreshToken) {
-        if (jwtParserUseCase.validateRefreshToken(refreshToken)) {
-            String email = jwtParserUseCase.getEmailFromRefreshToken(refreshToken);
+        if (jwtPort.validateRefreshToken(refreshToken)) {
+            String email = jwtPort.getEmailFromRefreshToken(refreshToken);
             Member member = memberPersistencePort.findMemberByEmail(email);
-            TokenDto newAccessToken = jwtIssueUseCase.issueAccessToken(email, member.getRole());
-            TokenDto newRefreshToken = jwtIssueUseCase.issueRefreshToken(email);
-            jwtRefreshManagementUseCase.deleteRefreshToken(refreshToken);
+            TokenDto newAccessToken = jwtPort.issueAccessToken(email, member.getRole());
+            TokenDto newRefreshToken = jwtPort.issueRefreshToken(email);
+            jwtPort.deleteRefreshToken(refreshToken);
             return new AuthTokenResponse(
                     newAccessToken.token(),
                     newRefreshToken.token(),
