@@ -1,10 +1,10 @@
-package team.incude.gsmc.v2.global.security.jwt.application.port;
+package team.incude.gsmc.v2.domain.auth.application.port;
 
 import jakarta.servlet.http.HttpServletRequest;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.presentation.dto.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
 
-public interface JwtPersistencePort {
+public interface JwtPort {
     TokenDto issueAccessToken(String email, MemberRole roles);
 
     TokenDto issueRefreshToken(String email);
