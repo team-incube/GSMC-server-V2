@@ -36,4 +36,6 @@ public interface JwtPort {
     MemberRole getRolesFromAccessToken(String accessToken);
 
     String resolveToken(HttpServletRequest request);
+
+    void deleteRefreshToken(String refreshToken);
 }
