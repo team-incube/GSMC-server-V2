@@ -126,13 +126,13 @@ public class EvidenceWebAdapter {
     }
 
     @PostMapping("/current/draft/activity")
-    public ResponseEntity<CreateDraftEvidenceResponse> createDraftActivity(@RequestBody CreateDraftActivityEvidenceReqeust reqeust) {
+    public ResponseEntity<CreateDraftEvidenceResponse> createDraftActivity(@Valid @ModelAttribute CreateDraftActivityEvidenceReqeust reqeust) {
         return ResponseEntity.status(HttpStatus.CREATED).body(evidenceApplicationPort.createDraftActivityEvidence(
                 reqeust.draftId(), reqeust.categoryName(), reqeust.title(), reqeust.content(), reqeust.file(), reqeust.imageUrl(), reqeust.activityType()));
     }
 
     @PostMapping("/current/draft/reading")
-    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@RequestBody CreateReadingEvidenceRequest reqeust) {
+    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@Valid @RequestBody CreateReadingEvidenceRequest reqeust) {
         return ResponseEntity.status(HttpStatus.CREATED).body(evidenceApplicationPort.createDraftReadingEvidence(
                 reqeust.draftId(), reqeust.title(), reqeust.author(), reqeust.page(), reqeust.content()));
     }
