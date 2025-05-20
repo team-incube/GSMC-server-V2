@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import team.incude.gsmc.v2.domain.auth.application.port.JwtPort;
 import team.incude.gsmc.v2.domain.auth.exception.RefreshTokenInvalidException;
 import team.incude.gsmc.v2.domain.auth.presentation.data.response.AuthTokenResponse;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
@@ -27,13 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RefreshServiceTest {
 
     @Mock
-    private JwtIssueService jwtIssueService;
-
-    @Mock
-    private JwtParserService jwtParserService;
-
-    @Mock
-    private JwtRefreshManagementService jwtRefreshManagementService;
+    private JwtPort jwtPort;
 
     @Mock
     private MemberPersistencePort memberPersistencePort;
@@ -67,11 +62,11 @@ class RefreshServiceTest {
                 TokenDto newAccessToken = new TokenDto("newAccessToken", accessTokenExpiration);
                 TokenDto newRefreshToken = new TokenDto("newRefreshToken", refreshTokenExpiration);
 
-                when(jwtParserService.validateRefreshToken(refreshToken)).thenReturn(true);
-                when(jwtParserService.getEmailFromRefreshToken(refreshToken)).thenReturn(email);
+                when(jwtPort.validateRefreshToken(refreshToken)).thenReturn(true);
+                when(jwtPort.getEmailFromRefreshToken(refreshToken)).thenReturn(email);
                 when(memberPersistencePort.findMemberByEmail(email)).thenReturn(member);
-                when(jwtIssueService.issueAccessToken(email, role)).thenReturn(newAccessToken);
-                when(jwtIssueService.issueRefreshToken(email)).thenReturn(newRefreshToken);
+                when(jwtPort.issueAccessToken(email, role)).thenReturn(newAccessToken);
+                when(jwtPort.issueRefreshToken(email)).thenReturn(newRefreshToken);
 
                 // when
                 AuthTokenResponse response = refreshService.execute(refreshToken);
@@ -85,7 +80,7 @@ class RefreshServiceTest {
                         () -> assertEquals(role, response.role())
                 );
 
-                verify(jwtRefreshManagementService).deleteRefreshToken(refreshToken);
+                verify(jwtPort).deleteRefreshToken(refreshToken);
             }
         }
 
@@ -99,7 +94,7 @@ class RefreshServiceTest {
 
                 // given
                 String invalidToken = "invalidToken";
-                when(jwtParserService.validateRefreshToken(invalidToken)).thenReturn(false);
+                when(jwtPort.validateRefreshToken(invalidToken)).thenReturn(false);
 
                 // when
                 assertThrows(RefreshTokenInvalidException.class,
@@ -107,7 +102,7 @@ class RefreshServiceTest {
                 );
 
                 // then
-                verify(jwtRefreshManagementService, never()).deleteRefreshToken(any());
+                verify(jwtPort, never()).deleteRefreshToken(any());
             }
         }
     }
