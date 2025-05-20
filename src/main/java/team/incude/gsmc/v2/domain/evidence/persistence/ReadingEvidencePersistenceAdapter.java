@@ -4,22 +4,17 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.evidence.exception.DraftReadingEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
-import team.incude.gsmc.v2.domain.evidence.persistence.repository.DraftReadingEvidenceRedisRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
-import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QReadingEvidenceJpaEntity.readingEvidenceJpaEntity;
@@ -34,8 +29,6 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private final ReadingEvidenceJpaRepository readingEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ReadingEvidenceMapper readingEvidenceMapper;
-    private final MemberMapper memberMapper;
-    private final DraftReadingEvidenceRedisRepository draftReadingEvidenceRedisRepository;
 
     @Override
     public List<ReadingEvidence> findReadingEvidenceByEmail(String email) {
