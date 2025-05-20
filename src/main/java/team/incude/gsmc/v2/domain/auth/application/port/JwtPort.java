@@ -2,7 +2,7 @@ package team.incude.gsmc.v2.domain.auth.application.port;
 
 import jakarta.servlet.http.HttpServletRequest;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.data.TokenDto;
 
 /**
  * Jwt 관련 유스케이스를 정의하는 포트 인터페이스입니다.

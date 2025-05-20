@@ -9,7 +9,7 @@ import team.incude.gsmc.v2.domain.auth.application.port.JwtPort;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtIssueUseCase;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtRefreshManagementUseCase;
-import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
+import team.incude.gsmc.v2.global.security.jwt.data.TokenDto;
 
 @Adapter(direction = PortDirection.INBOUND)
 @RequiredArgsConstructor

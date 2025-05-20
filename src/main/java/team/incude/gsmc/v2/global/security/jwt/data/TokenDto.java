@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.dto;
+package team.incude.gsmc.v2.global.security.jwt.data;
 
 import java.time.LocalDateTime;
 
