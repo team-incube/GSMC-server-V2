@@ -29,6 +29,14 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * 기타 증빙자료 생성을 담당하는 유스케이스 구현 클래스입니다.
+ * <p>{@link CreateOtherEvidenceUseCase}를 구현하며, 카테고리 이름과 첨부 파일을 기반으로
+ * 새로운 점수 기반 기타 증빙자료를 생성하고 저장합니다.
+ * <p>점수 누적, S3 업로드, Evidence 및 OtherEvidence 엔티티 생성, 이벤트 발행 등을 수행합니다.
+ * <p>점수 상한 초과 시 {@link ScoreLimitExceededException}을 발생시키며, 업로드 실패 시 {@link S3UploadFailedException}이 발생합니다.
+ * @author suuuuuuminnnnnn
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -42,6 +50,15 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CategoryPersistencePort categoryPersistencePort;
 
+    /**
+     * 기타 증빙자료를 생성하고 점수를 갱신하며 이벤트를 발행합니다.
+     * <p>해당 증빙자료는 카테고리 이름에 매핑된 {@link EvidenceType}으로 저장되며,
+     * 점수가 없으면 새로 생성하고, 존재하면 +1을 누적합니다.
+     * <p>파일은 S3에 업로드되며, 업로드 실패 시 {@link S3UploadFailedException}이 발생합니다.
+     * @param categoryName 점수를 누적할 카테고리 이름
+     * @param file 증빙자료 파일
+     * @throws ScoreLimitExceededException 점수 상한을 초과한 경우
+     */
     @Override
     public void execute(String categoryName, MultipartFile file) {
         Member member = currentMemberProvider.getCurrentUser();
@@ -64,6 +81,12 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
 
+    /**
+     * Evidence 도메인 객체를 생성합니다.
+     * @param score 연결할 점수 객체
+     * @param evidenceType 증빙자료 타입
+     * @return 생성된 Evidence 객체
+     */
     private Evidence createEvidence(Score score, EvidenceType evidenceType) {
         return Evidence.builder()
                 .score(score)
@@ -74,6 +97,13 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
                 .build();
     }
 
+    /**
+     * OtherEvidence 도메인 객체를 생성합니다.
+     * <p>파일이 존재하면 업로드 후 해당 URI를 저장합니다.
+     * @param evidence 연결할 Evidence 객체
+     * @param file 첨부 파일 (선택)
+     * @return 생성된 OtherEvidence 객체
+     */
     private OtherEvidence createOtherEvidence(Evidence evidence, MultipartFile file) {
         String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
         return OtherEvidence.builder()
@@ -82,6 +112,12 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
                 .build();
     }
 
+    /**
+     * MultipartFile을 S3에 업로드하고 URL을 반환합니다.
+     * @param file 업로드할 파일
+     * @return 업로드된 파일의 URL
+     * @throws S3UploadFailedException 업로드 실패 시
+     */
     private String uploadFile(MultipartFile file) {
         try {
             return s3Port.uploadFile(
@@ -93,6 +129,12 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         }
     }
 
+    /**
+     * 점수 테이블에 신규 Score 객체를 생성합니다.
+     * @param categoryName 카테고리 이름
+     * @param member 사용자
+     * @return 생성된 Score 객체
+     */
     private Score createScore(String categoryName, Member member) {
         Category category = categoryPersistencePort.findCategoryByName(categoryName);
         return Score.builder()
