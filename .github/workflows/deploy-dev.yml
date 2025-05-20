@@ -53,7 +53,7 @@ jobs:
           version: latest
       - name: Build and run Docker Compose
         run: |
-          docker compose -f docker-compose.test.yml up -d
+          docker compose -f docker-compose.test.yaml up -d
           sleep 120
           for i in {1..30}; do
             if curl -s http://localhost:8080/api/v2/health/check | grep -q '"OK"'; then
@@ -69,7 +69,7 @@ jobs:
         run: ./gradlew clean integrationTest --info --stacktrace
       - name: Stop Docker Compose
         if: always()
-        run: docker compose -f docker-compose.test.yml down
+        run: docker compose -f docker-compose.test.yaml down
       - name: Upload Test Reports
         if: failure()
         uses: actions/upload-artifact@v4
@@ -78,7 +78,7 @@ jobs:
           path: build/reports/tests/integrationTest/
       - name: Upload Docker Logs
         if: failure()
-        run: docker compose -f docker-compose.test.yml logs > docker-logs.txt
+        run: docker compose -f docker-compose.test.yaml logs > docker-logs.txt
       - name: Upload Docker Logs Artifact
         if: failure()
         uses: actions/upload-artifact@v4
