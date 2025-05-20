@@ -16,6 +16,21 @@ import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+/**
+ * JWT 토큰 발급을 담당하는 유스케이스 구현 클래스입니다.
+ * <p>{@link JwtIssueUseCase}를 구현하며, 액세스 토큰 및 리프레시 토큰을 발급하고,
+ * 리프레시 토큰은 Redis 저장소에 영속화합니다.
+ * <p>설정 값으로부터 비밀키와 만료 시간을 주입받아 사용하며,
+ * 토큰 생성 시 JJWT 라이브러리를 사용합니다.
+ *
+ * <ul>
+ *   <li>Access Token: 이메일과 역할 포함, 일정 시간 후 만료</li>
+ *   <li>Refresh Token: 이메일 포함, Redis에 저장</li>
+ * </ul>
+ *
+ * @author jihoonwjj
+ */
+
 @Service
 @RequiredArgsConstructor
 public class JwtIssueService implements JwtIssueUseCase {

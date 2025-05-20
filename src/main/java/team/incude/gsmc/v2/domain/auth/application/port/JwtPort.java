@@ -5,19 +5,19 @@ import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
 import team.incude.gsmc.v2.global.security.jwt.data.TokenDto;
 
 /**
- * Jwt 관련 유스케이스를 정의하는 포트 인터페이스입니다.
- * <p> 토큰발급, 유효성검사, 이메일추출 등 토큰 관련 기능을 제공합니다.
- * 주요기능:
+ * JWT 관련 기능을 정의하는 포트 인터페이스입니다.
+ * <p>도메인 계층에서 JWT 토큰 발급, 검증, 파싱 등의 기능을 추상화하여
+ * 어댑터 계층(JwtAdapter 등)과의 의존성을 줄입니다.
+ * <p>담당 기능:
  * <ul>
- *    <li>{@code issueAccessToken} - 새로운 액세스토큰 발급 </li>
- *    <li>{@code issueRefreshToken} - 새로운 리프레시토큰 발급 </li>
- *    <li>{@code validateAccessToken} - 액세스토큰의 유효성 검사 </li>
- *    <li>{@code validateRefreshToken} - 리프레시토클의 유효성 검사 </li>
- *    <li>{@code getEmailFromAccessToken} - 액세스토큰 이메일 추출 </li>
- *    <li>{@code getEmailFromRefreshToken} - 리프레시토큰 이메일 추출 </li>
- *    <li>{@code getRolesFromAccessToken} - 액세스토큰에서 역할 추출 </li>
- *    <li>{@code resolveToken} - 토큰 파싱 </li>
+ *   <li>Access/Refresh Token 발급</li>
+ *   <li>Token 유효성 검증</li>
+ *   <li>Token 파싱 (이메일, 권한 정보 추출)</li>
+ *   <li>HTTP 요청에서 Token 추출</li>
+ *   <li>Refresh Token 삭제</li>
  * </ul>
+ * 해당 포트를 구현하는 클래스는 실제 JWT 처리 로직을 담고 있어야 합니다.
+ *
  * @author jihoonwjj
  */
 public interface JwtPort {
