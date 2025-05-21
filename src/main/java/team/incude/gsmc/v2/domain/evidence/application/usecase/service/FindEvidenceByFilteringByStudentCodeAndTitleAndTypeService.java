@@ -18,6 +18,13 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidenc
 
 import java.util.List;
 
+/**
+ * 학생 코드, 증빙자료 제목, 증빙자료 유형을 기준으로 증빙자료를 조회하는 유스케이스 구현 클래스입니다.
+ * <p>{@link team.incude.gsmc.v2.domain.evidence.application.usecase.FindEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase}를 구현하며,
+ * 관리자 또는 검토자가 특정 학생의 증빙자료 중 조건에 맞는 항목을 필터링하여 조회할 수 있도록 합니다.
+ * <p>전공, 인문 활동 증빙자료는 내부적으로 구분되며, 기타 및 독서 증빙자료는 직접 필터링 후 DTO로 변환됩니다.
+ * @author suuuuuuminnnnnn
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,6 +34,15 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
     private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
 
+    /**
+     * 학생 코드, 제목, 증빙자료 유형을 기반으로 증빙자료를 조회합니다.
+     * <p>활동 증빙자료는 전공(MAJOR)과 인문(HUMANITIES)으로 구분되어 필터링되며,
+     * 기타 및 독서 증빙자료는 별도 저장소에서 조건에 맞는 항목을 조회합니다.
+     * @param studentCode 학생 학번
+     * @param title 증빙자료 제목 키워드
+     * @param evidenceType 필터링할 증빙자료 유형
+     * @return 조회된 증빙자료 목록 DTO 응답
+     */
     @Override
     public GetEvidencesResponse execute(String studentCode, String title, EvidenceType evidenceType) {
         List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.searchActivityEvidence(studentCode, evidenceType, title, null, null, null);
@@ -44,12 +60,23 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
         return new GetEvidencesResponse(majorEvidenceDtos, humanitiesEvidenceDtos, readingEvidenceDtos, otherEvidenceDtos);
     }
 
+    /**
+     * 활동 증빙자료 리스트에서 지정한 증빙자료 유형만 필터링합니다.
+     * @param evidences 활동 증빙자료 목록
+     * @param type 필터링할 증빙자료 타입
+     * @return 필터링된 활동 증빙자료 목록
+     */
     private List<ActivityEvidence> filterByType(List<ActivityEvidence> evidences, EvidenceType type) {
         return evidences.stream()
                 .filter(e -> e.getId().getEvidenceType().equals(type))
                 .toList();
     }
 
+    /**
+     * 활동 증빙자료 도메인 리스트를 응답 DTO 리스트로 변환합니다.
+     * @param evidences 활동 증빙자료 목록
+     * @return 활동 증빙자료 응답 DTO 목록
+     */
     private List<GetActivityEvidenceResponse> createActivityEvidenceDtos(List<ActivityEvidence> evidences) {
         return evidences.stream()
                 .map(e -> new GetActivityEvidenceResponse(
@@ -63,6 +90,11 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
                 .toList();
     }
 
+    /**
+     * 기타 증빙자료 도메인 리스트를 응답 DTO 리스트로 변환합니다.
+     * @param evidences 기타 증빙자료 목록
+     * @return 기타 증빙자료 응답 DTO 목록
+     */
     private List<GetOtherEvidenceResponse> createOtherEvidenceDtos(List<OtherEvidence> evidences) {
         return evidences.stream()
                 .map(e -> new GetOtherEvidenceResponse(
@@ -75,6 +107,11 @@ public class FindEvidenceByFilteringByStudentCodeAndTitleAndTypeService implemen
                 .toList();
     }
 
+    /**
+     * 독서 증빙자료 도메인 리스트를 응답 DTO 리스트로 변환합니다.
+     * @param evidences 독서 증빙자료 목록
+     * @return 독서 증빙자료 응답 DTO 목록
+     */
     private List<GetReadingEvidenceResponse> createReadingEvidenceDtos(List<ReadingEvidence> evidences) {
         return evidences.stream()
                 .map(e -> new GetReadingEvidenceResponse(

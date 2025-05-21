@@ -19,15 +19,6 @@ spring:
   cache:
     expire-after-write: ${CACHE_EXPIRE_AFTER_WRITE:60}
     type: caffeine
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/gsmc}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:password}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
 management:
   endpoints:
     web:

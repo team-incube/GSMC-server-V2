@@ -8,7 +8,7 @@ import team.incude.gsmc.v2.domain.certificate.application.usecase.FindCertificat
 import team.incude.gsmc.v2.domain.certificate.persentation.data.GetCertificateDto;
 import team.incude.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
-import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 /**
  * 자격증 조회 기능을 제공하는 서비스 클래스입니다.

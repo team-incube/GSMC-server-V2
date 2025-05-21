@@ -1,0 +1,22 @@
+<configuration scan="true">
+    <springProperty scope="context" name="discordWebhook" source="webhook.discord.url"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <springProfile name="!dev &amp; !test">
+        <appender name="DISCORD" class="team.incude.gsmc.v2.global.thirdparty.discord.service.DiscordLogbackService">
+            <webhookUrl>${discordWebhook}</webhookUrl>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="DISCORD"/>
+        </root>
+    </springProfile>
+    <springProfile name="dev, test">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+</configuration>

@@ -11,10 +11,17 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetDraftAc
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetDraftEvidenceResponse;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetDraftReadingEvidenceResponse;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 import java.util.List;
 
+/**
+ * 현재 사용자 기준으로 모든 임시저장 증빙자료를 조회하는 유스케이스 구현 클래스입니다.
+ * <p>{@link FindDraftEvidenceByCurrentUserUseCase}를 구현하며,
+ * 활동 및 독서 증빙자료의 임시저장을 각각 조회한 뒤 통합 응답으로 반환합니다.
+ * <p>임시저장은 사용자의 이메일 기준으로 조회되며, 각각의 응답 객체 리스트로 변환됩니다.
+ * @author suuuuuuminnnnnn
+ */
 @Service
 @RequiredArgsConstructor
 public class FindDraftEvidenceByCurrentUserService implements FindDraftEvidenceByCurrentUserUseCase {
@@ -23,6 +30,10 @@ public class FindDraftEvidenceByCurrentUserService implements FindDraftEvidenceB
     private final DraftReadingEvidencePersistencePort draftReadingEvidencePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
 
+    /**
+     * 현재 로그인한 사용자의 활동 및 독서 임시저장 증빙자료를 조회합니다.
+     * @return 활동/독서 임시저장을 포함한 통합 응답 DTO
+     */
     @Override
     public GetDraftEvidenceResponse execute() {
         Member member = currentMemberProvider.getCurrentUser();
@@ -36,6 +47,11 @@ public class FindDraftEvidenceByCurrentUserService implements FindDraftEvidenceB
         return new GetDraftEvidenceResponse(activityEvidenceResponses, readingEvidenceResponses);
     }
 
+    /**
+     * 활동 임시저장 엔티티 리스트를 응답 DTO 리스트로 변환합니다.
+     * @param activityEvidences 활동 임시저장 리스트
+     * @return 변환된 활동 임시저장 응답 리스트
+     */
     private List<GetDraftActivityEvidenceResponse> createDraftActivityResponse(List<DraftActivityEvidence> activityEvidences) {
         return activityEvidences.stream()
                 .map(e -> new GetDraftActivityEvidenceResponse(
@@ -49,6 +65,11 @@ public class FindDraftEvidenceByCurrentUserService implements FindDraftEvidenceB
                 .toList();
     }
 
+    /**
+     * 독서 임시저장 엔티티 리스트를 응답 DTO 리스트로 변환합니다.
+     * @param readingEvidences 독서 임시저장 리스트
+     * @return 변환된 독서 임시저장 응답 리스트
+     */
     private List<GetDraftReadingEvidenceResponse> createDraftReadingResponse(List<DraftReadingEvidence> readingEvidences) {
         return readingEvidences.stream()
                 .map(e -> new GetDraftReadingEvidenceResponse(
