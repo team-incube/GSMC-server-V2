@@ -77,7 +77,7 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
         Evidence evidence = createEvidence(score);
         ReadingEvidence readingEvidence = createReadingEvidence(evidence, title, author, page, content);
 
-        readingEvidencePersistencePort.saveReadingEvidence(readingEvidence);
+        readingEvidencePersistencePort.saveReadingEvidence(evidence, readingEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
         applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
     }
