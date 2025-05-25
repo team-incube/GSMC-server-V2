@@ -4,11 +4,16 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.OtherEvidenceNotFoundException;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.EvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.OtherEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.mapper.EvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.OtherEvidenceMapper;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.OtherEvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
@@ -48,6 +53,8 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private final OtherEvidenceJpaRepository otherEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final OtherEvidenceMapper otherEvidenceMapper;
+    private final EvidenceMapper evidenceMapper;
+    private final EvidenceJpaRepository evidenceJpaRepository;
 
     /**
      * 기타 증빙자료를 저장합니다.
@@ -68,6 +75,16 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
      * @param classNumber 반
      * @return 검색된 기타 증빙자료 리스트
      */
+    @Override
+    public OtherEvidence saveOtherEvidence(Evidence evidence, OtherEvidence otherEvidence) {
+        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
+        OtherEvidenceJpaEntity otherEvidenceJpaEntity = OtherEvidenceJpaEntity.builder()
+                .evidence(evidenceJpaEntity)
+                .fileUri(otherEvidence.getFileUri())
+                .build();
+        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceJpaEntity));
+    }
+
     @Override
     public List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
