@@ -6,7 +6,7 @@ import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersisten
 import team.incude.gsmc.v2.domain.member.application.usecase.FindCurrentStudentUseCase;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetailWithEvidence;
 import team.incude.gsmc.v2.domain.member.presentation.data.response.GetStudentResponse;
-import team.incude.gsmc.v2.global.security.jwt.usecase.service.CurrentMemberProvider;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 /**
  * 현재 로그인한 학생 정보를 조회하는 유스케이스 구현 클래스입니다.

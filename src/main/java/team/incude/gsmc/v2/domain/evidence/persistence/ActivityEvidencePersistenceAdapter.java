@@ -23,6 +23,20 @@ import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetai
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incude.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
+/**
+ * 활동 증빙자료의 영속성 처리를 담당하는 어댑터 클래스입니다.
+ * <p>{@link team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort}를 구현하며,
+ * 활동 증빙자료에 대한 저장, 조회, 검색, 삭제 기능을 JPA 및 QueryDSL 기반으로 제공합니다.
+ * <p>도메인 객체 ↔ JPA 엔티티 간 매핑은 {@link team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper}를 통해 수행됩니다.
+ * 주요 기능:
+ * <ul>
+ *     <li>사용자 이메일 및 증빙자료 타입 기반 조회</li>
+ *     <li>학번, 제목, 상태, 학년, 반 조건 기반 복합 검색</li>
+ *     <li>활동 증빙자료 저장 및 삭제</li>
+ *     <li>단건 조회</li>
+ * </ul>
+ * @author snowykte0426, suuuuuuminnnnnn
+ */
 @Adapter(direction = PortDirection.OUTBOUND)
 @RequiredArgsConstructor
 public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersistencePort {
@@ -31,6 +45,12 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private final JPAQueryFactory jpaQueryFactory;
     private final ActivityEvidenceMapper activityEvidenceMapper;
 
+    /**
+     * 사용자 이메일과 증빙자료 타입을 기준으로 활동 증빙자료 목록을 조회합니다.
+     * @param email 사용자 이메일
+     * @param evidenceType 활동 증빙자료 타입
+     * @return 조회된 활동 증빙자료 리스트
+     */
     @Override
     public List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType) {
         return jpaQueryFactory
@@ -53,6 +73,16 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 .toList();
     }
 
+    /**
+     * 다양한 필터 조건으로 활동 증빙자료를 검색합니다.
+     * @param studentCode 학생 학번
+     * @param evidenceType 증빙자료 타입
+     * @param title 활동 제목
+     * @param status 검토 상태
+     * @param grade 학년
+     * @param classNumber 반
+     * @return 필터링된 활동 증빙자료 리스트
+     */
     @Override
     public List<ActivityEvidence> searchActivityEvidence(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
@@ -79,11 +109,21 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 .toList();
     }
 
+    /**
+     * 활동 증빙자료를 저장합니다.
+     * @param activityEvidence 저장할 활동 증빙자료 도메인 객체
+     * @return 저장된 활동 증빙자료 도메인 객체
+     */
     @Override
     public ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence) {
         return activityEvidenceMapper.toDomain(activityEvidenceJpaRepository.save(activityEvidenceMapper.toEntity(activityEvidence)));
     }
 
+    /**
+     * 활동 증빙자료 ID를 기반으로 해당 자료를 삭제합니다.
+     * @param evidenceId 삭제할 증빙자료의 ID
+     * @throws ActivityEvidenceNotFountException 삭제 대상이 존재하지 않을 경우
+     */
     @Override
     public void deleteActivityEvidenceById(Long evidenceId) {
         long deletedCount = jpaQueryFactory
@@ -95,6 +135,12 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
         }
     }
 
+    /**
+     * 활동 증빙자료 ID를 기준으로 단건 조회합니다.
+     * @param id 조회할 증빙자료 ID
+     * @return 조회된 활동 증빙자료 도메인 객체
+     * @throws ActivityEvidenceNotFountException 존재하지 않을 경우 예외 발생
+     */
     @Override
     public ActivityEvidence findActivityEvidenceById(Long id) {
         return Optional.ofNullable(

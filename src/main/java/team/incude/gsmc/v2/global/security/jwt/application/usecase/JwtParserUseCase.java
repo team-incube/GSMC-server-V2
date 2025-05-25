@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.jwt.usecase;
+package team.incude.gsmc.v2.global.security.jwt.application.usecase;
 
 import jakarta.servlet.http.HttpServletRequest;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;

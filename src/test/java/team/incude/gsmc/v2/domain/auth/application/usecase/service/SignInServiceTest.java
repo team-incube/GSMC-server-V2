@@ -8,13 +8,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import team.incude.gsmc.v2.domain.auth.application.port.JwtPort;
 import team.incude.gsmc.v2.domain.auth.exception.PasswordInvalidException;
 import team.incude.gsmc.v2.domain.auth.presentation.data.response.AuthTokenResponse;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.global.security.jwt.dto.TokenDto;
-import team.incude.gsmc.v2.global.security.jwt.usecase.JwtIssueUseCase;
+import team.incude.gsmc.v2.global.security.jwt.data.TokenDto;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +29,7 @@ class SignInServiceTest {
     private MemberPersistencePort memberPersistencePort;
 
     @Mock
-    private JwtIssueUseCase jwtIssueUseCase;
+    private JwtPort jwtPort;
 
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
@@ -63,8 +63,8 @@ class SignInServiceTest {
                 TokenDto refreshToken = new TokenDto("refreshToken", LocalDateTime.now().plusDays(7));
                 when(memberPersistencePort.findMemberByEmail(email)).thenReturn(member);
                 when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
-                when(jwtIssueUseCase.issueAccessToken(email, role)).thenReturn(accessToken);
-                when(jwtIssueUseCase.issueRefreshToken(email)).thenReturn(refreshToken);
+                when(jwtPort.issueAccessToken(email, role)).thenReturn(accessToken);
+                when(jwtPort.issueRefreshToken(email)).thenReturn(refreshToken);
 
                 // when
                 AuthTokenResponse response = signInService.execute(email, password);
