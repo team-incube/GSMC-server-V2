@@ -5,11 +5,16 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.ActivityEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.EvidenceJpaEntity;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper;
+import team.incude.gsmc.v2.domain.evidence.persistence.mapper.EvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ActivityEvidenceJpaRepository;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
@@ -44,6 +49,8 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private final ActivityEvidenceJpaRepository activityEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ActivityEvidenceMapper activityEvidenceMapper;
+    private final EvidenceJpaRepository evidenceJpaRepository;
+    private final EvidenceMapper evidenceMapper;
 
     /**
      * 사용자 이메일과 증빙자료 타입을 기준으로 활동 증빙자료 목록을 조회합니다.
@@ -124,6 +131,18 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
      * @param evidenceId 삭제할 증빙자료의 ID
      * @throws ActivityEvidenceNotFountException 삭제 대상이 존재하지 않을 경우
      */
+    @Override
+    public ActivityEvidence saveActivityEvidence(Evidence evidence, ActivityEvidence activityEvidence) {
+        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
+        ActivityEvidenceJpaEntity activityEvidenceJpaEntity = ActivityEvidenceJpaEntity.builder()
+                .evidence(evidenceJpaEntity)
+                .content(activityEvidence.getContent())
+                .imageUri(activityEvidence.getImageUrl())
+                .title(activityEvidence.getTitle())
+                .build();
+        return activityEvidenceMapper.toDomain(activityEvidenceJpaRepository.save(activityEvidenceJpaEntity));
+    }
+
     @Override
     public void deleteActivityEvidenceById(Long evidenceId) {
         long deletedCount = jpaQueryFactory
