@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.domain.member.persistence;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
@@ -167,13 +168,14 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                                         studentDetailJpaEntity.classNumber,
                                         studentDetailJpaEntity.number,
                                         studentDetailJpaEntity.totalScore,
-                                        evidenceJpaEntity.id.isNotNull(),
+                                        JPAExpressions.selectOne()
+                                                .from(evidenceJpaEntity)
+                                                .where(evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id))
+                                                .exists(),
                                         studentDetailJpaEntity.member.role
                                 )
                         )
                         .from(studentDetailJpaEntity)
-                        .leftJoin(evidenceJpaEntity)
-                        .on(evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id))
                         .where(studentDetailJpaEntity.member.email.eq(email))
                         .fetchOne()
         ).map(studentDetailMapper::fromProjection).orElseThrow(MemberNotFoundException::new);
