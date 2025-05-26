@@ -17,6 +17,7 @@ import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
+import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
@@ -39,19 +40,16 @@ class CreateCertificateServiceTest {
 
     @Mock
     private CertificatePersistencePort certificatePersistencePort;
-
+    @Mock
+    private CategoryPersistencePort categoryPersistencePort;
     @Mock
     private OtherEvidencePersistencePort otherEvidencePersistencePort;
-
     @Mock
     private StudentDetailPersistencePort studentDetailPersistencePort;
-
     @Mock
     private ScorePersistencePort scorePersistencePort;
-
     @Mock
     private S3Port s3Port;
-
     @Mock
     private CurrentMemberProvider currentMemberProvider;
 
@@ -202,6 +200,29 @@ class CreateCertificateServiceTest {
                     .thenReturn(List.of(
                             Certificate.builder().name("한국사 능력검정 2급").build()
                     ));
+
+            // when & then
+            assertThatThrownBy(() -> createCertificateService.execute(certificateName, date, file))
+                    .isInstanceOf(DuplicateCertificateException.class);
+            verify(certificatePersistencePort, never()).saveCertificate(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("중복된 전공 자격증이 등록된 경우")
+    class Context_with_duplicate_major_certificate {
+
+        @Test
+        @DisplayName("이미 등록된 전공 자격증이 있으면 DuplicateCertificateException을 던진다")
+        void it_throws_when_duplicate_major_exists() {
+            // given
+            String certificateName = "정보처리기사";
+            LocalDate date = LocalDate.of(2024, 5, 1);
+            MockMultipartFile file = new MockMultipartFile("file", "cert.pdf", "application/pdf", "dummy".getBytes());
+            Member member = Member.builder().id(1L).email("s24058@gsm.hs.kr").build();
+            when(currentMemberProvider.getCurrentUser()).thenReturn(member);
+            when(certificatePersistencePort.existsByMemberIdAndName(1L, certificateName))
+                    .thenReturn(true);
 
             // when & then
             assertThatThrownBy(() -> createCertificateService.execute(certificateName, date, file))

@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.global.error.handler;
 
 import org.hibernate.NonUniqueResultException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,6 +17,7 @@ import team.incude.gsmc.v2.global.error.exception.GsmcException;
  * <ul>
  *   <li>{@link GsmcException} - 커스텀 예외 및 도메인 전용 예외</li>
  *   <li>{@link NonUniqueResultException} - JPA 조회 시 결과 중복 예외</li>
+ *   <li>{@link DataIntegrityViolationException} - 데이터베이스 무결성 제약 조건 위반 예외</li>
  * </ul>
  * 응답 형식은 모두 {@link team.incude.gsmc.v2.global.error.data.response.ErrorResponse}로 통일되어 있습니다.
  * @author snowykte0426
@@ -49,5 +51,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse("Duplicate results detected, Please check your request", HttpStatus.CONFLICT.value()));
+    }
+
+    /**
+     * {@link DataIntegrityViolationException} 처리 메서드.
+     * <p>데이터베이스 무결성 제약 조건 위반 시 발생하는 예외를 처리합니다.
+     * 제약 조건 위반 유형에 따라 구체적인 오류 메시지를 제공합니다.
+     * <ul>
+     *   <li>자격증 중복 등록 - member_id와 name 복합 unique 제약 조건 위반</li>
+     *   <li>기타 데이터 무결성 위반 - 외래 키 제약 조건 등</li>
+     * </ul>
+     * @param e 처리할 DataIntegrityViolationException
+     * @return 적절한 오류 메시지와 HTTP 400(BAD_REQUEST) 상태 코드를 포함한 응답
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Data integrity violation occurred. Please check your request.", HttpStatus.BAD_REQUEST.value()));
     }
 }
