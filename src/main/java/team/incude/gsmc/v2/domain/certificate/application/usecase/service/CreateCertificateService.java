@@ -196,12 +196,17 @@ public class CreateCertificateService implements CreateCertificateUseCase {
      */
     private void validateDuplicateCertificateType(Member member, String certificateName) {
         String typePrefix = resolveDuplicateRestrictedPrefix(certificateName);
-        if (typePrefix == null) return;
-        List<Certificate> lockedCertificates = certificatePersistencePort.findCertificateByMemberIdWithLock(member.getId());
-        boolean exists = lockedCertificates.stream()
-                .map(Certificate::getName)
-                .anyMatch(name -> name.startsWith(typePrefix));
-        if (exists) {
+        if (typePrefix != null) {
+            List<Certificate> lockedCertificates = certificatePersistencePort.findCertificateByMemberIdWithLock(member.getId());
+            boolean existsInSameType = lockedCertificates.stream()
+                    .map(Certificate::getName)
+                    .anyMatch(name -> name.startsWith(typePrefix));
+            if (existsInSameType) {
+                throw new DuplicateCertificateException();
+            }
+        }
+        boolean exactDuplicate = certificatePersistencePort.existsByMemberIdAndName(member.getId(), certificateName);
+        if (exactDuplicate) {
             throw new DuplicateCertificateException();
         }
     }
