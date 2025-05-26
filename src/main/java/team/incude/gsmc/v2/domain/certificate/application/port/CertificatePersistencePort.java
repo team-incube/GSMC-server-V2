@@ -16,6 +16,15 @@ import java.util.List;
  */
 @Port(direction = PortDirection.OUTBOUND)
 public interface CertificatePersistencePort {
+
+    /**
+     * 주어진 회원 ID와 자격증 이름을 기준으로 자격증이 존재하는지 확인합니다.
+     * @param memberId 회원의 고유 ID
+     * @param name 자격증 이름
+     * @return 해당 회원이 소유한 자격증이 존재하면 true, 그렇지 않으면 false
+     */
+    Boolean existsByMemberIdAndName(Long memberId, String name);
+
     /**
      * 지정된 ID에 해당하는 자격증을 조회하고, 비관적 락(Pessimistic Lock)을 걸어 반환합니다.
      * <p>동시성 문제를 방지하기 위해 자격증 수정 또는 삭제 전 반드시 호출되어야 합니다.
