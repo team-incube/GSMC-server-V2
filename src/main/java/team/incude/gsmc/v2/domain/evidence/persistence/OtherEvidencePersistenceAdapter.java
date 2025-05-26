@@ -57,16 +57,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private final EvidenceJpaRepository evidenceJpaRepository;
 
     /**
-     * 기타 증빙자료를 저장합니다.
-     * @param otherEvidence 저장할 도메인 객체
-     * @return 저장된 도메인 객체
-     */
-    @Override
-    public OtherEvidence saveOtherEvidence(OtherEvidence otherEvidence) {
-        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceMapper.toEntity(otherEvidence)));
-    }
-
-    /**
      * 학생 코드, 증빙자료 타입, 검토 상태, 학년, 반을 기준으로 기타 증빙자료를 검색합니다.
      * @param studentCode 학번
      * @param evidenceType 증빙자료 타입
@@ -75,16 +65,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
      * @param classNumber 반
      * @return 검색된 기타 증빙자료 리스트
      */
-    @Override
-    public OtherEvidence saveOtherEvidence(Evidence evidence, OtherEvidence otherEvidence) {
-        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
-        OtherEvidenceJpaEntity otherEvidenceJpaEntity = OtherEvidenceJpaEntity.builder()
-                .evidence(evidenceJpaEntity)
-                .fileUri(otherEvidence.getFileUri())
-                .build();
-        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceJpaEntity));
-    }
-
     @Override
     public List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory
@@ -110,6 +90,32 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .stream()
                 .map(otherEvidenceMapper::toDomain)
                 .toList();
+    }
+
+    /**
+     * 기타 증빙자료를 저장합니다.
+     * @param otherEvidence 저장할 도메인 객체
+     * @return 저장된 도메인 객체
+     */
+    @Override
+    public OtherEvidence saveOtherEvidence(OtherEvidence otherEvidence) {
+        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceMapper.toEntity(otherEvidence)));
+    }
+
+    /**
+     * 기타 증빙자료를 저장합니다.
+     * @param evidence 저장할 상위 도메인 객체
+     * @param otherEvidence 저장할 도메인 객체
+     * @return 저장된 도메인 객체
+     */
+    @Override
+    public OtherEvidence saveOtherEvidence(Evidence evidence, OtherEvidence otherEvidence) {
+        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
+        OtherEvidenceJpaEntity otherEvidenceJpaEntity = OtherEvidenceJpaEntity.builder()
+                .evidence(evidenceJpaEntity)
+                .fileUri(otherEvidence.getFileUri())
+                .build();
+        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceJpaEntity));
     }
 
     /**

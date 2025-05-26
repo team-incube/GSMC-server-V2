@@ -86,14 +86,10 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     /**
-     * 학생 정보, 제목, 증빙자료 타입, 검토 상태 등을 기준으로 독서 증빙자료를 검색합니다.
-     * @param studentCode 학번
-     * @param title 제목
-     * @param evidenceType 증빙자료 타입
-     * @param status 검토 상태
-     * @param grade 학년
-     * @param classNumber 반
-     * @return 조건에 부합하는 독서 증빙자료 리스트
+     * 독서 증빙자료를 저장합니다.
+     * @param evidence 저장할 상위 증빙자료 도메인 객체
+     * @param readingEvidence 저장할 독서 증빙자료 도메인 객체
+     * @return 저장된 도메인 객체
      */
     @Override
     public ReadingEvidence saveReadingEvidence(Evidence evidence, ReadingEvidence readingEvidence) {
@@ -108,6 +104,16 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
         return readingEvidenceMapper.toDomain(readingEvidenceJpaRepository.save(readingEvidenceJpaEntity));
     }
 
+    /**
+     * 학생 정보, 제목, 증빙자료 타입, 검토 상태 등을 기준으로 독서 증빙자료를 검색합니다.
+     * @param studentCode 학번
+     * @param title 제목
+     * @param evidenceType 증빙자료 타입
+     * @param status 검토 상태
+     * @param grade 학년
+     * @param classNumber 반
+     * @return 조건에 부합하는 독서 증빙자료 리스트
+     */
     @Override
     public List<ReadingEvidence> searchReadingEvidence(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
         return jpaQueryFactory

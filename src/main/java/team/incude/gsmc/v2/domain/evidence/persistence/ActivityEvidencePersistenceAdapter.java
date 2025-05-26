@@ -127,9 +127,10 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     /**
-     * 활동 증빙자료 ID를 기반으로 해당 자료를 삭제합니다.
-     * @param evidenceId 삭제할 증빙자료의 ID
-     * @throws ActivityEvidenceNotFountException 삭제 대상이 존재하지 않을 경우
+     * 활동 증빙자료를 저장합니다.
+     * @param evidence 저장할 상위 증빙자료 도메인 객체
+     * @param activityEvidence 저장할 활동 증빙자료 도메인 객체
+     * @return 저장된 활동 증빙자료 도메인 객체
      */
     @Override
     public ActivityEvidence saveActivityEvidence(Evidence evidence, ActivityEvidence activityEvidence) {
@@ -143,6 +144,11 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
         return activityEvidenceMapper.toDomain(activityEvidenceJpaRepository.save(activityEvidenceJpaEntity));
     }
 
+    /**
+     * 활동 증빙자료 ID를 기반으로 해당 자료를 삭제합니다.
+     * @param evidenceId 삭제할 증빙자료의 ID
+     * @throws ActivityEvidenceNotFountException 삭제 대상이 존재하지 않을 경우
+     */
     @Override
     public void deleteActivityEvidenceById(Long evidenceId) {
         long deletedCount = jpaQueryFactory
@@ -153,6 +159,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
             throw new ActivityEvidenceNotFountException();
         }
     }
+
 
     /**
      * 활동 증빙자료 ID를 기준으로 단건 조회합니다.
