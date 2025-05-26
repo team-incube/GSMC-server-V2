@@ -83,7 +83,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         Evidence evidence = createEvidence(score, activityType);
         ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file, imageUrl);
 
-        activityEvidencePersistencePort.saveActivityEvidence(activityEvidence);
+        activityEvidencePersistencePort.saveActivityEvidence(evidence, activityEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
         applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
     }

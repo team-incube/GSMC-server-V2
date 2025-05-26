@@ -82,7 +82,7 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
         Evidence evidence = createEvidence(score, evidenceType);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
-        otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
+        otherEvidencePersistencePort.saveOtherEvidence(evidence, otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
     }
 

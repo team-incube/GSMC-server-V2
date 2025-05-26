@@ -4,11 +4,16 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.EvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.ReadingEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.mapper.EvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
@@ -45,6 +50,8 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private final ReadingEvidenceJpaRepository readingEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ReadingEvidenceMapper readingEvidenceMapper;
+    private final EvidenceMapper evidenceMapper;
+    private final EvidenceJpaRepository evidenceJpaRepository;
 
     /**
      * 사용자 이메일을 기준으로 독서 증빙자료 목록을 조회합니다.
@@ -76,6 +83,25 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     @Override
     public ReadingEvidence saveReadingEvidence(ReadingEvidence readingEvidence) {
         return readingEvidenceMapper.toDomain(readingEvidenceJpaRepository.save(readingEvidenceMapper.toEntity(readingEvidence)));
+    }
+
+    /**
+     * 독서 증빙자료를 저장합니다.
+     * @param evidence 저장할 상위 증빙자료 도메인 객체
+     * @param readingEvidence 저장할 독서 증빙자료 도메인 객체
+     * @return 저장된 도메인 객체
+     */
+    @Override
+    public ReadingEvidence saveReadingEvidence(Evidence evidence, ReadingEvidence readingEvidence) {
+        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
+        ReadingEvidenceJpaEntity readingEvidenceJpaEntity = ReadingEvidenceJpaEntity.builder()
+                .evidence(evidenceJpaEntity)
+                .title(readingEvidence.getTitle())
+                .author(readingEvidence.getAuthor())
+                .content(readingEvidence.getContent())
+                .page(readingEvidence.getPage())
+                .build();
+        return readingEvidenceMapper.toDomain(readingEvidenceJpaRepository.save(readingEvidenceJpaEntity));
     }
 
     /**
