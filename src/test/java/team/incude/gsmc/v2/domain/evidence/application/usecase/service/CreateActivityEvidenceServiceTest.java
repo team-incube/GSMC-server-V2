@@ -104,7 +104,7 @@ class CreateActivityEvidenceServiceTest {
 
                 // then
                 verify(scorePersistencePort).saveScore(any());
-                verify(activityEvidencePersistencePort).saveActivityEvidence(any());
+                verify(activityEvidencePersistencePort).saveActivityEvidence(any(), any());
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
                                 ((ScoreUpdatedEvent) event).studentCode().equals(studentDetail.getStudentCode())
