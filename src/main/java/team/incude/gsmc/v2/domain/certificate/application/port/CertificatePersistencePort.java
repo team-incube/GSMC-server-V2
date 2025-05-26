@@ -23,7 +23,7 @@ public interface CertificatePersistencePort {
      * @param name 자격증 이름
      * @return 해당 회원이 소유한 자격증이 존재하면 true, 그렇지 않으면 false
      */
-    Boolean existsByMemberIdAndName(Long memberId, String name);
+    boolean existsByMemberIdAndName(Long memberId, String name);
 
     /**
      * 지정된 ID에 해당하는 자격증을 조회하고, 비관적 락(Pessimistic Lock)을 걸어 반환합니다.

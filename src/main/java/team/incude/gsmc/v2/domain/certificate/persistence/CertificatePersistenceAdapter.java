@@ -50,7 +50,7 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
      * @return 해당 회원이 소유한 자격증이 존재하면 true, 그렇지 않으면 false
      */
     @Override
-    public Boolean existsByMemberIdAndName(Long memberId, String name) {
+    public boolean existsByMemberIdAndName(Long memberId, String name) {
         return jpaQueryFactory
                 .selectOne()
                 .from(certificateJpaEntity)
