@@ -56,7 +56,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
      * 모든 카테고리 목록을 조회합니다.
      * @return 도메인 카테고리 객체 리스트
      */
-    @Cacheable(value = "categories", key = "#name")
+    @Cacheable(value = "categories", key = "'ALL'")
     @Override
     public List<Category> findAllCategory() {
         return categoryJpaRepository.findAll().stream().map(categoryMapper::toDomain).toList();
