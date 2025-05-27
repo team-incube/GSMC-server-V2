@@ -16,11 +16,13 @@ import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -220,6 +222,26 @@ class UpdateScoreServiceTest {
                         event instanceof ScoreUpdatedEvent &&
                                 ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
                 ));
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하지 않는 카테고리 이름이 주어지면")
+        class Context_when_category_not_exists {
+
+            @Test
+            @DisplayName("예외를 발생시킨다")
+            void it_throws_exception() {
+                // given
+                String studentCode = "24058";
+                String categoryName = "NON_EXISTENT_CATEGORY";
+                int value = 3;
+                when(categoryPersistencePort.findAllCategory()).thenReturn(List.of());
+
+                // when & then
+                assertThrows(CategoryNotFoundException.class, () -> {
+                    updateScoreService.execute(studentCode, categoryName, value);
+                });
             }
         }
     }
