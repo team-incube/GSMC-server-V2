@@ -26,6 +26,7 @@ import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -105,7 +106,7 @@ public class CreateOtherScoringEvidenceServiceTest {
                 when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(category.getName(), studentDetail.getStudentCode())).thenReturn(score);
                 when(s3Port.uploadFile(Mockito.anyString(), Mockito.any()))
                         .thenReturn(CompletableFuture.completedFuture(fakeFileUrl));
-                when(categoryPersistencePort.findCategoryByName(categoryName)).thenReturn(category);
+                when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
 
                 // when
                 createOtherScoringEvidenceService.execute(categoryName, file, value);

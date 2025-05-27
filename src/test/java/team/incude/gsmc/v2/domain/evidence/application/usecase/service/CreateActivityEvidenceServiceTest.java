@@ -32,22 +32,16 @@ class CreateActivityEvidenceServiceTest {
 
     @Mock
     private StudentDetailPersistencePort studentDetailPersistencePort;
-
     @Mock
     private ActivityEvidencePersistencePort activityEvidencePersistencePort;
-
     @Mock
     private ScorePersistencePort scorePersistencePort;
-
     @Mock
     private S3Port s3Port;
-
     @Mock
     private CurrentMemberProvider currentMemberProvider;
-
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
-
     @InjectMocks
     private CreateActivityEvidenceService createActivityEvidenceService;
 
