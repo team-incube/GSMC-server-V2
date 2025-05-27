@@ -19,6 +19,7 @@ import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
@@ -67,7 +68,11 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
         Member member = currentMemberProvider.getCurrentUser();
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
         Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
-        Category category = categoryPersistencePort.findCategoryByName(categoryName);
+        Category category = categoryPersistencePort.findAllCategory()
+                .stream()
+                .filter(cat -> cat.getName().equals(categoryName))
+                .findFirst()
+                .orElseThrow(CategoryNotFoundException::new);
         checkValueByMaximumValue(category, value);
 
         if (score == null) {
