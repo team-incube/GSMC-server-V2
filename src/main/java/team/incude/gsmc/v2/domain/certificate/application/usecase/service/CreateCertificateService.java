@@ -21,6 +21,7 @@ import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
@@ -89,7 +90,12 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, member.getEmail());
 
         if (score == null) {
-            score = createNewScore(categoryPersistencePort.findCategoryByName(categoryName), member);
+            score = createNewScore(categoryPersistencePort.findAllCategory()
+                        .stream()
+                        .filter(cat -> cat.getName().equals(categoryName))
+                        .findFirst()
+                        .orElseThrow(CategoryNotFoundException::new)
+                    , member);
         } else {
             if (ValueLimiterUtil.isExceedingLimit(score.getValue() + 1, score.getCategory().getMaximumValue())) {
                 throw new ScoreLimitExceededException();
