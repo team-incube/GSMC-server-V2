@@ -42,7 +42,6 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
      * @return 도메인 카테고리 객체
      * @throws CategoryNotFoundException 카테고리를 찾을 수 없는 경우
      */
-    @Cacheable(value = "category", key = "#name")
     @Override
     public Category findCategoryByName(String name) {
         return Optional.ofNullable(
@@ -57,6 +56,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
      * 모든 카테고리 목록을 조회합니다.
      * @return 도메인 카테고리 객체 리스트
      */
+    @Cacheable(value = "categories", key = "#name")
     @Override
     public List<Category> findAllCategory() {
         return categoryJpaRepository.findAll().stream().map(categoryMapper::toDomain).toList();
