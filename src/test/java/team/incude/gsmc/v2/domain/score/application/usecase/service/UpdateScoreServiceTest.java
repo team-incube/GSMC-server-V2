@@ -19,6 +19,8 @@ import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -30,22 +32,16 @@ class UpdateScoreServiceTest {
 
     @Mock
     private ScorePersistencePort scorePersistencePort;
-
     @Mock
     private CategoryPersistencePort categoryPersistencePort;
-
     @Mock
     private MemberPersistencePort memberPersistencePort;
-
     @Mock
     private StudentDetailPersistencePort studentDetailPersistencePort;
-
     @Mock
     private CurrentMemberProvider currentMemberProvider;
-
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
-
     @InjectMocks
     private UpdateScoreService updateScoreService;
 
@@ -77,7 +73,7 @@ class UpdateScoreServiceTest {
                         .build();
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByMemberEmail(email)).thenReturn(studentDetail);
-                when(categoryPersistencePort.findCategoryByName(categoryName)).thenReturn(category);
+                when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
                 when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode)).thenReturn(null);
                 when(memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode)).thenReturn(member);
 
@@ -124,7 +120,7 @@ class UpdateScoreServiceTest {
                         .build();
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByMemberEmail(email)).thenReturn(studentDetail);
-                when(categoryPersistencePort.findCategoryByName(categoryName)).thenReturn(category);
+                when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
                 when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode)).thenReturn(existingScore);
 
                 // when
@@ -165,7 +161,7 @@ class UpdateScoreServiceTest {
                         .maximumValue(5)
                         .isEvidenceRequired(false)
                         .build();
-                when(categoryPersistencePort.findCategoryByName(categoryName)).thenReturn(category);
+                when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
                 when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode)).thenReturn(null);
                 when(memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode)).thenReturn(member);
 
@@ -208,7 +204,7 @@ class UpdateScoreServiceTest {
                         .category(category)
                         .value(1)
                         .build();
-                when(categoryPersistencePort.findCategoryByName(categoryName)).thenReturn(category);
+                when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
                 when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode)).thenReturn(existingScore);
 
                 // when
