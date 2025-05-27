@@ -23,6 +23,7 @@ import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.Curre
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -34,16 +35,22 @@ class UpdateScoreServiceTest {
 
     @Mock
     private ScorePersistencePort scorePersistencePort;
+
     @Mock
     private CategoryPersistencePort categoryPersistencePort;
+
     @Mock
     private MemberPersistencePort memberPersistencePort;
+
     @Mock
     private StudentDetailPersistencePort studentDetailPersistencePort;
+
     @Mock
     private CurrentMemberProvider currentMemberProvider;
+
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
+
     @InjectMocks
     private UpdateScoreService updateScoreService;
 
