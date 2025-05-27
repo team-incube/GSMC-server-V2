@@ -229,7 +229,7 @@ public class EvidenceWebAdapter {
      * @return 생성된 임시저장 정보
      */
     @PostMapping("/current/draft/reading")
-    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@Valid @RequestBody CreateReadingEvidenceRequest reqeust) {
+    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@RequestBody CreateReadingEvidenceRequest reqeust) {
         return ResponseEntity.status(HttpStatus.CREATED).body(evidenceApplicationPort.createDraftReadingEvidence(
                 reqeust.draftId(), reqeust.title(), reqeust.author(), reqeust.page(), reqeust.content()));
     }
