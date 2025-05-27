@@ -12,6 +12,7 @@ import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.RequiredEvidenceCategoryException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
@@ -78,7 +79,11 @@ public class UpdateScoreService implements UpdateScoreUseCase {
      * @throws RequiredEvidenceCategoryException 증빙이 필요한 카테고리인 경우
      */
     protected void updateScore(String studentCode, String categoryName, Integer value) {
-        Category category = categoryPersistencePort.findCategoryByName(categoryName);
+        Category category = categoryPersistencePort.findAllCategory()
+                .stream()
+                .filter(cat -> cat.getName().equals(categoryName))
+                .findFirst()
+                .orElseThrow(CategoryNotFoundException::new);
         if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
             throw new ScoreLimitExceededException();
         }

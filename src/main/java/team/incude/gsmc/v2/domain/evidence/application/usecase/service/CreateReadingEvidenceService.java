@@ -17,6 +17,7 @@ import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
@@ -88,7 +89,11 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
      * @return 생성된 Score 객체
      */
     private Score createScore(Member member) {
-        Category category = categoryPersistencePort.findCategoryByName(HUMANITIES_READING);
+        Category category = categoryPersistencePort.findAllCategory()
+                .stream()
+                .filter(cat -> cat.getName().equals(HUMANITIES_READING))
+                .findFirst()
+                .orElseThrow(CategoryNotFoundException::new);
         return Score.builder()
                 .category(category)
                 .value(0)
