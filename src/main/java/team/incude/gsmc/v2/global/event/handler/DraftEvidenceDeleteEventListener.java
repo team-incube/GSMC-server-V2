@@ -20,16 +20,12 @@ public class DraftEvidenceDeleteEventListener {
     @Async
     @EventListener(DraftEvidenceDeleteEvent.class)
     public void handleDraftEvidenceDeleteEvent(DraftEvidenceDeleteEvent event) {
-        try {
-            activityEvidencePersistencePort.deleteDraftActivityEvidenceById(event.draftId());
-        } catch (Exception e) {
-            log.debug("Failed to delete draft activity evidence. draftId: {}, error: {}", event.draftId(), e.getMessage());
+
+        if (event.draftId() == null) {
+            return;
         }
 
-        try {
-            readingEvidencePersistencePort.deleteDraftReadingEvidenceById(event.draftId());
-        } catch (Exception e) {
-            log.debug("Failed to delete draft reading evidence. draftId: {}, error: {}", event.draftId(), e.getMessage());
-        }
+        activityEvidencePersistencePort.deleteDraftActivityEvidenceById(event.draftId());
+        readingEvidencePersistencePort.deleteDraftReadingEvidenceById(event.draftId());
     }
 }
