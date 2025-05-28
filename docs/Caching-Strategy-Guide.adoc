@@ -6,7 +6,7 @@
 
 == 적용 배경
 
-- `findCategoryByName(String name)` 메서드는 다양한 비즈니스 로직에서 반복적으로 호출됩니다.
+- `findAllCategory()` 메서드는 다양한 비즈니스 로직에서 반복적으로 호출됩니다.
 - 해당 데이터는 자주 변경되지 않는 정적인 정보입니다.
 - 결과적으로 **불필요한 DB I/O**가 많아지고, 시스템 전체 성능에 영향을 줄 수 있습니다.
 - 캐시를 적용하여 **DB 부하를 줄이고**, **API 응답 속도를 향상**시키는 것이 목적입니다.
@@ -17,15 +17,10 @@
 
 [source,java]
 ----
-@Cacheable(value = "category", key = "#name")
+@Cacheable(value = "categories", key = "'ALL'")
 @Override
-public Category findCategoryByName(String name) {
-    return Optional.ofNullable(
-            jpaQueryFactory
-                .selectFrom(categoryJpaEntity)
-                .where(categoryJpaEntity.name.eq(name))
-                .fetchOne()
-    ).map(categoryMapper::toDomain).orElseThrow(CategoryNotFoundException::new);
+public List<Category> findAllCategory() {
+    return categoryJpaRepository.findAll().stream().map(categoryMapper::toDomain).toList();
 }
 ----
 
@@ -45,7 +40,7 @@ public class CacheConfig {
 
     @Bean
     public CaffeineCacheManager cacheManager() {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager("category");
+        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager("categories");
         caffeineCacheManager.setCaffeine(
             Caffeine.newBuilder()
                 .expireAfterWrite(expireAfterWrite, TimeUnit.MINUTES)
@@ -86,7 +81,7 @@ public class CacheConfig {
 
 == 캐시를 적용한 이유
 
-- `findCategoryByName()`은 **온갖 비즈니스 로직에서 반복 호출**됩니다.
+- `findAllCategory()`은 **온갖 비즈니스 로직에서 반복 호출**됩니다.
 - 해당 카테고리 데이터는 **잘 바뀌지 않는 정적 데이터**입니다.
 - 따라서 캐시를 통해:
 * DB 접근 횟수를 줄이고,
