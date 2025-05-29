@@ -24,6 +24,8 @@ import team.incude.gsmc.v2.global.util.SnakeKebabToCamelCaseConverterUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -110,9 +112,10 @@ public class GetSheetService implements GetSheetUseCase {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             wb.write(baos);
 
+            String filename = URLEncoder.encode(grade + "-" + classNumber + "-점수표.xlsx", StandardCharsets.UTF_8);
             return new InMemoryMultipartFile(
                     "file",
-                    grade + "-" + classNumber + "-점수표.xlsx",
+                    filename,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     baos.toByteArray()
             );
