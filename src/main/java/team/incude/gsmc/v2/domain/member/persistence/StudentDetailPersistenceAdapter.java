@@ -107,11 +107,12 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
      * @return 학생 상세 도메인 객체 리스트
      */
     @Override
-    public List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber) {
+    public List<StudentDetail> findStudentDetailByGradeAndClassNumberAndMemberNotNull(Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(studentDetailJpaEntity)
                 .where(studentDetailJpaEntity.grade.eq(grade)
-                        .and(studentDetailJpaEntity.classNumber.eq(classNumber)))
+                        .and(studentDetailJpaEntity.classNumber.eq(classNumber))
+                        .and(studentDetailJpaEntity.member.isNotNull()))
                 .fetch()
                 .stream()
                 .map(studentDetailMapper::toDomain)

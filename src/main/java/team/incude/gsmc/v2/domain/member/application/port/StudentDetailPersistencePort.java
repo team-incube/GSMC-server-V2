@@ -34,7 +34,7 @@ public interface StudentDetailPersistencePort {
 
     StudentDetail findStudentDetailByMemberEmail(String email);
 
-    List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber);
+    List<StudentDetail> findStudentDetailByGradeAndClassNumberAndMemberNotNull(Integer grade, Integer classNumber);
 
     StudentDetailWithEvidence findStudentDetailWithEvidenceByStudentCode(String studentCode);
 
