@@ -16,7 +16,10 @@ import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -119,7 +122,8 @@ class GetSheetServiceTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.getOriginalFilename()).isEqualTo("2-1-점수표.xlsx");
+            assertThat(URLDecoder.decode(Objects.requireNonNull(result.getOriginalFilename()), StandardCharsets.UTF_8))
+                    .isEqualTo("2-1-점수표.xlsx");
             assertThat(result.getContentType()).isEqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             assertThat(result.getSize()).isGreaterThan(0);
         }
