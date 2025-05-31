@@ -101,17 +101,18 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     /**
-     * 주어진 학년과 반 번호에 해당하는 학생 목록을 조회합니다.
+     * 주어진 학년과 반 번호에 해당하며, 사용자 정보가 존재하는 학생 상세 정보를 조회합니다.
      * @param grade 학년
      * @param classNumber 반 번호
      * @return 학생 상세 도메인 객체 리스트
      */
     @Override
-    public List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber) {
+    public List<StudentDetail> findStudentDetailByGradeAndClassNumberAndMemberNotNull(Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(studentDetailJpaEntity)
                 .where(studentDetailJpaEntity.grade.eq(grade)
-                        .and(studentDetailJpaEntity.classNumber.eq(classNumber)))
+                        .and(studentDetailJpaEntity.classNumber.eq(classNumber))
+                        .and(studentDetailJpaEntity.member.isNotNull()))
                 .fetch()
                 .stream()
                 .map(studentDetailMapper::toDomain)
