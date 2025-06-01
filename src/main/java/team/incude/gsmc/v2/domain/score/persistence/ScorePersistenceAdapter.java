@@ -62,46 +62,15 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
         ).map(scoreMapper::toDomain).orElse(null);
     }
 
-    /**
-     * 학생 코드와 카테고리 이름을 기준으로 점수를 조회하고, 비관적 락(PESSIMISTIC_WRITE)을 적용합니다.
-     * @param name 카테고리 이름
-     * @param studentCode 학생 고유 코드
-     * @return 조회된 점수 도메인 객체 (없을 경우 null)
-     */
     @Override
-    public Score findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(String name, String studentCode) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .selectFrom(scoreJpaEntity)
-                        .join(scoreJpaEntity.category, categoryJpaEntity)
-                        .join(scoreJpaEntity.member, memberJpaEntity)
-                        .fetchJoin()
-                        .join(studentDetailJpaEntity)
-                        .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
-                        .fetchJoin()
-                        .where(
-                                categoryJpaEntity.name.eq(name),
-                                studentDetailJpaEntity.studentCode.eq(studentCode)
-                        )
-                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                        .fetchOne()
-        ).map(scoreMapper::toDomain).orElse(null);
-    }
-
-    /**
-     * 학생 코드에 해당하는 모든 점수를 조회합니다.
-     * @param studentCode 학생 고유 코드
-     * @return 점수 도메인 객체 목록
-     */
-    @Override
-    public List<Score> findScoreByStudentDetailStudentCode(String studentCode) {
+    public List<Score> findScoreByMemberEmail(String email) {
         return jpaQueryFactory
-                .selectFrom(scoreJpaEntity).distinct()
-                .join(scoreJpaEntity.member, memberJpaEntity).fetchJoin()
-                .join(scoreJpaEntity.category, categoryJpaEntity).fetchJoin()
-                .join(studentDetailJpaEntity)
-                .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
-                .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                .selectFrom(scoreJpaEntity)
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.category, categoryJpaEntity)
+                .fetchJoin()
+                .where(memberJpaEntity.email.eq(email))
                 .fetch()
                 .stream()
                 .map(scoreMapper::toDomain)
@@ -118,10 +87,10 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
         return jpaQueryFactory
                 .selectFrom(scoreJpaEntity)
                 .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
                 .join(scoreJpaEntity.category, categoryJpaEntity)
                 .fetchJoin()
-                .join(studentDetailJpaEntity)
-                .on(studentDetailJpaEntity.member.id.eq(memberJpaEntity.id))
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity))
                 .where(studentDetailJpaEntity.studentCode.in(studentCodes))
                 .fetch()
                 .stream()
