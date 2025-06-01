@@ -19,6 +19,9 @@ import java.util.UUID;
 /**
  * {@code HttpLoggingAspect}는 {@code @RestController}가 적용된 클래스의 메서드에 대해
  * HTTP 요청과 응답 정보를 로깅하는 AOP 클래스입니다.
+ * 
+ * <p><b>현재 비활성화됨:</b> 필터 기반 로깅({@code HttpLoggingFilter})으로 대체되었습니다.
+ * 
  * <p>요청 시 다음의 정보를 로깅합니다:
  * <ul>
  *   <li>클라이언트 IP</li>
@@ -42,10 +45,12 @@ import java.util.UUID;
  * <p>요청과 응답 로그에는 트래킹을 위한 UUID 코드가 함께 포함됩니다.
  * <p>응답 객체가 {@code ResponseEntity}가 아닌 경우 {@code RuntimeException}을 발생시킵니다.
  * @author snowykte0426
+ * @deprecated 필터 기반 로깅으로 대체됨. 이 클래스는 더 이상 사용되지 않습니다.
  */
 @Aspect
-@Component
+// @Component  // 필터 기반 로깅으로 대체되어 비활성화
 @Slf4j
+@Deprecated
 public class HttpLoggingAspect {
 
     @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
