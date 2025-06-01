@@ -53,7 +53,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
      */
     @Override
     public void execute(String categoryName, Integer value) {
-        updateScore(studentDetailPersistencePort.findStudentDetailByMemberEmail(currentMemberProvider.getCurrentUser().getEmail()).getStudentCode(), categoryName, value);
+        updateScore(currentMemberProvider.getCurrentUser().getEmail(), categoryName, value);
     }
 
     /**
@@ -78,7 +78,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
      * @throws ScoreLimitExceededException 최대 점수를 초과한 경우
      * @throws RequiredEvidenceCategoryException 증빙이 필요한 카테고리인 경우
      */
-    protected void updateScore(String studentCode, String categoryName, Integer value) {
+    protected void updateScore(String email, String categoryName, Integer value) {
         Category category = categoryPersistencePort.findAllCategory()
                 .stream()
                 .filter(cat -> cat.getName().equals(categoryName))
@@ -90,9 +90,9 @@ public class UpdateScoreService implements UpdateScoreUseCase {
         if (category.getIsEvidenceRequired()) {
             throw new RequiredEvidenceCategoryException();
         }
-        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode);
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, email);
         if (score == null) {
-            Member member = memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode);
+            Member member = memberPersistencePort.findMemberByEmail(email);
             score = createNewScore(category, member);
         } else {
             score = Score.builder()
@@ -103,7 +103,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
                     .build();
         }
         scorePersistencePort.saveScore(score);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentCode));
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(email));
     }
 
     /**
