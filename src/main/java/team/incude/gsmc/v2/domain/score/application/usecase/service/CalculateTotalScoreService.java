@@ -44,11 +44,11 @@ public class CalculateTotalScoreService implements CalculateTotalScoreUseCase {
 
     /**
      * 특정 학생의 총합 점수를 계산하여 {@link StudentDetail}에 저장합니다.
-     * @param studentCode 총합 점수를 계산할 학생의 고유 코드
+     * @param email 총합 점수를 계산할 학생 이메일
      */
     @Override
-    public void execute(String studentCode) {
-        List<Score> scores = scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode);
+    public void execute(String email) {
+        List<Score> scores = scorePersistencePort.findScoreByMemberEmail(email);
         List<Category> categories = categoryPersistencePort.findAllCategory().stream()
                 .map(
                         categoryEntity -> Category.builder()
@@ -68,7 +68,7 @@ public class CalculateTotalScoreService implements CalculateTotalScoreUseCase {
         List<Integer> scoreValues = categories.stream()
                 .map(cat -> scoreByCategory.getOrDefault(cat.getId(), 0))
                 .toList();
-        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByStudentCode(studentCode);
+        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByEmail(email);
         studentDetailPersistencePort.saveStudentDetail(
                 StudentDetail.builder()
                         .id(studentDetail.getId())
