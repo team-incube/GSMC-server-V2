@@ -10,9 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
@@ -29,9 +27,6 @@ public class CreateReadingEvidenceServiceTest {
 
     @Mock
     private ReadingEvidencePersistencePort readingEvidencePersistencePort;
-
-    @Mock
-    private StudentDetailPersistencePort studentDetailPersistencePort;
 
     @Mock
     private ScorePersistencePort scorePersistencePort;
@@ -64,11 +59,7 @@ public class CreateReadingEvidenceServiceTest {
                 String content = "content";
 
                 Member member = Member.builder()
-                        .email("test@gsm.hs.kr")
-                        .build();
-
-                StudentDetail studentDetail = StudentDetail.builder()
-                        .studentCode("1234")
+                        .email("s24035@gsm.hs.kr")
                         .build();
 
                 Category category = Category.builder()
@@ -83,8 +74,7 @@ public class CreateReadingEvidenceServiceTest {
                         .build();
 
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(studentDetail);
-                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(category.getName(), studentDetail.getStudentCode())).thenReturn(score);
+                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(category.getName(), member.getEmail())).thenReturn(score);
 
                 // when
                 createReadingEvidenceService.execute(title, author, page, content, null);
@@ -94,7 +84,7 @@ public class CreateReadingEvidenceServiceTest {
                 verify(readingEvidencePersistencePort).saveReadingEvidence(any(), any(ReadingEvidence.class));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).studentCode().equals(studentDetail.getStudentCode())
+                                ((ScoreUpdatedEvent) event).email().equals(member.getEmail())
                 ));
             }
         }
