@@ -53,23 +53,6 @@ public class MemberPersistenceAdapter implements MemberPersistencePort {
     }
 
     /**
-     * 학생 코드에 해당하는 학생의 사용자 정보를 조회합니다.
-     * @param studentCode 학생 고유 코드
-     * @return 도메인 회원 객체
-     * @throws MemberNotFoundException 사용자를 찾을 수 없는 경우
-     */
-    @Override
-    public Member findMemberByStudentDetailStudentCode(String studentCode) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .select(studentDetailJpaEntity.member)
-                        .from(studentDetailJpaEntity)
-                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
-                        .fetchOne()
-        ).map(memberMapper::toDomain).orElseThrow(MemberNotFoundException::new);
-    }
-
-    /**
      * 주어진 이메일을 가진 사용자가 존재하는지 확인합니다.
      * @param email 사용자 이메일
      * @return 존재 여부
