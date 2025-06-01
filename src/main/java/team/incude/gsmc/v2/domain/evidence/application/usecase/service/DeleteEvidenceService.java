@@ -12,9 +12,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
@@ -40,7 +38,6 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final ScorePersistencePort scorePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -56,13 +53,12 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
     public void execute(Long evidenceId) {
         Evidence evidence = evidencePersistencePort.findEvidenceById(evidenceId);
         Member member = currentMemberProvider.getCurrentUser();
-        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
 
         deleteSubEvidenceIfExists(evidence.getId());
 
         saveScore(evidence);
         evidencePersistencePort.deleteEvidenceById(evidenceId);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
     }
 
     /**
