@@ -28,5 +28,5 @@ public interface MemberApplicationPort {
 
     GetStudentResponse findCurrentStudent();
 
-    GetStudentResponse findMemberByStudentCode(String studentCode);
+    GetStudentResponse findMemberByEmail(String email);
 }
