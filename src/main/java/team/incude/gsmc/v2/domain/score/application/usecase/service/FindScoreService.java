@@ -40,28 +40,28 @@ public class FindScoreService implements FindScoreUseCase {
      */
     @Override
     public GetScoreResponse execute() {
-        return findScore(studentDetailPersistencePort.findStudentDetailByMemberEmail(currentMemberProvider.getCurrentUser().getEmail()).getStudentCode());
+        return findScore(currentMemberProvider.getCurrentUser().getEmail());
     }
 
     /**
      * 주어진 학생 코드에 해당하는 점수를 조회합니다.
-     * @param studentCode 점수를 조회할 학생의 고유 코드
+     * @param email 점수를 조회할 학생의 이메일
      * @return 총합 점수 및 카테고리별 점수를 포함한 응답 객체
      */
     @Override
-    public GetScoreResponse execute(String studentCode) {
-        return findScore(studentCode);
+    public GetScoreResponse execute(String email) {
+        return findScore(email);
     }
 
     /**
      * 내부적으로 점수를 조회하고 {@link GetScoreResponse} 형태로 변환합니다.
-     * @param studentCode 학생 고유 코드
+     * @param email 학생 이메일
      * @return 총점과 상세 점수를 포함한 응답 객체
      */
-    private GetScoreResponse findScore(String studentCode) {
-        List<Score> scores = scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode);
+    private GetScoreResponse findScore(String email) {
+        List<Score> scores = scorePersistencePort.findScoreByMemberEmail(email);
         return new GetScoreResponse(
-                studentDetailPersistencePort.findTotalScoreByStudentCode(studentCode),
+                studentDetailPersistencePort.findTotalScoreByEmail(email),
                 scores.stream()
                         .map(score -> new GetScoreDto(
                                 score.getCategory().getName(),

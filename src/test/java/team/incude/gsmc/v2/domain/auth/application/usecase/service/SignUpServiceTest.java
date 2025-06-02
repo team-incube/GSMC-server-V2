@@ -60,7 +60,7 @@ class SignUpServiceTest {
 
                 when(authenticationPersistencePort.findAuthenticationByEmail(email))
                         .thenReturn(Authentication.builder().email(email).verified(true).build());
-                when(studentDetailPersistencePort.findStudentDetailByStudentCodeWithLock("24072"))
+                when(studentDetailPersistencePort.findStudentDetailByEmailWithLock(email))
                         .thenReturn(StudentDetail.builder().studentCode("24072").build());
                 when(memberPersistencePort.existsMemberByEmail(email)).thenReturn(false);
                 when(bCryptPasswordEncoder.encode(password)).thenReturn(encodedPassword);

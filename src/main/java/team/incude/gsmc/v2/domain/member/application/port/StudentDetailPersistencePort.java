@@ -28,15 +28,15 @@ import java.util.List;
  */
 @Port(direction = PortDirection.OUTBOUND)
 public interface StudentDetailPersistencePort {
-    StudentDetail findStudentDetailByStudentCode(String studentCode);
+    StudentDetail findStudentDetailByEmail(String email);
 
-    StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode);
+    StudentDetail findStudentDetailByEmailWithLock(String email);
 
     StudentDetail findStudentDetailByMemberEmail(String email);
 
     List<StudentDetail> findStudentDetailByGradeAndClassNumberAndMemberNotNull(Integer grade, Integer classNumber);
 
-    StudentDetailWithEvidence findStudentDetailWithEvidenceByStudentCode(String studentCode);
+    StudentDetailWithEvidence findStudentDetailWithEvidenceByEmail(String email);
 
     StudentDetailWithEvidence findStudentDetailWithEvidenceByMemberEmail(String email);
 
@@ -44,7 +44,7 @@ public interface StudentDetailPersistencePort {
 
     Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);
 
-    Integer findTotalScoreByStudentCode(String studentCode);
+    Integer findTotalScoreByEmail(String email);
 
     StudentDetail saveStudentDetail(StudentDetail studentDetail);
 }

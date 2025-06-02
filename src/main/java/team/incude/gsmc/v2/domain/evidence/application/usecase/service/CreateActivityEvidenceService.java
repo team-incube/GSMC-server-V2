@@ -12,9 +12,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
@@ -48,7 +46,6 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final ScorePersistencePort scorePersistencePort;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final S3Port s3Port;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -69,8 +66,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     @Override
     public void execute(String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType, UUID draftId) {
         Member member = currentMemberProvider.getCurrentUser();
-        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, member.getEmail());
 
         if (score == null) {
             score = createScore(categoryName, member);
@@ -85,7 +81,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file, imageUrl);
 
         activityEvidencePersistencePort.saveActivityEvidence(evidence, activityEvidence);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
         applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
     }
 
