@@ -19,21 +19,21 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("특정 학생 조회 서비스 클래스의")
-class FindStudentByStudentCodeServiceTest {
+class FindStudentByEmailServiceTest {
 
     @Mock
     private StudentDetailPersistencePort studentDetailPersistencePort;
 
     @InjectMocks
-    private FindStudentByStudentCodeService findStudentByStudentCodeService;
+    private FindStudentByEmailService findStudentByEmailService;
 
     @Nested
-    @DisplayName("execute(studentCode) 메서드는")
+    @DisplayName("execute(email) 메서드는")
     class Describe_execute {
 
         @Nested
-        @DisplayName("유효한 studentCode가 주어졌을 때")
-        class Context_with_valid_studentCode {
+        @DisplayName("유효한 이메일이 주어졌을 때")
+        class Context_with_valid_email {
 
             @Test
             @DisplayName("해당 학생의 상세 정보를 반환한다")
@@ -56,11 +56,11 @@ class FindStudentByStudentCodeServiceTest {
                         .studentDetail(studentDetail)
                         .hasPendingEvidence(false)
                         .build();
-                when(studentDetailPersistencePort.findStudentDetailWithEvidenceByStudentCode(studentCode))
+                when(studentDetailPersistencePort.findStudentDetailWithEvidenceByMemberEmail(member.getEmail()))
                         .thenReturn(studentDetailWithEvidence);
 
                 // when
-                GetStudentResponse response = findStudentByStudentCodeService.execute(studentCode);
+                GetStudentResponse response = findStudentByEmailService.execute(member.getEmail());
 
                 // then
                 assertThat(response.email()).isEqualTo("student@gsm.hs.kr");

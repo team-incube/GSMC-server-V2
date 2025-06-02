@@ -15,9 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
@@ -38,9 +36,6 @@ public class CreateOtherScoringEvidenceServiceTest {
 
     @Mock
     private S3Port s3Port;
-
-    @Mock
-    private StudentDetailPersistencePort studentDetailPersistencePort;
 
     @Mock
     private ScorePersistencePort scorePersistencePort;
@@ -83,11 +78,7 @@ public class CreateOtherScoringEvidenceServiceTest {
                         "test".getBytes()
                 );
                 Member member = Member.builder()
-                        .email("test@gsm.hs.kr")
-                        .build();
-
-                StudentDetail studentDetail = StudentDetail.builder()
-                        .studentCode("1234")
+                        .email("s24035@gsm.hs.kr")
                         .build();
 
                 Category category = Category.builder()
@@ -102,8 +93,7 @@ public class CreateOtherScoringEvidenceServiceTest {
                         .build();
 
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(studentDetail);
-                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(category.getName(), studentDetail.getStudentCode())).thenReturn(score);
+                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(category.getName(), member.getEmail())).thenReturn(score);
                 when(s3Port.uploadFile(Mockito.anyString(), Mockito.any()))
                         .thenReturn(CompletableFuture.completedFuture(fakeFileUrl));
                 when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
@@ -116,7 +106,7 @@ public class CreateOtherScoringEvidenceServiceTest {
                 verify(otherEvidencePersistencePort).saveOtherEvidence(any(), any(OtherEvidence.class));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).studentCode().equals(studentDetail.getStudentCode())
+                                ((ScoreUpdatedEvent) event).email().equals(member.getEmail())
                 ));
             }
         }

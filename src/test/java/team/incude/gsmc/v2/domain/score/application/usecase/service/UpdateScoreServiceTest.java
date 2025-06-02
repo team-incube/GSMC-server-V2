@@ -9,9 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import team.incude.gsmc.v2.domain.member.application.port.MemberPersistencePort;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
@@ -23,7 +21,6 @@ import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.Curre
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -41,9 +38,6 @@ class UpdateScoreServiceTest {
 
     @Mock
     private MemberPersistencePort memberPersistencePort;
-
-    @Mock
-    private StudentDetailPersistencePort studentDetailPersistencePort;
 
     @Mock
     private CurrentMemberProvider currentMemberProvider;
@@ -66,8 +60,7 @@ class UpdateScoreServiceTest {
             @DisplayName("새로운 점수를 생성한다")
             void it_creates_new_score() {
                 // given
-                String email = "user@gsm.hs.kr";
-                String studentCode = "24058";
+                String email = "s24058@gsm.hs.kr";
                 String categoryName = "MAJOR-CERTIFICATE-NUM";
                 int value = 3;
                 Member member = Member.builder().email(email).build();
@@ -76,15 +69,10 @@ class UpdateScoreServiceTest {
                         .maximumValue(6)
                         .isEvidenceRequired(false)
                         .build();
-                StudentDetail studentDetail = StudentDetail.builder()
-                        .studentCode(studentCode)
-                        .member(member)
-                        .build();
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(email)).thenReturn(studentDetail);
                 when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
-                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode)).thenReturn(null);
-                when(memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode)).thenReturn(member);
+                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, email)).thenReturn(null);
+                when(memberPersistencePort.findMemberByEmail(email)).thenReturn(member);
 
                 // when
                 updateScoreService.execute(categoryName, value);
@@ -93,7 +81,7 @@ class UpdateScoreServiceTest {
                 verify(scorePersistencePort).saveScore(any(Score.class));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
+                                ((ScoreUpdatedEvent) event).email().equals(email)
                 ));
             }
         }
@@ -106,20 +94,14 @@ class UpdateScoreServiceTest {
             @DisplayName("기존 점수를 갱신한다")
             void it_updates_existing_score() {
                 // given
-                String email = "user@gsm.hs.kr";
-                String studentCode = "24058";
+                String email = "s24058@gsm.hs.kr";
                 String categoryName = "MAJOR-CERTIFICATE-NUM";
                 int value = 5;
-
                 Member member = Member.builder().email(email).build();
                 Category category = Category.builder()
                         .name(categoryName)
                         .maximumValue(6)
                         .isEvidenceRequired(false)
-                        .build();
-                StudentDetail studentDetail = StudentDetail.builder()
-                        .studentCode(studentCode)
-                        .member(member)
                         .build();
                 Score existingScore = Score.builder()
                         .id(1L)
@@ -128,9 +110,8 @@ class UpdateScoreServiceTest {
                         .value(2)
                         .build();
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(email)).thenReturn(studentDetail);
                 when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
-                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode)).thenReturn(existingScore);
+                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, email)).thenReturn(existingScore);
 
                 // when
                 updateScoreService.execute(categoryName, value);
@@ -143,7 +124,7 @@ class UpdateScoreServiceTest {
                 ));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
+                                ((ScoreUpdatedEvent) event).email().equals(email)
                 ));
             }
         }
@@ -162,30 +143,31 @@ class UpdateScoreServiceTest {
             void it_creates_score() {
                 // given
                 String studentCode = "24058";
+                String email = "s24058@gsm.hs.kr";
                 String categoryName = "HUMANITIES-READING";
                 int value = 1;
-                Member member = Member.builder().id(1L).build();
+                Member member = Member.builder().id(1L).email(email).build();
                 Category category = Category.builder()
                         .name(categoryName)
                         .maximumValue(5)
                         .isEvidenceRequired(false)
                         .build();
                 when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
-                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode)).thenReturn(null);
-                when(memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode)).thenReturn(member);
+                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, email)).thenReturn(null);
+                when(memberPersistencePort.findMemberByEmail(email)).thenReturn(member);
 
                 // when
-                updateScoreService.execute(studentCode, categoryName, value);
+                updateScoreService.execute(email, categoryName, value); // email로 호출
 
                 // then
                 verify(scorePersistencePort).saveScore(argThat(score ->
                         score.getId() == null &&
-                                score.getValue() == 1 &&
+                                score.getValue() == value &&
                                 score.getCategory().getName().equals(categoryName)
                 ));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
+                                ((ScoreUpdatedEvent) event).email().equals(email)
                 ));
             }
         }
@@ -199,9 +181,13 @@ class UpdateScoreServiceTest {
             void it_updates_score() {
                 // given
                 String studentCode = "24058";
+                String email = "s24058@gsm.hs.kr";
                 String categoryName = "HUMANITIES-READING";
                 int value = 4;
-                Member member = Member.builder().id(2L).build();
+                Member member = Member.builder()
+                        .email(email)
+                        .id(2L)
+                        .build();
                 Category category = Category.builder()
                         .name(categoryName)
                         .maximumValue(5)
@@ -214,10 +200,10 @@ class UpdateScoreServiceTest {
                         .value(1)
                         .build();
                 when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
-                when(scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode)).thenReturn(existingScore);
+                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, email)).thenReturn(existingScore);
 
                 // when
-                updateScoreService.execute(studentCode, categoryName, value);
+                updateScoreService.execute(email, categoryName, value);
 
                 // then
                 verify(scorePersistencePort).saveScore(argThat(score ->
@@ -227,7 +213,7 @@ class UpdateScoreServiceTest {
                 ));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
-                                ((ScoreUpdatedEvent) event).studentCode().equals(studentCode)
+                                ((ScoreUpdatedEvent) event).email().equals(email)
                 ));
             }
         }
@@ -241,14 +227,15 @@ class UpdateScoreServiceTest {
             void it_throws_exception() {
                 // given
                 String studentCode = "24058";
+                String email = "s24058@gsm.hs.kr";
                 String categoryName = "NON_EXISTENT_CATEGORY";
                 int value = 3;
                 when(categoryPersistencePort.findAllCategory()).thenReturn(List.of());
 
                 // when & then
-                assertThrows(CategoryNotFoundException.class, () -> {
-                    updateScoreService.execute(studentCode, categoryName, value);
-                });
+                assertThrows(CategoryNotFoundException.class, () ->
+                        updateScoreService.execute(email, categoryName, value)
+                );
             }
         }
     }

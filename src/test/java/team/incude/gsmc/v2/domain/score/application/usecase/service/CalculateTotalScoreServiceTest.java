@@ -52,7 +52,10 @@ class CalculateTotalScoreServiceTest {
                             .value(1)
                             .build())
                     .toList();
-            Member member = Member.builder().id(1L).build();
+            Member member = Member.builder()
+                    .email("s24058@gsm.hs.kr")
+                    .id(1L)
+                    .build();
             StudentDetail studentDetail = StudentDetail.builder()
                     .id(1L)
                     .studentCode(studentCode)
@@ -61,7 +64,7 @@ class CalculateTotalScoreServiceTest {
                     .grade(2)
                     .number(3)
                     .build();
-            when(scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode)).thenReturn(scores);
+            when(scorePersistencePort.findScoreByMemberEmail(member.getEmail())).thenReturn(scores);
             when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(
                     Category.builder().id(1L).name("MAJOR-AWARD_CAREER-OUT_SCHOOL-OFFICIAL").weight(50f).build(),
                     Category.builder().id(2L).name("MAJOR-AWARD_CAREER-OUT_SCHOOL-UNOFFICIAL").weight(50f).build(),
@@ -105,10 +108,10 @@ class CalculateTotalScoreServiceTest {
                     Category.builder().id(40L).name("FOREIGN_LANG-CPT_SCORE").weight(-1f).build(),
                     Category.builder().id(41L).name("FOREIGN_LANG-HSK_SCORE").weight(-1f).build()
             ));
-            when(studentDetailPersistencePort.findStudentDetailByStudentCode(studentCode)).thenReturn(studentDetail);
+            when(studentDetailPersistencePort.findStudentDetailByEmail(member.getEmail())).thenReturn(studentDetail);
 
             // when
-            calculateTotalScoreService.execute(studentCode);
+            calculateTotalScoreService.execute(member.getEmail());
 
             // then
             verify(studentDetailPersistencePort).saveStudentDetail(any(StudentDetail.class));

@@ -12,9 +12,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
@@ -46,7 +44,6 @@ import java.util.Map;
 public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvidenceUseCase {
 
     private final S3Port s3Port;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final ScorePersistencePort scorePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -66,8 +63,7 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
     @Override
     public void execute(String categoryName, MultipartFile file, int value) {
         Member member = currentMemberProvider.getCurrentUser();
-        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, member.getEmail());
         Category category = categoryPersistencePort.findAllCategory()
                 .stream()
                 .filter(cat -> cat.getName().equals(categoryName))
@@ -88,7 +84,7 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
         OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
         otherEvidencePersistencePort.saveOtherEvidence(evidence, otherEvidence);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
     }
 
     /**

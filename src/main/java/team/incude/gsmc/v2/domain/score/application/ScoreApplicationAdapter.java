@@ -44,12 +44,12 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
 
     /**
      * 특정 학생 코드에 해당하는 사용자의 점수를 조회합니다.
-     * @param studentCode 학생 고유 코드
+     * @param email 학생 이메일
      * @return 점수 응답 DTO
      */
     @Override
-    public GetScoreResponse findScoreByStudentCode(String studentCode) {
-        return findScoreUseCase.execute(studentCode);
+    public GetScoreResponse findScoreByEmail(String email) {
+        return findScoreUseCase.execute(email);
     }
 
     /**
@@ -65,13 +65,13 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
 
     /**
      * 특정 학생의 특정 카테고리 점수를 수정합니다.
-     * @param studentCode 학생 고유 코드
+     * @param email 학생 이메일
      * @param categoryName 수정할 카테고리 이름
      * @param value 수정할 점수 값
      */
     @Override
-    public void updateScoreByStudentCode(String studentCode, String categoryName, Integer value) {
-        updateScoreUseCase.execute(studentCode, categoryName, value);
+    public void updateScoreByEmail(String email, String categoryName, Integer value) {
+        updateScoreUseCase.execute(email, categoryName, value);
     }
 
     /**

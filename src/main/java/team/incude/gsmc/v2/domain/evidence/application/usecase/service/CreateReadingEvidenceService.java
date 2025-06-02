@@ -10,9 +10,7 @@ import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
@@ -41,7 +39,6 @@ import java.util.UUID;
 public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCase {
 
     private final ReadingEvidencePersistencePort readingEvidencePersistencePort;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final ScorePersistencePort scorePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -63,8 +60,7 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
     @Override
     public void execute(String title, String author, int page, String content, UUID draftId) {
         Member member = currentMemberProvider.getCurrentUser();
-        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(HUMANITIES_READING, studentDetail.getStudentCode());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(HUMANITIES_READING, member.getEmail());
 
         if (score == null) {
             score = createScore(member);
@@ -79,7 +75,7 @@ public class CreateReadingEvidenceService implements CreateReadingEvidenceUseCas
         ReadingEvidence readingEvidence = createReadingEvidence(evidence, title, author, page, content);
 
         readingEvidencePersistencePort.saveReadingEvidence(evidence, readingEvidence);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
         applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
     }
 
