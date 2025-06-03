@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.domain.evidence.application.port;
 
 import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
@@ -30,6 +31,8 @@ public interface ReadingEvidencePersistencePort {
     List<ReadingEvidence> findReadingEvidenceByEmail(String email);
 
     ReadingEvidence saveReadingEvidence(ReadingEvidence readingEvidence);
+
+    ReadingEvidence saveReadingEvidence(Evidence evidence, ReadingEvidence readingEvidence);
 
     List<ReadingEvidence> searchReadingEvidence(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber);
 

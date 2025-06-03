@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.domain.evidence.application.port;
 
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
@@ -28,6 +29,8 @@ public interface ActivityEvidencePersistencePort {
     List<ActivityEvidence> searchActivityEvidence(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber);
 
     ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence);
+
+    ActivityEvidence saveActivityEvidence(Evidence evidence, ActivityEvidence activityEvidence);
 
     void deleteActivityEvidenceById(Long evidenceId);
 

@@ -42,6 +42,23 @@ public class CertificatePersistenceAdapter implements CertificatePersistencePort
     private final JPAQueryFactory jpaQueryFactory;
     private final CertificateMapper certificateMapper;
 
+
+    /**
+     * 주어진 회원 ID와 자격증 이름을 기준으로 자격증이 존재하는지 확인합니다.
+     * @param memberId 회원의 고유 ID
+     * @param name 자격증 이름
+     * @return 해당 회원이 소유한 자격증이 존재하면 true, 그렇지 않으면 false
+     */
+    @Override
+    public boolean existsByMemberIdAndName(Long memberId, String name) {
+        return jpaQueryFactory
+                .selectOne()
+                .from(certificateJpaEntity)
+                .where(certificateJpaEntity.member.id.eq(memberId)
+                        .and(certificateJpaEntity.name.eq(name)))
+                .fetchFirst() != null;
+    }
+
     /**
      * 비관적 락(PESSIMISTIC_WRITE)을 걸고 ID에 해당하는 자격증을 조회하고 비관적 락을 설정합니다.
      * @param id 자격증의 고유 ID

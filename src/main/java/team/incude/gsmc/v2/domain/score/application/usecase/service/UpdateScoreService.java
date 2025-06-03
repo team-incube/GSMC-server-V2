@@ -12,6 +12,7 @@ import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.RequiredEvidenceCategoryException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
@@ -52,7 +53,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
      */
     @Override
     public void execute(String categoryName, Integer value) {
-        updateScore(studentDetailPersistencePort.findStudentDetailByMemberEmail(currentMemberProvider.getCurrentUser().getEmail()).getStudentCode(), categoryName, value);
+        updateScore(currentMemberProvider.getCurrentUser().getEmail(), categoryName, value);
     }
 
     /**
@@ -77,17 +78,21 @@ public class UpdateScoreService implements UpdateScoreUseCase {
      * @throws ScoreLimitExceededException 최대 점수를 초과한 경우
      * @throws RequiredEvidenceCategoryException 증빙이 필요한 카테고리인 경우
      */
-    protected void updateScore(String studentCode, String categoryName, Integer value) {
-        Category category = categoryPersistencePort.findCategoryByName(categoryName);
+    protected void updateScore(String email, String categoryName, Integer value) {
+        Category category = categoryPersistencePort.findAllCategory()
+                .stream()
+                .filter(cat -> cat.getName().equals(categoryName))
+                .findFirst()
+                .orElseThrow(CategoryNotFoundException::new);
         if (ValueLimiterUtil.isExceedingLimit(value, category.getMaximumValue())) {
             throw new ScoreLimitExceededException();
         }
         if (category.getIsEvidenceRequired()) {
             throw new RequiredEvidenceCategoryException();
         }
-        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentCode);
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, email);
         if (score == null) {
-            Member member = memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode);
+            Member member = memberPersistencePort.findMemberByEmail(email);
             score = createNewScore(category, member);
         } else {
             score = Score.builder()
@@ -98,7 +103,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
                     .build();
         }
         scorePersistencePort.saveScore(score);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentCode));
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(email));
     }
 
     /**

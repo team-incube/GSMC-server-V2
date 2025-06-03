@@ -218,7 +218,7 @@ public class EvidenceWebAdapter {
      * @return 생성된 임시저장 정보
      */
     @PostMapping("/current/draft/activity")
-    public ResponseEntity<CreateDraftEvidenceResponse> createDraftActivity(@RequestBody CreateDraftActivityEvidenceReqeust reqeust) {
+    public ResponseEntity<CreateDraftEvidenceResponse> createDraftActivity(@Valid @ModelAttribute CreateDraftActivityEvidenceReqeust reqeust) {
         return ResponseEntity.status(HttpStatus.CREATED).body(evidenceApplicationPort.createDraftActivityEvidence(
                 reqeust.draftId(), reqeust.categoryName(), reqeust.title(), reqeust.content(), reqeust.file(), reqeust.imageUrl(), reqeust.activityType()));
     }

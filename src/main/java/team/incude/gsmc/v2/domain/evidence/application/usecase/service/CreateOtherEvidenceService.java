@@ -12,13 +12,12 @@ import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
@@ -43,7 +42,6 @@ import java.util.Map;
 public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
 
     private final S3Port s3Port;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final ScorePersistencePort scorePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
@@ -62,8 +60,7 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
     @Override
     public void execute(String categoryName, MultipartFile file) {
         Member member = currentMemberProvider.getCurrentUser();
-        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = scorePersistencePort.findScoreByCategoryNameAndStudentDetailStudentCodeWithLock(categoryName, studentDetail.getStudentCode());
+        Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, member.getEmail());
 
         if (score == null) {
             score = createScore(categoryName, member);
@@ -77,8 +74,8 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         Evidence evidence = createEvidence(score, evidenceType);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
-        otherEvidencePersistencePort.saveOtherEvidence(otherEvidence);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        otherEvidencePersistencePort.saveOtherEvidence(evidence, otherEvidence);
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
     }
 
     /**
@@ -136,7 +133,11 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
      * @return 생성된 Score 객체
      */
     private Score createScore(String categoryName, Member member) {
-        Category category = categoryPersistencePort.findCategoryByName(categoryName);
+        Category category = categoryPersistencePort.findAllCategory()
+                .stream()
+                .filter(cat -> cat.getName().equals(categoryName))
+                .findFirst()
+                .orElseThrow(CategoryNotFoundException::new);
         return Score.builder()
                 .category(category)
                 .value(0)

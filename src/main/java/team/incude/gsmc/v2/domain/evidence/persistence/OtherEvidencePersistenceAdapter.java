@@ -4,11 +4,16 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.OtherEvidenceNotFoundException;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.EvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.OtherEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.mapper.EvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.OtherEvidenceMapper;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.OtherEvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
@@ -48,16 +53,8 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private final OtherEvidenceJpaRepository otherEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final OtherEvidenceMapper otherEvidenceMapper;
-
-    /**
-     * 기타 증빙자료를 저장합니다.
-     * @param otherEvidence 저장할 도메인 객체
-     * @return 저장된 도메인 객체
-     */
-    @Override
-    public OtherEvidence saveOtherEvidence(OtherEvidence otherEvidence) {
-        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceMapper.toEntity(otherEvidence)));
-    }
+    private final EvidenceMapper evidenceMapper;
+    private final EvidenceJpaRepository evidenceJpaRepository;
 
     /**
      * 학생 코드, 증빙자료 타입, 검토 상태, 학년, 반을 기준으로 기타 증빙자료를 검색합니다.
@@ -93,6 +90,32 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .stream()
                 .map(otherEvidenceMapper::toDomain)
                 .toList();
+    }
+
+    /**
+     * 기타 증빙자료를 저장합니다.
+     * @param otherEvidence 저장할 도메인 객체
+     * @return 저장된 도메인 객체
+     */
+    @Override
+    public OtherEvidence saveOtherEvidence(OtherEvidence otherEvidence) {
+        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceMapper.toEntity(otherEvidence)));
+    }
+
+    /**
+     * 기타 증빙자료를 저장합니다.
+     * @param evidence 저장할 상위 도메인 객체
+     * @param otherEvidence 저장할 도메인 객체
+     * @return 저장된 도메인 객체
+     */
+    @Override
+    public OtherEvidence saveOtherEvidence(Evidence evidence, OtherEvidence otherEvidence) {
+        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
+        OtherEvidenceJpaEntity otherEvidenceJpaEntity = OtherEvidenceJpaEntity.builder()
+                .evidence(evidenceJpaEntity)
+                .fileUri(otherEvidence.getFileUri())
+                .build();
+        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceJpaEntity));
     }
 
     /**

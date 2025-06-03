@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.member.application.port.MemberApplicationPort;
 import team.incude.gsmc.v2.domain.member.application.usecase.FindAllStudentUseCase;
 import team.incude.gsmc.v2.domain.member.application.usecase.FindCurrentStudentUseCase;
-import team.incude.gsmc.v2.domain.member.application.usecase.FindStudentByStudentCodeUseCase;
+import team.incude.gsmc.v2.domain.member.application.usecase.FindStudentByEmailUseCase;
 import team.incude.gsmc.v2.domain.member.application.usecase.SearchStudentUseCase;
 import team.incude.gsmc.v2.domain.member.presentation.data.response.GetStudentResponse;
 import team.incude.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
@@ -21,7 +21,7 @@ import java.util.List;
  *   <li>{@link FindAllStudentUseCase} - 전체 학생 목록 조회</li>
  *   <li>{@link SearchStudentUseCase} - 이름/학년/반 조건 기반 검색</li>
  *   <li>{@link FindCurrentStudentUseCase} - 현재 로그인한 사용자 정보 조회</li>
- *   <li>{@link FindStudentByStudentCodeUseCase} - 학생 코드 기반 단일 조회</li>
+ *   <li>{@link FindStudentByEmailUseCase} - 학생 코드 기반 단일 조회</li>
  * </ul>
  * 이 클래스는 어댑터 계층에서 도메인 계층으로의 연결을 담당하는 구조적 진입점입니다.
  * @author snowykte0426
@@ -33,7 +33,7 @@ public class MemberApplicationAdapter implements MemberApplicationPort {
     private final FindAllStudentUseCase findAllStudentUseCase;
     private final SearchStudentUseCase searchStudentUseCase;
     private final FindCurrentStudentUseCase findCurrentStudentUseCase;
-    private final FindStudentByStudentCodeUseCase findStudentByStudentCodeUseCase;
+    private final FindStudentByEmailUseCase findStudentByEmailUseCase;
 
     @Override
     public List<GetStudentResponse> findAllStudents() {
@@ -51,7 +51,7 @@ public class MemberApplicationAdapter implements MemberApplicationPort {
     }
 
     @Override
-    public GetStudentResponse findMemberByStudentCode(String studentCode) {
-        return findStudentByStudentCodeUseCase.execute(studentCode);
+    public GetStudentResponse findMemberByEmail(String email) {
+        return findStudentByEmailUseCase.execute(email);
     }
 }

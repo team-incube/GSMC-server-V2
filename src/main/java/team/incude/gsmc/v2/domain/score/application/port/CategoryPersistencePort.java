@@ -21,7 +21,5 @@ import java.util.List;
  */
 @Port(direction = PortDirection.OUTBOUND)
 public interface CategoryPersistencePort {
-    Category findCategoryByName(String name);
-
     List<Category> findAllCategory();
 }

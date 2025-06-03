@@ -62,14 +62,14 @@ public class DeleteCertificateService implements DeleteCertificateUseCase {
 
     /**
      * 특정 사용자의 자격증을 삭제합니다.
-     * @param studentCode 자격증을 삭제할 사용자의 학생 코드
+     * @param email 자격증을 삭제할 사용자의 학생 이메일
      * @param id 삭제할 자격증의 ID
      */
     @Override
-    public void execute(String studentCode, Long id) {
-        Member member = memberPersistencePort.findMemberByStudentDetailStudentCode(studentCode);
+    public void execute(String email, Long id) {
+        Member member = memberPersistencePort.findMemberByEmail(email);
         deleteCertificate(member, id);
-        applicationContext.publishEvent(new ScoreUpdatedEvent(studentCode));
+        applicationContext.publishEvent(new ScoreUpdatedEvent(email));
     }
 
     /**

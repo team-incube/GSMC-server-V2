@@ -23,9 +23,9 @@ import java.util.UUID;
  */
 public record CreateDraftActivityEvidenceReqeust(
         UUID draftId,
-        @NotNull String categoryName,
-        @NotNull String title,
-        @NotNull String content,
+        String categoryName,
+        String title,
+        String content,
         MultipartFile file,
         String imageUrl,
         @NotNull EvidenceType activityType

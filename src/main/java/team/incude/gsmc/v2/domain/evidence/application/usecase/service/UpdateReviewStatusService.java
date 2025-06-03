@@ -9,9 +9,6 @@ import team.incude.gsmc.v2.domain.evidence.application.usecase.UpdateReviewStatu
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
-import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
@@ -31,7 +28,6 @@ import java.util.Set;
 @Transactional
 public class UpdateReviewStatusService implements UpdateReviewStatusUseCase {
 
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final EvidencePersistencePort evidencePersistencePort;
     private final ScorePersistencePort scorePersistencePort;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -45,14 +41,12 @@ public class UpdateReviewStatusService implements UpdateReviewStatusUseCase {
     public void execute(Long evidenceId, ReviewStatus reviewStatus) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
         Score score = evidence.getScore();
-        Member member = score.getMember();
-        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
 
         Evidence newEvidence = createEvidence(evidence, reviewStatus);
 
         saveScore(evidence, reviewStatus);
         evidencePersistencePort.saveEvidence(newEvidence);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(score.getMember().getEmail()));
     }
 
     /**
