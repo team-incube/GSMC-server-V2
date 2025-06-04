@@ -76,6 +76,35 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     /**
+     * 사용자 이메일과 제목, 증빙자료 타입을 기준으로 독서 증빙자료 목록을 조회합니다.
+     * @param email 사용자 이메일
+     * @param title 증빙자료 제목
+     * @param evidenceType 증빙자료 타입
+     * @return 조회된 독서 증빙자료 도메인 리스트
+     */
+    @Override
+    public List<ReadingEvidence> findReadingEvidenceByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType) {
+        return jpaQueryFactory
+                .selectFrom(readingEvidenceJpaEntity)
+                .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity))
+                .fetchJoin()
+                .where(
+                        memberEmailEq(email),
+                        titleEq(title),
+                        evidenceTypeEq(evidenceType)
+                ).fetch()
+                .stream()
+                .map(readingEvidenceMapper::toDomain)
+                .toList();
+    }
+
+    /**
      * 독서 증빙자료를 저장합니다.
      * @param readingEvidence 저장할 독서 증빙자료 도메인 객체
      * @return 저장된 도메인 객체
@@ -104,18 +133,8 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
         return readingEvidenceMapper.toDomain(readingEvidenceJpaRepository.save(readingEvidenceJpaEntity));
     }
 
-    /**
-     * 학생 정보, 제목, 증빙자료 타입, 검토 상태 등을 기준으로 독서 증빙자료를 검색합니다.
-     * @param studentCode 학번
-     * @param title 제목
-     * @param evidenceType 증빙자료 타입
-     * @param status 검토 상태
-     * @param grade 학년
-     * @param classNumber 반
-     * @return 조건에 부합하는 독서 증빙자료 리스트
-     */
     @Override
-    public List<ReadingEvidence> searchReadingEvidence(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<ReadingEvidence> findReadingEvidenceByEmailAndStatus(String email, ReviewStatus status) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
                 .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity)
@@ -124,17 +143,10 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
                 .fetchJoin()
                 .join(scoreJpaEntity.member, memberJpaEntity)
                 .fetchJoin()
-                .join(studentDetailJpaEntity)
-                .on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
                 .where(
-                        studentCodeEq(studentCode),
-                        titleEq(title),
-                        evidenceTypeEq(evidenceType),
-                        statusEq(status),
-                        gradeEq(grade),
-                        classNumberEq(classNumber)
-                )
-                .fetch()
+                        memberEmailEq(email),
+                        statusEq(status)
+                ).fetch()
                 .stream()
                 .map(readingEvidenceMapper::toDomain)
                 .toList();
@@ -180,7 +192,7 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
 
     private BooleanExpression titleEq(String title) {
         if (title == null) return null;
-        return readingEvidenceJpaEntity.title.eq(title);
+        return readingEvidenceJpaEntity.title.containsIgnoreCase(title);
     }
 
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
