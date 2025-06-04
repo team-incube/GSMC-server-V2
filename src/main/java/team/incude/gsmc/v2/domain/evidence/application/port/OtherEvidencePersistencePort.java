@@ -17,6 +17,7 @@ import java.util.List;
  * <ul>
  *   <li>{@code saveOtherEvidence} - 기타 증빙자료 저장</li>
  *   <li>{@code findOtherEvidenceByEmail} - 사용자 이메일 기준 목록 조회</li>
+ *   <li>{@code findOtherEvidenceByMemberEmailAndType} - 사용자 이메일 및 증빙자료 타입 기준 목록 조회</li>
  *   <li>{@code searchOtherEvidence} - 학생코드, 타입, 상태, 학년/반 기준 조건 검색</li>
  *   <li>{@code deleteOtherEvidenceById} - ID 기반 삭제</li>
  *   <li>{@code findOtherEvidenceById} - ID 기반 단건 조회</li>
@@ -33,7 +34,9 @@ public interface OtherEvidencePersistencePort {
 
     List<OtherEvidence> findOtherEvidenceByEmail(String email);
 
-    List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber);
+    List<OtherEvidence> findOtherEvidenceByMemberEmailAndType(String email, EvidenceType type);
+
+    List<OtherEvidence> findOtherEvidenceByMemberEmailAndTypeAndStatus(String email, EvidenceType type, ReviewStatus status);
 
     void deleteOtherEvidenceById(Long evidenceId);
 
