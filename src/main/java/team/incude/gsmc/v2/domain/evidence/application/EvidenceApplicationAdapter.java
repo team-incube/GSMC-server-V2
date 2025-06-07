@@ -27,8 +27,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final CreateReadingEvidenceUseCase createReadingEvidenceUseCase;
     private final DeleteEvidenceUseCase deleteEvidenceUseCase;
     private final FindEvidenceByCurrentUserAndTypeUseCase findEvidenceByCurrentUserAndTypeUseCase;
-    private final FindEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase findEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase;
-    private final FindEvidenceByStudentCodeAndFilteringTypeAndStatusUseCase findEvidenceByStudentCodeAndFilteringTypeAndStatusUseCase;
+    private final FindEvidenceByTitleAndTypeUseCase findEvidenceByTitleAndTypeUseCase;
+    private final FindEvidenceByEmailAndTypeAndStatusUseCase findEvidenceByEmailAndTypeAndStatusUseCase;
     private final UpdateActivityEvidenceByCurrentUserUseCase updateActivityEvidenceByCurrentUserUseCase;
     private final UpdateOtherEvidenceByCurrentUserUseCase updateOtherEvidenceByCurrentUserUseCase;
     private final UpdateReadingEvidenceByCurrentUserUseCase updateReadingEvidenceByCurrentUserUseCase;
@@ -53,16 +53,16 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      * 학생코드 + 증빙자료 타입 + 상태 조건으로 증빙자료를 조회합니다.
      */
     @Override
-    public GetEvidencesResponse findEvidenceByStudentCodeAndTypeAndStatus(String studentCode, EvidenceType evidenceType, ReviewStatus status) {
-        return findEvidenceByStudentCodeAndFilteringTypeAndStatusUseCase.execute(studentCode, evidenceType, status);
+    public GetEvidencesResponse findEvidenceByEmailAndTypeAndStatus(String email, EvidenceType evidenceType, ReviewStatus status) {
+        return findEvidenceByEmailAndTypeAndStatusUseCase.execute(email, evidenceType, status);
     }
 
     /**
-     * 학생코드 + 제목 + 증빙자료 타입 조건으로 증빙자료를 조회합니다.
+     * 제목 + 증빙자료 타입 조건으로 증빙자료를 조회합니다.
      */
     @Override
-    public GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(String studentCode, String title, EvidenceType evidenceType) {
-        return findEvidenceByFilteringByStudentCodeAndTitleAndTypeUseCase.execute(studentCode, title, evidenceType);
+    public GetEvidencesResponse findEvidenceByTitleAndType(String title, EvidenceType evidenceType) {
+        return findEvidenceByTitleAndTypeUseCase.execute(title, evidenceType);
     }
 
     /**
