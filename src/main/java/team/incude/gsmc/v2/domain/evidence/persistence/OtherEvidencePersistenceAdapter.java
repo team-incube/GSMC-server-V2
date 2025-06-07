@@ -57,16 +57,13 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private final EvidenceJpaRepository evidenceJpaRepository;
 
     /**
-     * 학생 코드, 증빙자료 타입, 검토 상태, 학년, 반을 기준으로 기타 증빙자료를 검색합니다.
-     * @param studentCode 학번
-     * @param evidenceType 증빙자료 타입
-     * @param status 검토 상태
-     * @param grade 학년
-     * @param classNumber 반
+     * 사용자 이메일, 증빙자료 타입을 기준으로 기타 증빙자료를 검색합니다.
+     * @param email 사용자 이메일
+     * @param type 증빙자료 타입
      * @return 검색된 기타 증빙자료 리스트
      */
     @Override
-    public List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<OtherEvidence> findOtherEvidenceByMemberEmailAndType(String email, EvidenceType type) {
         return jpaQueryFactory
                 .selectFrom(otherEvidenceJpaEntity)
                 .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity)
@@ -75,17 +72,29 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 .fetchJoin()
                 .join(scoreJpaEntity.member, memberJpaEntity)
                 .fetchJoin()
-                .join(studentDetailJpaEntity)
-                .on(studentDetailJpaEntity.member.eq(memberJpaEntity))
+                .where(
+                        memberEmailEq(email),
+                        evidenceTypeEq(type)
+                ).fetch()
+                .stream()
+                .map(otherEvidenceMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<OtherEvidence> findOtherEvidenceByMemberEmailAndTypeAndStatus(String email, EvidenceType type, ReviewStatus status) {
+        return jpaQueryFactory
+                .selectFrom(otherEvidenceJpaEntity)
+                .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity)
                 .fetchJoin()
-                .join(scoreJpaEntity.category, categoryJpaEntity)
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
                 .fetchJoin()
                 .where(
-                        studentCodeEq(studentCode),
-                        evidenceTypeEq(evidenceType),
-                        statusEq(status),
-                        gradeEq(grade),
-                        classNumberEq(classNumber)
+                        memberEmailEq(email),
+                        evidenceTypeEq(type),
+                        statusEq(status)
                 ).fetch()
                 .stream()
                 .map(otherEvidenceMapper::toDomain)
@@ -170,11 +179,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
         return memberJpaEntity.email.eq(email);
     }
 
-    private BooleanExpression studentCodeEq(String studentCode) {
-        if (studentCode == null) return null;
-        return studentDetailJpaEntity.studentCode.eq(studentCode);
-    }
-
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
         if (evidenceType == null) return null;
         return evidenceJpaEntity.evidenceType.eq(evidenceType);
@@ -183,11 +187,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private BooleanExpression statusEq(ReviewStatus status) {
         if (status == null) return null;
         return evidenceJpaEntity.reviewStatus.eq(status);
-    }
-
-    private BooleanExpression gradeEq(Integer grade) {
-        if (grade == null) return null;
-        return studentDetailJpaEntity.grade.eq(grade);
     }
 
     private BooleanExpression classNumberEq(Integer classNumber) {

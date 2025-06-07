@@ -48,21 +48,55 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
     @Override
     public GetEvidencesResponse execute(EvidenceType type) {
         Member member = currentMemberProvider.getCurrentUser();
+        String email = member.getEmail();
 
-        List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByEmailAndEvidenceType(member.getEmail(), type);
+        if (type == null) {
+            return findAllEvidenceByEmail(email);
+        }
+
+        return findEvidenceByEmailAndType(email, type);
+    }
+
+    private GetEvidencesResponse findAllEvidenceByEmail(String email) {
+        List<ActivityEvidence> activityEvidences = activityEvidencePersistencePort.findActivityEvidenceByMemberEmail(email);
 
         List<ActivityEvidence> majorEvidences = filterByType(activityEvidences, EvidenceType.MAJOR);
         List<ActivityEvidence> humanitiesEvidences = filterByType(activityEvidences, EvidenceType.HUMANITIES);
-        List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByEmail(member.getEmail());
-        List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByEmail(member.getEmail());
+        List<OtherEvidence> otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByEmail(email);
+        List<ReadingEvidence> readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByEmail(email);
 
-        List<GetActivityEvidenceResponse> majorEvidenceDtos = createActivityEvidenceDtos(majorEvidences);
-        List<GetActivityEvidenceResponse> humanitiesEvidenceDtos = createActivityEvidenceDtos(humanitiesEvidences);
-        List<GetReadingEvidenceResponse> readingEvidenceDtos = createReadingEvidenceDtos(readingEvidences);
-        List<GetOtherEvidenceResponse> otherEvidenceDtos = createOtherEvidenceDtos(otherEvidences);
-
-        return new GetEvidencesResponse(majorEvidenceDtos, humanitiesEvidenceDtos, readingEvidenceDtos, otherEvidenceDtos);
+        return new GetEvidencesResponse(
+                createActivityEvidenceDtos(majorEvidences),
+                createActivityEvidenceDtos(humanitiesEvidences),
+                createReadingEvidenceDtos(readingEvidences),
+                createOtherEvidenceDtos(otherEvidences)
+        );
     }
+
+    private GetEvidencesResponse findEvidenceByEmailAndType(String email, EvidenceType type) {
+        List<ActivityEvidence> majorEvidences = List.of();
+        List<ActivityEvidence> humanitiesEvidences = List.of();
+        List<ReadingEvidence> readingEvidences = List.of();
+        List<OtherEvidence> otherEvidences = List.of();
+
+        if (type == EvidenceType.MAJOR) {
+            majorEvidences = findActivityEvidenceByEmailAndType(email, EvidenceType.MAJOR);
+        } else if (type == EvidenceType.HUMANITIES) {
+            humanitiesEvidences = findActivityEvidenceByEmailAndType(email, EvidenceType.HUMANITIES);
+        } else if (type == EvidenceType.READING) {
+            readingEvidences = readingEvidencePersistencePort.findReadingEvidenceByEmail(email);
+        } else {
+            otherEvidences = otherEvidencePersistencePort.findOtherEvidenceByMemberEmailAndType(email, type);
+        }
+
+        return new GetEvidencesResponse(
+                createActivityEvidenceDtos(majorEvidences),
+                createActivityEvidenceDtos(humanitiesEvidences),
+                createReadingEvidenceDtos(readingEvidences),
+                createOtherEvidenceDtos(otherEvidences)
+        );
+    }
+
 
     /**
      * 활동 증빙자료 리스트에서 특정 EvidenceType에 해당하는 항목만 필터링합니다.
@@ -74,6 +108,10 @@ public class FindEvidenceByCurrentUserAndTypeService implements FindEvidenceByCu
         return evidences.stream()
                 .filter(e -> e.getId().getEvidenceType().equals(type))
                 .toList();
+    }
+
+    private List<ActivityEvidence> findActivityEvidenceByEmailAndType(String email, EvidenceType type) {
+        return activityEvidencePersistencePort.findActivityEvidenceByEmailAndEvidenceType(email, type);
     }
 
     /**
