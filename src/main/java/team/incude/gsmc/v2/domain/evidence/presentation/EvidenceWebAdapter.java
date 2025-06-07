@@ -225,13 +225,13 @@ public class EvidenceWebAdapter {
 
     /**
      * 독서 증빙자료 임시저장을 생성합니다.
-     * @param reqeust 임시저장 생성 요청
+     * @param request 임시저장 생성 요청
      * @return 생성된 임시저장 정보
      */
     @PostMapping("/current/draft/reading")
-    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@RequestBody CreateReadingEvidenceRequest reqeust) {
+    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@RequestBody CreateReadingEvidenceRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(evidenceApplicationPort.createDraftReadingEvidence(
-                reqeust.draftId(), reqeust.title(), reqeust.author(), reqeust.page(), reqeust.content()));
+                request.draftId(), request.title(), request.author(), request.page(), request.content()));
     }
 
     /**
