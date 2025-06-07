@@ -20,6 +20,7 @@ import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.Curre
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,18 +40,18 @@ class FindScoreServiceTest {
     private FindScoreService findScoreService;
 
     @Nested
-    @DisplayName("execute(String studentCode) 메서드는")
-    class Describe_executeWithStudentCode {
+    @DisplayName("execute(String email) 메서드는")
+    class Describe_executeWithEmail {
 
         @Nested
-        @DisplayName("유효한 studentCode가 주어졌을 때")
-        class Context_with_valid_studentCode {
+        @DisplayName("유효한 email 주어졌을 때")
+        class Context_with_valid_email {
 
             @Test
             @DisplayName("해당 사용자의 점수 목록과 총점을 반환한다")
             void it_returns_scores_and_total_score() {
                 // given
-                String studentCode = "24058";
+                String email = "s24058@gsm.hs.kr";
                 List<Score> scores = List.of(
                         Score.builder()
                                 .category(Category.builder().name("MAJOR-CERTIFICATE-NUM").build())
@@ -61,11 +62,11 @@ class FindScoreServiceTest {
                                 .value(2)
                                 .build()
                 );
-                when(scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode)).thenReturn(scores);
-                when(studentDetailPersistencePort.findTotalScoreByStudentCode(studentCode)).thenReturn(95);
+                when(scorePersistencePort.findScoreByMemberEmail(email)).thenReturn(scores);
+                when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(95);
 
                 // when
-                GetScoreResponse response = findScoreService.execute(studentCode);
+                GetScoreResponse response = findScoreService.execute(email);
 
                 // then
                 assertThat(response.totalScore()).isEqualTo(95);
@@ -100,9 +101,8 @@ class FindScoreServiceTest {
                         .member(member)
                         .build();
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(email)).thenReturn(studentDetail);
-                when(scorePersistencePort.findScoreByStudentDetailStudentCode(studentCode)).thenReturn(List.of());
-                when(studentDetailPersistencePort.findTotalScoreByStudentCode(studentCode)).thenReturn(0);
+                when(scorePersistencePort.findScoreByMemberEmail(email)).thenReturn(List.of());
+                when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(0);
 
                 // when
                 GetScoreResponse response = findScoreService.execute();

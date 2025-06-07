@@ -9,5 +9,5 @@ package team.incude.gsmc.v2.global.event;
  *
  * @author snowykte0426
  */
-public record ScoreUpdatedEvent(String studentCode) {
+public record ScoreUpdatedEvent(String email) {
 }

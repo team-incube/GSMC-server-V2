@@ -4,11 +4,16 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.EvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.ReadingEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.mapper.EvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ReadingEvidenceMapper;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ReadingEvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
@@ -45,6 +50,8 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     private final ReadingEvidenceJpaRepository readingEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ReadingEvidenceMapper readingEvidenceMapper;
+    private final EvidenceMapper evidenceMapper;
+    private final EvidenceJpaRepository evidenceJpaRepository;
 
     /**
      * 사용자 이메일을 기준으로 독서 증빙자료 목록을 조회합니다.
@@ -69,6 +76,35 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     /**
+     * 사용자 이메일과 제목, 증빙자료 타입을 기준으로 독서 증빙자료 목록을 조회합니다.
+     * @param email 사용자 이메일
+     * @param title 증빙자료 제목
+     * @param evidenceType 증빙자료 타입
+     * @return 조회된 독서 증빙자료 도메인 리스트
+     */
+    @Override
+    public List<ReadingEvidence> findReadingEvidenceByEmailAndTitleAndType(String email, String title, EvidenceType evidenceType) {
+        return jpaQueryFactory
+                .selectFrom(readingEvidenceJpaEntity)
+                .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity))
+                .fetchJoin()
+                .where(
+                        memberEmailEq(email),
+                        titleEq(title),
+                        evidenceTypeEq(evidenceType)
+                ).fetch()
+                .stream()
+                .map(readingEvidenceMapper::toDomain)
+                .toList();
+    }
+
+    /**
      * 독서 증빙자료를 저장합니다.
      * @param readingEvidence 저장할 독서 증빙자료 도메인 객체
      * @return 저장된 도메인 객체
@@ -79,17 +115,26 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
     }
 
     /**
-     * 학생 정보, 제목, 증빙자료 타입, 검토 상태 등을 기준으로 독서 증빙자료를 검색합니다.
-     * @param studentCode 학번
-     * @param title 제목
-     * @param evidenceType 증빙자료 타입
-     * @param status 검토 상태
-     * @param grade 학년
-     * @param classNumber 반
-     * @return 조건에 부합하는 독서 증빙자료 리스트
+     * 독서 증빙자료를 저장합니다.
+     * @param evidence 저장할 상위 증빙자료 도메인 객체
+     * @param readingEvidence 저장할 독서 증빙자료 도메인 객체
+     * @return 저장된 도메인 객체
      */
     @Override
-    public List<ReadingEvidence> searchReadingEvidence(String studentCode, String title, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
+    public ReadingEvidence saveReadingEvidence(Evidence evidence, ReadingEvidence readingEvidence) {
+        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
+        ReadingEvidenceJpaEntity readingEvidenceJpaEntity = ReadingEvidenceJpaEntity.builder()
+                .evidence(evidenceJpaEntity)
+                .title(readingEvidence.getTitle())
+                .author(readingEvidence.getAuthor())
+                .content(readingEvidence.getContent())
+                .page(readingEvidence.getPage())
+                .build();
+        return readingEvidenceMapper.toDomain(readingEvidenceJpaRepository.save(readingEvidenceJpaEntity));
+    }
+
+    @Override
+    public List<ReadingEvidence> findReadingEvidenceByEmailAndStatus(String email, ReviewStatus status) {
         return jpaQueryFactory
                 .selectFrom(readingEvidenceJpaEntity)
                 .join(readingEvidenceJpaEntity.evidence, evidenceJpaEntity)
@@ -98,17 +143,10 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
                 .fetchJoin()
                 .join(scoreJpaEntity.member, memberJpaEntity)
                 .fetchJoin()
-                .join(studentDetailJpaEntity)
-                .on(studentDetailJpaEntity.member.eq(memberJpaEntity)).fetchJoin()
                 .where(
-                        studentCodeEq(studentCode),
-                        titleEq(title),
-                        evidenceTypeEq(evidenceType),
-                        statusEq(status),
-                        gradeEq(grade),
-                        classNumberEq(classNumber)
-                )
-                .fetch()
+                        memberEmailEq(email),
+                        statusEq(status)
+                ).fetch()
                 .stream()
                 .map(readingEvidenceMapper::toDomain)
                 .toList();
@@ -154,7 +192,7 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
 
     private BooleanExpression titleEq(String title) {
         if (title == null) return null;
-        return readingEvidenceJpaEntity.title.eq(title);
+        return readingEvidenceJpaEntity.title.containsIgnoreCase(title);
     }
 
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {

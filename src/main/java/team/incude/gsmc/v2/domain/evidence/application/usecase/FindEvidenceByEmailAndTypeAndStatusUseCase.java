@@ -11,6 +11,6 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.GetEvidenc
  * 반환값은 {@link GetEvidencesResponse} 형태이며, 조건에 일치하는 증빙자료 목록을 포함합니다.
  * @author suuuuuuminnnnnn
  */
-public interface FindEvidenceByStudentCodeAndFilteringTypeAndStatusUseCase {
-    GetEvidencesResponse execute(String studentCode, EvidenceType type, ReviewStatus status);
+public interface FindEvidenceByEmailAndTypeAndStatusUseCase {
+    GetEvidencesResponse execute(String email, EvidenceType type, ReviewStatus status);
 }

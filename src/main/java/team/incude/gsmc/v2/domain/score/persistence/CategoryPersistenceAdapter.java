@@ -36,27 +36,10 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     private final CategoryMapper categoryMapper;
 
     /**
-     * 카테고리 이름을 기준으로 카테고리를 조회합니다.
-     * <p>해당 결과는 캐시에 저장되어 이후 동일 요청에 대해 성능을 최적화합니다.
-     * @param name 조회할 카테고리 이름
-     * @return 도메인 카테고리 객체
-     * @throws CategoryNotFoundException 카테고리를 찾을 수 없는 경우
-     */
-    @Cacheable(value = "category", key = "#name")
-    @Override
-    public Category findCategoryByName(String name) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .selectFrom(categoryJpaEntity)
-                        .where(categoryJpaEntity.name.eq(name))
-                        .fetchOne()
-        ).map(categoryMapper::toDomain).orElseThrow(CategoryNotFoundException::new);
-    }
-
-    /**
      * 모든 카테고리 목록을 조회합니다.
      * @return 도메인 카테고리 객체 리스트
      */
+    @Cacheable(value = "categories", key = "'ALL'")
     @Override
     public List<Category> findAllCategory() {
         return categoryJpaRepository.findAll().stream().map(categoryMapper::toDomain).toList();

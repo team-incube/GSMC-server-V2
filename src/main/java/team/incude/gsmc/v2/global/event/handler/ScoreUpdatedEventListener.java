@@ -24,6 +24,6 @@ public class ScoreUpdatedEventListener {
     @Async
     @EventListener(ScoreUpdatedEvent.class)
     public void handleScoreUpdatedEvent(ScoreUpdatedEvent event) {
-        scoreApplicationPort.calculateTotalScore(event.studentCode());
+        scoreApplicationPort.calculateTotalScore(event.email());
     }
 }

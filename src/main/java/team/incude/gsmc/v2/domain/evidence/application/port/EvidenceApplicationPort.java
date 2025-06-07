@@ -22,9 +22,9 @@ import java.util.UUID;
 public interface EvidenceApplicationPort {
     GetEvidencesResponse findEvidenceByCurrentUserAndType(EvidenceType evidenceType);
 
-    GetEvidencesResponse findEvidenceByStudentCodeAndTypeAndStatus(String studentCode, EvidenceType evidenceType, ReviewStatus status);
+    GetEvidencesResponse findEvidenceByEmailAndTypeAndStatus(String email, EvidenceType evidenceType, ReviewStatus status);
 
-    GetEvidencesResponse findEvidenceByStudentCodeAndTitleAndType(String  studentCode, String title, EvidenceType evidenceType);
+    GetEvidencesResponse findEvidenceByTitleAndType(String title, EvidenceType evidenceType);
 
     void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl);
 

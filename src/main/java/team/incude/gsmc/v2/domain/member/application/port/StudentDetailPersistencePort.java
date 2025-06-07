@@ -18,7 +18,7 @@ import java.util.List;
  * 주요 기능:
  * <ul>
  *   <li>학생 코드 또는 이메일 기반 조회 (락 포함)</li>
- *   <li>학년/반 조건 기반 목록 조회</li>
+ *   <li>사용자 정보가 존재하는 학년/반 조건 학생 목록 조회</li>
  *   <li>증빙자료 포함 조회</li>
  *   <li>검토 상태 존재 여부 기반 목록 필터링</li>
  *   <li>검색 조건 및 페이징 처리된 학생 조회</li>
@@ -28,15 +28,15 @@ import java.util.List;
  */
 @Port(direction = PortDirection.OUTBOUND)
 public interface StudentDetailPersistencePort {
-    StudentDetail findStudentDetailByStudentCode(String studentCode);
+    StudentDetail findStudentDetailByEmail(String email);
 
-    StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode);
+    StudentDetail findStudentDetailByEmailWithLock(String email);
 
     StudentDetail findStudentDetailByMemberEmail(String email);
 
-    List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber);
+    List<StudentDetail> findStudentDetailByGradeAndClassNumberAndMemberNotNull(Integer grade, Integer classNumber);
 
-    StudentDetailWithEvidence findStudentDetailWithEvidenceByStudentCode(String studentCode);
+    StudentDetailWithEvidence findStudentDetailWithEvidenceByEmail(String email);
 
     StudentDetailWithEvidence findStudentDetailWithEvidenceByMemberEmail(String email);
 
@@ -44,7 +44,7 @@ public interface StudentDetailPersistencePort {
 
     Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);
 
-    Integer findTotalScoreByStudentCode(String studentCode);
+    Integer findTotalScoreByEmail(String email);
 
     StudentDetail saveStudentDetail(StudentDetail studentDetail);
 }

@@ -1,6 +1,7 @@
 package team.incude.gsmc.v2.domain.member.persistence;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
+import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 
 /**
@@ -50,32 +52,36 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
 
     /**
      * 학생 코드를 기준으로 학생 상세 정보를 조회합니다.
-     * @param studentCode 학생 고유 코드
+     * @param email 학생 이메일
      * @return 학생 상세 도메인 객체
      * @throws MemberInvalidException 학생이 존재하지 않을 경우
      */
     @Override
-    public StudentDetail findStudentDetailByStudentCode(String studentCode) {
+    public StudentDetail findStudentDetailByEmail(String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(studentDetailJpaEntity)
-                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .join(studentDetailJpaEntity.member, memberJpaEntity)
+                        .fetchJoin()
+                        .where(memberJpaEntity.email.eq(email))
                         .fetchOne()
         ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
     }
 
     /**
      * 학생 코드를 기준으로 비관적 락을 걸고 학생 정보를 조회합니다.
-     * @param studentCode 학생 고유 코드
+     * @param email 학생 이메일
      * @return 락이 걸린 학생 상세 도메인 객체
      * @throws MemberInvalidException 학생이 존재하지 않을 경우
      */
     @Override
-    public StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode) {
+    public StudentDetail findStudentDetailByEmailWithLock(String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(studentDetailJpaEntity)
-                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .join(studentDetailJpaEntity.member, memberJpaEntity)
+                        .fetchJoin()
+                        .where(memberJpaEntity.email.eq(email))
                         .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne()
         ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
@@ -100,17 +106,18 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     /**
-     * 주어진 학년과 반 번호에 해당하는 학생 목록을 조회합니다.
+     * 주어진 학년과 반 번호에 해당하며, 사용자 정보가 존재하는 학생 상세 정보를 조회합니다.
      * @param grade 학년
      * @param classNumber 반 번호
      * @return 학생 상세 도메인 객체 리스트
      */
     @Override
-    public List<StudentDetail> findStudentDetailByGradeAndClassNumber(Integer grade, Integer classNumber) {
+    public List<StudentDetail> findStudentDetailByGradeAndClassNumberAndMemberNotNull(Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .selectFrom(studentDetailJpaEntity)
                 .where(studentDetailJpaEntity.grade.eq(grade)
-                        .and(studentDetailJpaEntity.classNumber.eq(classNumber)))
+                        .and(studentDetailJpaEntity.classNumber.eq(classNumber))
+                        .and(studentDetailJpaEntity.member.isNotNull()))
                 .fetch()
                 .stream()
                 .map(studentDetailMapper::toDomain)
@@ -119,12 +126,12 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
 
     /**
      * 학생 코드를 기준으로 증빙 포함 학생 정보를 조회합니다.
-     * @param studentCode 학생 고유 코드
+     * @param email 학생 이메일
      * @return 증빙 포함 학생 상세 정보
      * @throws MemberNotFoundException 학생이 존재하지 않을 경우
      */
     @Override
-    public StudentDetailWithEvidence findStudentDetailWithEvidenceByStudentCode(String studentCode) {
+    public StudentDetailWithEvidence findStudentDetailWithEvidenceByEmail(String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .select(
@@ -143,7 +150,9 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                         .from(studentDetailJpaEntity)
                         .leftJoin(evidenceJpaEntity)
                         .on(evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id))
-                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .join(studentDetailJpaEntity.member, memberJpaEntity)
+                        .fetchJoin()
+                        .where(memberJpaEntity.email.eq(email))
                         .fetchOne()
         ).map(studentDetailMapper::fromProjection).orElseThrow(MemberNotFoundException::new);
     }
@@ -167,13 +176,14 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                                         studentDetailJpaEntity.classNumber,
                                         studentDetailJpaEntity.number,
                                         studentDetailJpaEntity.totalScore,
-                                        evidenceJpaEntity.id.isNotNull(),
+                                        JPAExpressions.selectOne()
+                                                .from(evidenceJpaEntity)
+                                                .where(evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id))
+                                                .exists(),
                                         studentDetailJpaEntity.member.role
                                 )
                         )
                         .from(studentDetailJpaEntity)
-                        .leftJoin(evidenceJpaEntity)
-                        .on(evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id))
                         .where(studentDetailJpaEntity.member.email.eq(email))
                         .fetchOne()
         ).map(studentDetailMapper::fromProjection).orElseThrow(MemberNotFoundException::new);
@@ -276,17 +286,19 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
 
     /**
      * 학생 코드로 총합 점수를 조회합니다.
-     * @param studentCode 학생 고유 코드
+     * @param email 학생 이메일
      * @return 총합 점수
      * @throws MemberInvalidException 학생이 존재하지 않을 경우
      */
     @Override
-    public Integer findTotalScoreByStudentCode(String studentCode) {
+    public Integer findTotalScoreByEmail(String email) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .select(studentDetailJpaEntity.totalScore)
                         .from(studentDetailJpaEntity)
-                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .join(studentDetailJpaEntity.member, memberJpaEntity)
+                        .fetchJoin()
+                        .where(memberJpaEntity.email.eq(email))
                         .fetchOne()
         ).orElseThrow(MemberInvalidException::new);
     }

@@ -5,11 +5,16 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.ActivityEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.EvidenceJpaEntity;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.ActivityEvidenceMapper;
+import team.incude.gsmc.v2.domain.evidence.persistence.mapper.EvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.ActivityEvidenceJpaRepository;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
@@ -44,6 +49,8 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     private final ActivityEvidenceJpaRepository activityEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final ActivityEvidenceMapper activityEvidenceMapper;
+    private final EvidenceJpaRepository evidenceJpaRepository;
+    private final EvidenceMapper evidenceMapper;
 
     /**
      * 사용자 이메일과 증빙자료 타입을 기준으로 활동 증빙자료 목록을 조회합니다.
@@ -74,17 +81,14 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     }
 
     /**
-     * 다양한 필터 조건으로 활동 증빙자료를 검색합니다.
-     * @param studentCode 학생 학번
-     * @param evidenceType 증빙자료 타입
-     * @param title 활동 제목
-     * @param status 검토 상태
-     * @param grade 학년
-     * @param classNumber 반
-     * @return 필터링된 활동 증빙자료 리스트
+     * 사용자 이메일과 제목과 증빙자료 타입을 기준으로 활동 증빙자료 목록을 조회합니다.
+     * @param email 사용자 이메일
+     * @param title 증빙자료 제목
+     * @param evidenceType 활동 증빙자료 타입
+     * @return 조회된 활동 증빙자료 리스트
      */
     @Override
-    public List<ActivityEvidence> searchActivityEvidence(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber) {
+    public List<ActivityEvidence> findActivityEvidenceByMemberEmailAndTitleAndType(String email, String title, EvidenceType evidenceType) {
         return jpaQueryFactory
                 .selectFrom(activityEvidenceJpaEntity)
                 .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity)
@@ -96,14 +100,52 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 .join(studentDetailJpaEntity).on(studentDetailJpaEntity.member.eq(memberJpaEntity))
                 .fetchJoin()
                 .where(
-                        studentCodeEq(studentCode),
-                        evidenceTypeEq(evidenceType),
+                        memberEmailEq(email),
                         titleEq(title),
-                        statusEq(status),
-                        gradeEq(grade),
-                        classNumberEq(classNumber)
-                )
-                .fetch()
+                        evidenceTypeEq(evidenceType)
+                ).fetch()
+                .stream()
+                .map(activityEvidenceMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<ActivityEvidence> findActivityEvidenceByMemberEmailAndTypeAndStatus(String email, EvidenceType type, ReviewStatus status) {
+        return jpaQueryFactory
+                .selectFrom(activityEvidenceJpaEntity)
+                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .where(
+                        memberEmailEq(email),
+                        evidenceTypeEq(type),
+                        statusEq(status)
+                ).fetch()
+                .stream()
+                .map(activityEvidenceMapper::toDomain)
+                .toList();
+    }
+
+    /**
+     * 사용자 이메일을 기준으로 활동 증빙자료 목록을 조회합니다.
+     * @param email 사용자 이메일
+     */
+    @Override
+    public List<ActivityEvidence> findActivityEvidenceByMemberEmail(String email) {
+        return jpaQueryFactory
+                .selectFrom(activityEvidenceJpaEntity)
+                .join(activityEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .where(
+                        memberEmailEq(email)
+                ).fetch()
                 .stream()
                 .map(activityEvidenceMapper::toDomain)
                 .toList();
@@ -117,6 +159,24 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     @Override
     public ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence) {
         return activityEvidenceMapper.toDomain(activityEvidenceJpaRepository.save(activityEvidenceMapper.toEntity(activityEvidence)));
+    }
+
+    /**
+     * 활동 증빙자료를 저장합니다.
+     * @param evidence 저장할 상위 증빙자료 도메인 객체
+     * @param activityEvidence 저장할 활동 증빙자료 도메인 객체
+     * @return 저장된 활동 증빙자료 도메인 객체
+     */
+    @Override
+    public ActivityEvidence saveActivityEvidence(Evidence evidence, ActivityEvidence activityEvidence) {
+        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
+        ActivityEvidenceJpaEntity activityEvidenceJpaEntity = ActivityEvidenceJpaEntity.builder()
+                .evidence(evidenceJpaEntity)
+                .content(activityEvidence.getContent())
+                .imageUri(activityEvidence.getImageUrl())
+                .title(activityEvidence.getTitle())
+                .build();
+        return activityEvidenceMapper.toDomain(activityEvidenceJpaRepository.save(activityEvidenceJpaEntity));
     }
 
     /**
@@ -134,6 +194,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
             throw new ActivityEvidenceNotFountException();
         }
     }
+
 
     /**
      * 활동 증빙자료 ID를 기준으로 단건 조회합니다.
@@ -169,7 +230,7 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
 
     private BooleanExpression titleEq(String title) {
         if (title == null || title.isBlank()) return null;
-        return activityEvidenceJpaEntity.title.eq(title);
+        return activityEvidenceJpaEntity.title.containsIgnoreCase(title.trim());
     }
 
     private BooleanExpression statusEq(ReviewStatus status) {

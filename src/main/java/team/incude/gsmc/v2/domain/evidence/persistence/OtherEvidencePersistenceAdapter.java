@@ -4,11 +4,16 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.exception.OtherEvidenceNotFoundException;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.EvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.entity.OtherEvidenceJpaEntity;
+import team.incude.gsmc.v2.domain.evidence.persistence.mapper.EvidenceMapper;
 import team.incude.gsmc.v2.domain.evidence.persistence.mapper.OtherEvidenceMapper;
+import team.incude.gsmc.v2.domain.evidence.persistence.repository.EvidenceJpaRepository;
 import team.incude.gsmc.v2.domain.evidence.persistence.repository.OtherEvidenceJpaRepository;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
@@ -48,6 +53,53 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private final OtherEvidenceJpaRepository otherEvidenceJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
     private final OtherEvidenceMapper otherEvidenceMapper;
+    private final EvidenceMapper evidenceMapper;
+    private final EvidenceJpaRepository evidenceJpaRepository;
+
+    /**
+     * 사용자 이메일, 증빙자료 타입을 기준으로 기타 증빙자료를 검색합니다.
+     * @param email 사용자 이메일
+     * @param type 증빙자료 타입
+     * @return 검색된 기타 증빙자료 리스트
+     */
+    @Override
+    public List<OtherEvidence> findOtherEvidenceByMemberEmailAndType(String email, EvidenceType type) {
+        return jpaQueryFactory
+                .selectFrom(otherEvidenceJpaEntity)
+                .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .where(
+                        memberEmailEq(email),
+                        evidenceTypeEq(type)
+                ).fetch()
+                .stream()
+                .map(otherEvidenceMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<OtherEvidence> findOtherEvidenceByMemberEmailAndTypeAndStatus(String email, EvidenceType type, ReviewStatus status) {
+        return jpaQueryFactory
+                .selectFrom(otherEvidenceJpaEntity)
+                .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity)
+                .fetchJoin()
+                .join(evidenceJpaEntity.score, scoreJpaEntity)
+                .fetchJoin()
+                .join(scoreJpaEntity.member, memberJpaEntity)
+                .fetchJoin()
+                .where(
+                        memberEmailEq(email),
+                        evidenceTypeEq(type),
+                        statusEq(status)
+                ).fetch()
+                .stream()
+                .map(otherEvidenceMapper::toDomain)
+                .toList();
+    }
 
     /**
      * 기타 증빙자료를 저장합니다.
@@ -60,39 +112,19 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     }
 
     /**
-     * 학생 코드, 증빙자료 타입, 검토 상태, 학년, 반을 기준으로 기타 증빙자료를 검색합니다.
-     * @param studentCode 학번
-     * @param evidenceType 증빙자료 타입
-     * @param status 검토 상태
-     * @param grade 학년
-     * @param classNumber 반
-     * @return 검색된 기타 증빙자료 리스트
+     * 기타 증빙자료를 저장합니다.
+     * @param evidence 저장할 상위 도메인 객체
+     * @param otherEvidence 저장할 도메인 객체
+     * @return 저장된 도메인 객체
      */
     @Override
-    public List<OtherEvidence> searchOtherEvidence(String studentCode, EvidenceType evidenceType, ReviewStatus status, Integer grade, Integer classNumber) {
-        return jpaQueryFactory
-                .selectFrom(otherEvidenceJpaEntity)
-                .join(otherEvidenceJpaEntity.evidence, evidenceJpaEntity)
-                .fetchJoin()
-                .join(evidenceJpaEntity.score, scoreJpaEntity)
-                .fetchJoin()
-                .join(scoreJpaEntity.member, memberJpaEntity)
-                .fetchJoin()
-                .join(studentDetailJpaEntity)
-                .on(studentDetailJpaEntity.member.eq(memberJpaEntity))
-                .fetchJoin()
-                .join(scoreJpaEntity.category, categoryJpaEntity)
-                .fetchJoin()
-                .where(
-                        studentCodeEq(studentCode),
-                        evidenceTypeEq(evidenceType),
-                        statusEq(status),
-                        gradeEq(grade),
-                        classNumberEq(classNumber)
-                ).fetch()
-                .stream()
-                .map(otherEvidenceMapper::toDomain)
-                .toList();
+    public OtherEvidence saveOtherEvidence(Evidence evidence, OtherEvidence otherEvidence) {
+        EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
+        OtherEvidenceJpaEntity otherEvidenceJpaEntity = OtherEvidenceJpaEntity.builder()
+                .evidence(evidenceJpaEntity)
+                .fileUri(otherEvidence.getFileUri())
+                .build();
+        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceJpaEntity));
     }
 
     /**
@@ -147,11 +179,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
         return memberJpaEntity.email.eq(email);
     }
 
-    private BooleanExpression studentCodeEq(String studentCode) {
-        if (studentCode == null) return null;
-        return studentDetailJpaEntity.studentCode.eq(studentCode);
-    }
-
     private BooleanExpression evidenceTypeEq(EvidenceType evidenceType) {
         if (evidenceType == null) return null;
         return evidenceJpaEntity.evidenceType.eq(evidenceType);
@@ -160,11 +187,6 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     private BooleanExpression statusEq(ReviewStatus status) {
         if (status == null) return null;
         return evidenceJpaEntity.reviewStatus.eq(status);
-    }
-
-    private BooleanExpression gradeEq(Integer grade) {
-        if (grade == null) return null;
-        return studentDetailJpaEntity.grade.eq(grade);
     }
 
     private BooleanExpression classNumberEq(Integer classNumber) {
