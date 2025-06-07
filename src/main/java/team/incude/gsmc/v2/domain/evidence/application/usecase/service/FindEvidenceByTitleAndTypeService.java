@@ -19,7 +19,8 @@ import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 import java.util.List;
-import java.util.Set;
+
+import static team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceTypeGroup.OTHER_TYPES;
 
 /**
  * 학생 코드, 증빙자료 제목, 증빙자료 유형을 기준으로 증빙자료를 조회하는 유스케이스 구현 클래스입니다.
@@ -49,9 +50,8 @@ public class FindEvidenceByTitleAndTypeService implements FindEvidenceByTitleAnd
     @Override
     public GetEvidencesResponse execute(String title, EvidenceType evidenceType) {
         Member member = currentMemberProvider.getCurrentUser();
-        String email = member.getEmail();
 
-        return createEvidencesResponse(email, title, evidenceType);
+        return createEvidencesResponse(member.getEmail(), title, evidenceType);
     }
 
     private GetEvidencesResponse createEvidencesResponse(String email, String title, EvidenceType evidenceType) {
@@ -123,21 +123,6 @@ public class FindEvidenceByTitleAndTypeService implements FindEvidenceByTitleAnd
     private List<ReadingEvidence> findReadingEvidence(String email, String title) {
         return readingEvidencePersistencePort.findReadingEvidenceByEmailAndTitleAndType(email, title, EvidenceType.READING);
     }
-
-    private static final Set<EvidenceType> OTHER_TYPES = Set.of(
-            EvidenceType.FOREIGN_LANGUAGE,
-            EvidenceType.CERTIFICATE,
-            EvidenceType.TOPCIT,
-            EvidenceType.READ_A_THON,
-            EvidenceType.TOEIC,
-            EvidenceType.TOEFL,
-            EvidenceType.TEPS,
-            EvidenceType.TOEIC_SPEAKING,
-            EvidenceType.OPIC,
-            EvidenceType.JPT,
-            EvidenceType.CPT,
-            EvidenceType.HSK
-    );
 
     /**
      * 기타 증빙자료 도메인 리스트를 응답 DTO 리스트로 변환합니다.
