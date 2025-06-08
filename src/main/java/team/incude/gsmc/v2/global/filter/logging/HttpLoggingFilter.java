@@ -11,6 +11,10 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -26,6 +30,8 @@ public class HttpLoggingFilter implements Filter {
     );
 
     private static final int MAX_PAYLOAD_LENGTH = 10000;
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초 SSS밀리초");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -77,6 +83,11 @@ public class HttpLoggingFilter implements Filter {
         String queryString = request.getQueryString();
         String sessionId = request.getRequestedSessionId();
 
+        String formattedDate = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(startTime),
+                ZoneId.systemDefault()
+        ).format(DATE_FORMATTER);
+
         Map<String, String> headers = new HashMap<>();
         Collections.list(request.getHeaderNames()).forEach(headerName ->
                 headers.put(headerName, request.getHeader(headerName))
@@ -86,7 +97,7 @@ public class HttpLoggingFilter implements Filter {
 
         log.info("[REQUEST] Code: {} | Time: {} | IP: {} | Session: {} | {} {} | Query: {} | Headers: {} | Body: {}",
                 code,
-                new Date(startTime),
+                formattedDate,
                 ip,
                 StringUtils.hasText(sessionId) ? sessionId : "No Session",
                 method,
@@ -102,6 +113,11 @@ public class HttpLoggingFilter implements Filter {
         int status = response.getStatus();
         long duration = System.currentTimeMillis() - startTime;
 
+        String formattedDate = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(System.currentTimeMillis()),
+                ZoneId.systemDefault()
+        ).format(DATE_FORMATTER);
+
         Map<String, String> responseHeaders = new HashMap<>();
         response.getHeaderNames().forEach(headerName ->
                 responseHeaders.put(headerName, response.getHeader(headerName))
@@ -109,9 +125,10 @@ public class HttpLoggingFilter implements Filter {
 
         String responseBody = getResponseBody(response);
 
-        log.info("[RESPONSE] Code: {} | IP: {} | Status: {} | Duration: {}ms | Headers: {} | Body: {}",
+        log.info("[RESPONSE] Code: {} | IP: {} | Time: {} | Status: {} | Duration: {}ms | Headers: {} | Body: {}",
                 code,
                 ip,
+                formattedDate,
                 status,
                 duration,
                 responseHeaders,
