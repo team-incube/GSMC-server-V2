@@ -199,24 +199,27 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                 .select(
                         Projections.constructor(
                                 StudentProjection.class,
-                                studentDetailJpaEntity.member.email,
-                                studentDetailJpaEntity.member.name,
-                                studentDetailJpaEntity.grade,
-                                studentDetailJpaEntity.classNumber,
-                                studentDetailJpaEntity.number,
-                                studentDetailJpaEntity.totalScore,
-                                evidenceJpaEntity.id.isNotNull(),
-                                studentDetailJpaEntity.member.role
+                                studentDetailJpaEntity.member.email.min(),
+                                studentDetailJpaEntity.member.name.min(),
+                                studentDetailJpaEntity.grade.min(),
+                                studentDetailJpaEntity.classNumber.min(),
+                                studentDetailJpaEntity.number.min(),
+                                studentDetailJpaEntity.totalScore.max(),
+                                JPAExpressions
+                                        .selectOne()
+                                        .from(evidenceJpaEntity)
+                                        .where(
+                                                evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id)
+                                                        .and(evidenceJpaEntity.reviewStatus.eq(ReviewStatus.PENDING))
+                                        )
+                                        .exists(),
+                                studentDetailJpaEntity.member.role.min()
                         )
                 )
                 .from(studentDetailJpaEntity)
-                .leftJoin(evidenceJpaEntity)
-                .on(
-                        evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id)
-                                .and(evidenceJpaEntity.reviewStatus.eq(ReviewStatus.PENDING))
-                )
                 .where(studentDetailJpaEntity.member.isNotNull())
-                .orderBy(studentDetailJpaEntity.studentCode.asc())
+                .groupBy(studentDetailJpaEntity.member.id)
+                .orderBy(studentDetailJpaEntity.studentCode.min().asc())
                 .fetch()
                 .stream()
                 .map(studentDetailMapper::fromProjection)
@@ -232,45 +235,44 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
      * @return 페이징된 학생 상세 정보 목록
      */
     @Override
-    public Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable) {
+    public Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(
+            String name, Integer grade, Integer classNumber, Pageable pageable) {
         List<StudentProjection> content = jpaQueryFactory
                 .select(
                         Projections.constructor(
                                 StudentProjection.class,
-                                studentDetailJpaEntity.member.email,
-                                studentDetailJpaEntity.member.name,
-                                studentDetailJpaEntity.grade,
-                                studentDetailJpaEntity.classNumber,
-                                studentDetailJpaEntity.number,
-                                studentDetailJpaEntity.totalScore,
-                                evidenceJpaEntity.id.isNotNull(),
-                                studentDetailJpaEntity.member.role
+                                studentDetailJpaEntity.member.email.min(),
+                                studentDetailJpaEntity.member.name.min(),
+                                studentDetailJpaEntity.grade.min(),
+                                studentDetailJpaEntity.classNumber.min(),
+                                studentDetailJpaEntity.number.min(),
+                                studentDetailJpaEntity.totalScore.max(),
+                                JPAExpressions
+                                        .selectOne()
+                                        .from(evidenceJpaEntity)
+                                        .where(
+                                                evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id)
+                                                        .and(evidenceJpaEntity.reviewStatus.eq(ReviewStatus.PENDING))
+                                        )
+                                        .exists(),
+                                studentDetailJpaEntity.member.role.min()
                         )
                 )
                 .from(studentDetailJpaEntity)
-                .leftJoin(evidenceJpaEntity)
-                .on(
-                        evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id)
-                                .and(evidenceJpaEntity.reviewStatus.eq(ReviewStatus.PENDING))
-                )
                 .where(
                         studentDetailJpaEntity.member.isNotNull(),
                         name != null ? studentDetailJpaEntity.member.name.contains(name) : null,
                         grade != null ? studentDetailJpaEntity.grade.eq(grade) : null,
                         classNumber != null ? studentDetailJpaEntity.classNumber.eq(classNumber) : null
                 )
-                .orderBy(studentDetailJpaEntity.studentCode.asc())
+                .groupBy(studentDetailJpaEntity.member.id)
+                .orderBy(studentDetailJpaEntity.studentCode.min().asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
         Long total = jpaQueryFactory
-                .select(studentDetailJpaEntity.count())
+                .select(studentDetailJpaEntity.member.countDistinct())
                 .from(studentDetailJpaEntity)
-                .leftJoin(evidenceJpaEntity)
-                .on(
-                        evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id)
-                                .and(evidenceJpaEntity.reviewStatus.eq(ReviewStatus.PENDING))
-                )
                 .where(
                         studentDetailJpaEntity.member.isNotNull(),
                         name != null ? studentDetailJpaEntity.member.name.contains(name) : null,
