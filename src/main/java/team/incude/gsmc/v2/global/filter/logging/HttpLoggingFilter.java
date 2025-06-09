@@ -171,9 +171,11 @@ public class HttpLoggingFilter implements Filter {
             return path.startsWith(prefix);
         } else if (pattern.endsWith("/*")) {
             String prefix = pattern.substring(0, pattern.length() - 2);
-            int slashCount = prefix.length() - prefix.replace("/", "").length();
-            int pathSlashCount = path.length() - path.replace("/", "").length();
-            return path.startsWith(prefix) && pathSlashCount == slashCount;
+            if (!path.startsWith(prefix)) {
+                return false;
+            }
+            String remainingPath = path.substring(prefix.length());
+            return remainingPath.startsWith("/") && remainingPath.indexOf('/', 1) == -1;
         } else {
             return path.equals(pattern);
         }
