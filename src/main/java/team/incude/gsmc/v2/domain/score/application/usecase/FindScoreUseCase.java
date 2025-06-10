@@ -8,12 +8,12 @@ import team.incude.gsmc.v2.domain.score.presentation.data.response.GetScoreRespo
  * 각각의 요청은 {@link GetScoreResponse} 형태로 점수 데이터를 반환합니다.
  * <ul>
  *   <li>{@code execute()} - 현재 로그인한 사용자의 점수 조회</li>
- *   <li>{@code execute(String studentCode)} - 특정 학생 코드로 점수 조회</li>
+ *   <li>{@code execute(String email)} - 특정 학생 코드로 점수 조회</li>
  * </ul>
  * @author snowykte0426
  */
 public interface FindScoreUseCase {
     GetScoreResponse execute();
 
-    GetScoreResponse execute(String studentCode);
+    GetScoreResponse execute(String email);
 }

@@ -54,6 +54,15 @@ public class FindEvidenceByTitleAndTypeService implements FindEvidenceByTitleAnd
         return createEvidencesResponse(member.getEmail(), title, evidenceType);
     }
 
+    /**
+     * 학생 코드, 제목, 증빙자료 유형을 기반으로 증빙자료를 조회하여 응답 DTO를 생성합니다.
+     * <p>활동 증빙자료는 전공(MAJOR)과 인문(HUMANITIES)으로 구분되며,
+     * 기타 및 독서 증빙자료는 별도로 조회하여 응답 DTO로 변환합니다.
+     * @param email 학생 이메일
+     * @param title 증빙자료 제목 키워드
+     * @param evidenceType 필터링할 증빙자료 유형
+     * @return 조회된 증빙자료 목록 응답 DTO
+     */
     private GetEvidencesResponse createEvidencesResponse(String email, String title, EvidenceType evidenceType) {
         List<ActivityEvidence> majorEvidences = findMajorEvidences(email, title, evidenceType);
         List<ActivityEvidence> humanitiesEvidences = findHumanitiesEvidences(email, title, evidenceType);
@@ -68,6 +77,15 @@ public class FindEvidenceByTitleAndTypeService implements FindEvidenceByTitleAnd
         );
     }
 
+    /**
+     * 활동 증빙자료를 전공(MAJOR) 또는 인문(HUMANITIES)으로 필터링하여 조회합니다.
+     * <p>증빙자료 유형이 null이거나 MAJOR인 경우 전공 증빙자료를 조회하고,
+     * HUMANITIES인 경우 인문 증빙자료를 조회합니다.
+     * @param email 학생 이메일
+     * @param title 증빙자료 제목 키워드
+     * @param evidenceType 필터링할 증빙자료 유형
+     * @return 조회된 활동 증빙자료 목록
+     */
     private List<ActivityEvidence> findMajorEvidences(String email, String title, EvidenceType evidenceType) {
         if (evidenceType == null || evidenceType.equals(EvidenceType.MAJOR)) {
             return findActivityEvidence(email, title, EvidenceType.MAJOR);
@@ -75,6 +93,14 @@ public class FindEvidenceByTitleAndTypeService implements FindEvidenceByTitleAnd
         return List.of();
     }
 
+    /**
+     * 활동 증빙자료를 인문(HUMANITIES)으로 필터링하여 조회합니다.
+     * <p>증빙자료 유형이 null이거나 HUMANITIES인 경우 인문 증빙자료를 조회합니다.
+     * @param email 학생 이메일
+     * @param title 증빙자료 제목 키워드
+     * @param evidenceType 필터링할 증빙자료 유형
+     * @return 조회된 인문 활동 증빙자료 목록
+     */
     private List<ActivityEvidence> findHumanitiesEvidences(String email, String title, EvidenceType evidenceType) {
         if (evidenceType == null || evidenceType.equals(EvidenceType.HUMANITIES)) {
             return findActivityEvidence(email, title, EvidenceType.HUMANITIES);
@@ -82,6 +108,14 @@ public class FindEvidenceByTitleAndTypeService implements FindEvidenceByTitleAnd
         return List.of();
     }
 
+    /**
+     * 독서 증빙자료를 조회합니다.
+     * <p>증빙자료 유형이 null이거나 READING인 경우 독서 증빙자료를 조회합니다.
+     * @param email 학생 이메일
+     * @param title 증빙자료 제목 키워드
+     * @param evidenceType 필터링할 증빙자료 유형
+     * @return 조회된 독서 증빙자료 목록
+     */
     private List<ReadingEvidence> findReadingEvidences(String email, String title, EvidenceType evidenceType) {
         if (evidenceType == null || evidenceType.equals(EvidenceType.READING)) {
             return findReadingEvidence(email, title);
@@ -89,6 +123,15 @@ public class FindEvidenceByTitleAndTypeService implements FindEvidenceByTitleAnd
         return List.of();
     }
 
+    /**
+     * 기타 증빙자료를 조회합니다.
+     * <p>증빙자료 유형이 null인 경우 모든 기타 증빙자료를 조회하고,
+     * 특정 유형이 OTHER_TYPES에 포함된 경우 해당 유형의 기타 증빙자료를 조회합니다.
+     * @param email 학생 이메일
+     * @param title 증빙자료 제목 키워드
+     * @param evidenceType 필터링할 증빙자료 유형
+     * @return 조회된 기타 증빙자료 목록
+     */
     private List<OtherEvidence> findOtherEvidences(String email, String title, EvidenceType evidenceType) {
         if (evidenceType == null && title == null) {
             return otherEvidencePersistencePort.findOtherEvidenceByEmail(email);
@@ -116,10 +159,23 @@ public class FindEvidenceByTitleAndTypeService implements FindEvidenceByTitleAnd
                 .toList();
     }
 
+    /**
+     * 활동 증빙자료를 학생 이메일, 제목, 증빙자료 유형을 기준으로 조회합니다.
+     * @param email 학생 이메일
+     * @param title 증빙자료 제목 키워드
+     * @param type 증빙자료 유형
+     * @return 조회된 활동 증빙자료 목록
+     */
     private List<ActivityEvidence> findActivityEvidence(String email, String title, EvidenceType type) {
         return activityEvidencePersistencePort.findActivityEvidenceByMemberEmailAndTitleAndType(email, title, type);
     }
 
+    /**
+     * 독서 증빙자료를 학생 이메일, 제목을 기준으로 조회합니다.
+     * @param email 학생 이메일
+     * @param title 증빙자료 제목 키워드
+     * @return 조회된 독서 증빙자료 목록
+     */
     private List<ReadingEvidence> findReadingEvidence(String email, String title) {
         return readingEvidencePersistencePort.findReadingEvidenceByEmailAndTitleAndType(email, title, EvidenceType.READING);
     }
