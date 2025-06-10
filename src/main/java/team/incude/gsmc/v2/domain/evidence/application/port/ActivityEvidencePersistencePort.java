@@ -17,6 +17,8 @@ import java.util.List;
  * <ul>
  *   <li>사용자 이메일과 증빙자료 유형에 따른 조회</li>
  *   <li>학번, 제목, 검토 상태, 학년/반 기준의 검색</li>
+ *   <li>이메일, 제목, 증빙자료 타입 기준의 검색</li>
+ *   <li>이메일 기준의 검색</li>
  *   <li>활동 증빙자료 저장 및 삭제</li>
  *   <li>단건 조회</li>
  * </ul>
@@ -26,7 +28,11 @@ import java.util.List;
 public interface ActivityEvidencePersistencePort {
     List<ActivityEvidence> findActivityEvidenceByEmailAndEvidenceType(String email, EvidenceType evidenceType);
 
-    List<ActivityEvidence> searchActivityEvidence(String studentCode, EvidenceType evidenceType, String title, ReviewStatus status, Integer grade, Integer classNumber);
+    List<ActivityEvidence> findActivityEvidenceByMemberEmailAndTitleAndType(String title, String email, EvidenceType evidenceType);
+
+    List<ActivityEvidence> findActivityEvidenceByMemberEmailAndTypeAndStatus(String email, EvidenceType type, ReviewStatus status);
+
+    List<ActivityEvidence> findActivityEvidenceByMemberEmail(String memberEmail);
 
     ActivityEvidence saveActivityEvidence(ActivityEvidence activityEvidence);
 

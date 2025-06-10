@@ -56,7 +56,7 @@ public class MemberWebAdapter {
     }
 
     @GetMapping("/students/{studentCode}")
-    public ResponseEntity<GetStudentResponse> getStudent(@PathVariable(value = "studentCode") String email) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.findMemberByEmail(email));
+    public ResponseEntity<GetStudentResponse> getStudent(@PathVariable(value = "studentCode") String studentCode) {
+        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.findMemberByEmail(studentCode));
     }
 }

@@ -41,7 +41,7 @@ public class EvidenceWebAdapter {
 
     /**
      * 특정 학생의 증빙자료 목록을 조회합니다.
-     * @param studentCode 학생 코드
+     * @param email 학생 이메일
      * @param type 증빙자료 타입 (선택)
      * @param status 검토 상태 (선택)
      * @return 증빙자료 목록
@@ -52,24 +52,22 @@ public class EvidenceWebAdapter {
             @RequestParam(name = "type", required = false) EvidenceType type,
             @RequestParam(name = "status", required = false) ReviewStatus status) {
         GetEvidencesResponse response = evidenceApplicationPort
-                .findEvidenceByStudentCodeAndTypeAndStatus(studentCode, type, status);
+                .findEvidenceByEmailAndTypeAndStatus(studentCode, type, status);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     /**
      * 검색 조건(학생 코드, 제목, 타입)에 따라 증빙자료를 조회합니다.
-     * @param studentCode 학생 코드 (선택)
      * @param title 제목 (선택)
      * @param type 증빙자료 타입 (선택)
      * @return 검색된 증빙자료 목록
      */
     @GetMapping("/search")
     public ResponseEntity<GetEvidencesResponse> searchEvidence(
-            @RequestParam(name = "studentCode", required = false) String studentCode,
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "type", required = false) EvidenceType type) {
         GetEvidencesResponse response = evidenceApplicationPort
-                .findEvidenceByStudentCodeAndTitleAndType(studentCode, title, type);
+                .findEvidenceByTitleAndType(title, type);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -225,13 +223,13 @@ public class EvidenceWebAdapter {
 
     /**
      * 독서 증빙자료 임시저장을 생성합니다.
-     * @param reqeust 임시저장 생성 요청
+     * @param request 임시저장 생성 요청
      * @return 생성된 임시저장 정보
      */
     @PostMapping("/current/draft/reading")
-    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@RequestBody CreateReadingEvidenceRequest reqeust) {
+    public ResponseEntity<CreateDraftEvidenceResponse> createDraftReading(@RequestBody CreateReadingEvidenceRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(evidenceApplicationPort.createDraftReadingEvidence(
-                reqeust.draftId(), reqeust.title(), reqeust.author(), reqeust.page(), reqeust.content()));
+                request.draftId(), request.title(), request.author(), request.page(), request.content()));
     }
 
     /**
