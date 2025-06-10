@@ -72,7 +72,7 @@ public class UpdateScoreService implements UpdateScoreUseCase {
      * <p>최대 점수 제한 및 증빙 필요 여부를 확인하고,
      * 점수가 없으면 새로 생성하며, 있으면 기존 점수를 수정합니다.
      * 저장 후 {@link ScoreUpdatedEvent}를 발행합니다.
-     * @param studentCode 학생 고유 코드
+     * @param email 학생 고유 코드
      * @param categoryName 카테고리 이름
      * @param value 설정할 점수 값
      * @throws ScoreLimitExceededException 최대 점수를 초과한 경우
