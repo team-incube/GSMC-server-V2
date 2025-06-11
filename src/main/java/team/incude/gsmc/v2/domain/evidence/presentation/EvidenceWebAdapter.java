@@ -46,13 +46,13 @@ public class EvidenceWebAdapter {
      * @param status 검토 상태 (선택)
      * @return 증빙자료 목록
      */
-    @GetMapping("/{studentCode}")
+    @GetMapping("/{email}")
     public ResponseEntity<GetEvidencesResponse> getEvidenceByStudentCode(
-            @PathVariable String studentCode,
+            @PathVariable String email,
             @RequestParam(name = "type", required = false) EvidenceType type,
             @RequestParam(name = "status", required = false) ReviewStatus status) {
         GetEvidencesResponse response = evidenceApplicationPort
-                .findEvidenceByEmailAndTypeAndStatus(studentCode, type, status);
+                .findEvidenceByEmailAndTypeAndStatus(email, type, status);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
