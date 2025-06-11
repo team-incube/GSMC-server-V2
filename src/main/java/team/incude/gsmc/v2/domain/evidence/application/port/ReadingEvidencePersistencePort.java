@@ -40,4 +40,6 @@ public interface ReadingEvidencePersistencePort {
     void deleteReadingEvidenceById(Long evidenceId);
 
     ReadingEvidence findReadingEvidenceById(Long id);
+
+    ReadingEvidence findReadingEvidenceByIdOrNull(Long id);
 }

@@ -180,6 +180,16 @@ public class ReadingEvidencePersistenceAdapter implements ReadingEvidencePersist
                 ).map(readingEvidenceMapper::toDomain).orElseThrow(ReadingEvidenceNotFoundException::new);
     }
 
+    @Override
+    public ReadingEvidence findReadingEvidenceByIdOrNull(Long id) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(readingEvidenceJpaEntity)
+                        .where(readingEvidenceJpaEntity.id.eq(id))
+                        .fetchOne()
+        ).map(readingEvidenceMapper::toDomain).orElse(null);
+    }
+
     private BooleanExpression memberEmailEq(String email) {
         if (email == null) return null;
         return memberJpaEntity.email.eq(email);
