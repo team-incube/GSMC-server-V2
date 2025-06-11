@@ -82,7 +82,7 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
             if (otherEvidence.getFileUri() != null) {
                 s3Port.deleteFile(otherEvidence.getFileUri());
             }
-            activityEvidencePersistencePort.deleteActivityEvidenceById(evidenceId);
+            otherEvidencePersistencePort.deleteOtherEvidenceById(evidenceId);
             return;
         }
 
