@@ -41,4 +41,6 @@ public interface OtherEvidencePersistencePort {
     void deleteOtherEvidenceById(Long evidenceId);
 
     OtherEvidence findOtherEvidenceById(Long id);
+
+    OtherEvidence findOtherEvidenceByIdOrNull(Long id);
 }

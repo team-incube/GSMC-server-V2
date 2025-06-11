@@ -41,7 +41,7 @@ public class EvidenceWebAdapter {
 
     /**
      * 특정 학생의 증빙자료 목록을 조회합니다.
-     * @param email 학생 이메일
+     * @param studentCode 학생 고유 번호
      * @param type 증빙자료 타입 (선택)
      * @param status 검토 상태 (선택)
      * @return 증빙자료 목록
