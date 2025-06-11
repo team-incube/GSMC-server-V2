@@ -68,7 +68,7 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
      */
     private void deleteSubEvidenceIfExists(Long evidenceId) {
 
-        ActivityEvidence activityEvidence = activityEvidencePersistencePort.findActivityEvidenceById(evidenceId);
+        ActivityEvidence activityEvidence = activityEvidencePersistencePort.findActivityEvidenceByIdOrNull(evidenceId);
         if (activityEvidence != null) {
             if (activityEvidence.getImageUrl() != null) {
                 s3Port.deleteFile(activityEvidence.getImageUrl());
@@ -77,7 +77,7 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
             return;
         }
 
-        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
+        OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceByIdOrNull(evidenceId);
         if (otherEvidence != null) {
             if (otherEvidence.getFileUri() != null) {
                 s3Port.deleteFile(otherEvidence.getFileUri());
@@ -86,7 +86,7 @@ public class DeleteEvidenceService implements DeleteEvidenceUseCase {
             return;
         }
 
-        ReadingEvidence readingEvidence = readingEvidencePersistencePort.findReadingEvidenceById(evidenceId);
+        ReadingEvidence readingEvidence = readingEvidencePersistencePort.findReadingEvidenceByIdOrNull(evidenceId);
         if (readingEvidence != null) {
             readingEvidencePersistencePort.deleteReadingEvidenceById(evidenceId);
         }
