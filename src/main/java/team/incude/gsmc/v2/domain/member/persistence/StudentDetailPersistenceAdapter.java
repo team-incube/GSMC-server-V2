@@ -69,19 +69,33 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     /**
+     * 학생 코드를 기준으로 학생 상세 정보를 조회합니다.
+     * @param studentCode 학생 고유 코드
+     * @return 학생 상세 도메인 객체
+     * @throws MemberInvalidException 학생이 존재하지 않을 경우
+     */
+    @Override
+    public StudentDetail findStudentDetailByStudentCode(String studentCode) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(studentDetailJpaEntity)
+                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
+                        .fetchOne()
+        ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
+    }
+
+    /**
      * 학생 코드를 기준으로 비관적 락을 걸고 학생 정보를 조회합니다.
-     * @param email 학생 이메일
+     * @param studentCode 학생 고유 코드
      * @return 락이 걸린 학생 상세 도메인 객체
      * @throws MemberInvalidException 학생이 존재하지 않을 경우
      */
     @Override
-    public StudentDetail findStudentDetailByEmailWithLock(String email) {
+    public StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .selectFrom(studentDetailJpaEntity)
-                        .join(studentDetailJpaEntity.member, memberJpaEntity)
-                        .fetchJoin()
-                        .where(memberJpaEntity.email.eq(email))
+                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
                         .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                         .fetchOne()
         ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
@@ -313,5 +327,24 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     @Override
     public StudentDetail saveStudentDetail(StudentDetail studentDetail) {
         return studentDetailMapper.toDomain(studentDetailJpaRepository.save(studentDetailMapper.toEntity(studentDetail)));
+    }
+
+    /**
+     * 이메일을 기준으로 비관적 락을 걸고 학생 정보를 조회합니다.
+     * @param email 회원 이메일
+     * @return 락이 걸린 학생 상세 도메인 객체
+     * @throws MemberInvalidException 학생이 존재하지 않을 경우
+     */
+    @Override
+    public StudentDetail findStudentDetailByEmailWithLock(String email) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(studentDetailJpaEntity)
+                        .join(studentDetailJpaEntity.member, memberJpaEntity)
+                        .fetchJoin()
+                        .where(memberJpaEntity.email.eq(email))
+                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                        .fetchOne()
+        ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
     }
 }
