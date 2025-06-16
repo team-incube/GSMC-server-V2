@@ -31,6 +31,10 @@ public interface StudentDetailPersistencePort {
     StudentDetail findStudentDetailByEmail(String email);
 
     StudentDetail findStudentDetailByEmailWithLock(String email);
+    
+    StudentDetail findStudentDetailByStudentCode(String studentCode);
+    
+    StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode);
 
     StudentDetail findStudentDetailByMemberEmail(String email);
 
