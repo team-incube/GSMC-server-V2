@@ -19,16 +19,16 @@ import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incude.gsmc.v2.domain.member.persistence.mapper.StudentDetailMapper;
 
 /**
- * 회원 가입 유스케이스의 구현 클래스입니다.
- * <p>{@link SignUpUseCase}를 구현하며, 이메일 인증 여부 확인, 회원 존재 여부 확인,
- * 비밀번호 암호화, 회원 및 학생 상세 정보 저장까지의 전체 가입 프로세스를 담당합니다.
- * 이메일은 형식이 유효한지 확인되며, `s학번@gsm.hs.kr` 패턴을 만족해야 합니다.
- * 이메일 인증이 완료되지 않았거나 이미 가입된 회원인 경우 예외가 발생합니다.
- * 관련 예외:
+ * 회원가입 유스케이스를 구현한 서비스 클래스입니다.
+ * <p>사용자 회원가입을 진행하며, 인증 및 회원 중복 검증, 비밀번호 암호화, 학생 정보 연결 등의 작업을 수행합니다.
+ * <p>회원가입 유스케이스는 {@code SignUpUseCase} 인터페이스를 구현합니다.
+ * <p>주요 기능:
  * <ul>
- *   <li>{@link MemberForbiddenException} - 이메일 인증 미완료</li>
- *   <li>{@link MemberExistException} - 이미 존재하는 회원</li>
- *   <li>{@link EmailFormatInvalidException} - 형식이 잘못된 이메일</li>
+ *   <li>이메일 인증 여부 확인</li>
+ *   <li>기존 회원 유무 확인</li>
+ *   <li>이메일 형식 검증</li>
+ *   <li>비밀번호 암호화</li>
+ *   <li>학생 상세 정보 연결</li>
  * </ul>
  * @author jihoonwjj
  */
@@ -63,7 +63,8 @@ public class SignUpService implements SignUpUseCase {
         }
 
         validateEmail(email);
-        StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByEmailWithLock(email);
+        String studentCode = parseEmail(email);
+        StudentDetail existedStudentDetail = studentDetailPersistencePort.findStudentDetailByStudentCodeWithLock(studentCode);
 
         Member member = Member.builder()
                 .email(email)
@@ -91,5 +92,19 @@ public class SignUpService implements SignUpUseCase {
         if (!email.startsWith("s") || !email.endsWith("@gsm.hs.kr")) {
             throw new EmailFormatInvalidException();
         }
+    }
+    
+    /**
+     * 이메일 주소에서 학생 코드를 추출합니다.
+     * <p>형식은 반드시 "s학번@gsm.hs.kr"이어야 하며, 접두사 's' 제거 후 학번만 추출됩니다.
+     * @param email 입력된 이메일 주소
+     * @return 학번 문자열
+     * @throws EmailFormatInvalidException 형식이 올바르지 않은 경우
+     */
+    private String parseEmail(String email) {
+        if (!email.startsWith("s") || !email.endsWith("@gsm.hs.kr")) {
+            throw new EmailFormatInvalidException();
+        }
+        return email.substring(1, email.indexOf("@"));
     }
 }
