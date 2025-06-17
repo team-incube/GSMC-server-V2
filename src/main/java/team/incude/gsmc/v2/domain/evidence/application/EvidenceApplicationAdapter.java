@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationPort;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.*;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.*;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -40,6 +42,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final FindDraftActivityEvidenceByDraftIdUseCase findDraftActivityEvidenceUseCase;
     private final FindDraftReadingEvidenceByDraftIdUseCase findDraftReadingEvidenceUseCase;
     private final FindDraftEvidenceByCurrentUserUseCase findDraftEvidenceByCurrentUserUseCase;
+    private final UpdateEvidenceFileUseCase updateEvidenceFileUseCase;
 
     /**
      * 현재 사용자의 증빙자료를 타입별로 조회합니다.
@@ -191,5 +194,10 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     @Override
     public GetDraftEvidenceResponse findDraftEvidenceByCurrentUser() {
         return findDraftEvidenceByCurrentUserUseCase.execute();
+    }
+
+    @Override
+    public void updateEvidenceFile(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType) {
+        updateEvidenceFileUseCase.execute(evidenceId, fileName, inputStream, evidenceType);
     }
 }
