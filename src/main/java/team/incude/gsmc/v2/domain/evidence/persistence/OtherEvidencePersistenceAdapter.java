@@ -120,11 +120,20 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
     @Override
     public OtherEvidence saveOtherEvidence(Evidence evidence, OtherEvidence otherEvidence) {
         EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
-        OtherEvidenceJpaEntity otherEvidenceJpaEntity = OtherEvidenceJpaEntity.builder()
-                .evidence(evidenceJpaEntity)
+
+        OtherEvidenceJpaEntity existingEntity = otherEvidenceJpaRepository.findById(otherEvidence.getId().getId())
+                .orElse(OtherEvidenceJpaEntity.builder()
+                        .evidence(evidenceJpaEntity)
+                        .fileUri(otherEvidence.getFileUri())
+                        .build());
+
+        OtherEvidenceJpaEntity updatedEntity = OtherEvidenceJpaEntity.builder()
+                .id(existingEntity.getId())
+                .evidence(existingEntity.getEvidence())
                 .fileUri(otherEvidence.getFileUri())
                 .build();
-        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(otherEvidenceJpaEntity));
+
+        return otherEvidenceMapper.toDomain(otherEvidenceJpaRepository.save(updatedEntity));
     }
 
     /**
