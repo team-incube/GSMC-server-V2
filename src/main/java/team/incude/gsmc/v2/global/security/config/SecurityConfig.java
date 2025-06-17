@@ -11,8 +11,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import team.incude.gsmc.v2.domain.auth.application.port.JwtPort;
 import team.incude.gsmc.v2.global.security.jwt.auth.filter.JwtAuthenticationFilter;
-import team.incude.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
