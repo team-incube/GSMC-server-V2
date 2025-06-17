@@ -15,13 +15,20 @@ import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersisten
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.member.domain.constant.MemberRole;
-import team.incude.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
-import team.incude.gsmc.v2.domain.member.persistence.mapper.StudentDetailMapper;
+
 
 /**
  * 회원가입 유스케이스를 구현한 서비스 클래스입니다.
  * <p>사용자 회원가입을 진행하며, 인증 및 회원 중복 검증, 비밀번호 암호화, 학생 정보 연결 등의 작업을 수행합니다.
  * <p>회원가입 유스케이스는 {@code SignUpUseCase} 인터페이스를 구현합니다.
+ * 이메일은 형식이 유효한지 확인되며, `s학번@gsm.hs.kr` 패턴을 만족해야 합니다.
+ * 이메일 인증이 완료되지 않았거나 이미 가입된 회원인 경우 예외가 발생합니다.
+ * 관련 예외:
+ * <ul>
+ *   <li>{@link MemberForbiddenException} - 이메일 인증 미완료</li>
+ *   <li>{@link MemberExistException} - 이미 존재하는 회원</li>
+ *   <li>{@link EmailFormatInvalidException} - 형식이 잘못된 이메일</li>
+ * </ul>
  * <p>주요 기능:
  * <ul>
  *   <li>이메일 인증 여부 확인</li>
