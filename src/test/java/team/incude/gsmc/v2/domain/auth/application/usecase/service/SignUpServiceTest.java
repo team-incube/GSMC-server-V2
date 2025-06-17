@@ -57,11 +57,12 @@ class SignUpServiceTest {
                 String email = "s24072@gsm.hs.kr";
                 String password = "test123";
                 String encodedPassword = "encodedPassword";
+                String studentCode = "24072";
 
                 when(authenticationPersistencePort.findAuthenticationByEmail(email))
                         .thenReturn(Authentication.builder().email(email).verified(true).build());
-                when(studentDetailPersistencePort.findStudentDetailByEmailWithLock(email))
-                        .thenReturn(StudentDetail.builder().studentCode("24072").build());
+                when(studentDetailPersistencePort.findStudentDetailByStudentCodeWithLock(studentCode))
+                        .thenReturn(StudentDetail.builder().studentCode(studentCode).build());
                 when(memberPersistencePort.existsMemberByEmail(email)).thenReturn(false);
                 when(bCryptPasswordEncoder.encode(password)).thenReturn(encodedPassword);
 

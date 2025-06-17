@@ -13,7 +13,6 @@ import team.incude.gsmc.v2.global.annotation.adapter.Adapter;
 import java.util.Optional;
 
 import static team.incude.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
-import static team.incude.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
 
 /**
  * 사용자(Member) 도메인의 영속성 어댑터 구현체입니다.
