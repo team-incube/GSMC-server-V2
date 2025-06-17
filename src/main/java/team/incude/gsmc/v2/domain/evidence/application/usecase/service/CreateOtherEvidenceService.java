@@ -1,12 +1,13 @@
 package team.incude.gsmc.v2.domain.evidence.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateOtherEvidenceUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
@@ -19,7 +20,7 @@ import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
-import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
+import team.incude.gsmc.v2.global.event.FileUploadEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
@@ -39,11 +40,12 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
 
-    private final S3Port s3Port;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final ScorePersistencePort scorePersistencePort;
+    private final EvidencePersistencePort evidencePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CategoryPersistencePort categoryPersistencePort;
@@ -59,6 +61,7 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
      */
     @Override
     public void execute(String categoryName, MultipartFile file) {
+        long startTime = System.currentTimeMillis();
         Member member = currentMemberProvider.getCurrentUser();
         Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, member.getEmail());
 
@@ -70,12 +73,28 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         score.plusValue(1);
         score = scorePersistencePort.saveScore(score);
 
-        EvidenceType evidenceType = categoryMap.get(categoryName);
-        Evidence evidence = createEvidence(score, evidenceType);
-        OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
+        Evidence evidence = createEvidence(score, categoryMap.get(categoryName));
+        evidence = evidencePersistencePort.saveEvidence(evidence);
+        OtherEvidence otherEvidence = createOtherEvidence(evidence, file.getOriginalFilename());
 
+        long dbStartTime = System.currentTimeMillis();
         otherEvidencePersistencePort.saveOtherEvidence(evidence, otherEvidence);
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
+        long dbEndTime = System.currentTimeMillis();
+        log.info("DB save time: {}ms", dbEndTime - dbStartTime);
+
+        try {
+            applicationEventPublisher.publishEvent(new FileUploadEvent(
+                    evidence.getId(),
+                    file.getOriginalFilename(),
+                    file.getInputStream(),
+                    evidence.getEvidenceType()
+            ));
+        } catch (IOException e) {
+            throw new S3UploadFailedException();
+        }
+
+        long endTime = System.currentTimeMillis();
+        log.info("Total execution time: {}ms", endTime - startTime);
     }
 
     /**
@@ -98,32 +117,16 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
      * OtherEvidence 도메인 객체를 생성합니다.
      * <p>파일이 존재하면 업로드 후 해당 URI를 저장합니다.
      * @param evidence 연결할 Evidence 객체
-     * @param file 첨부 파일 (선택)
+     * @param fileName 첨부 파일명
      * @return 생성된 OtherEvidence 객체
      */
-    private OtherEvidence createOtherEvidence(Evidence evidence, MultipartFile file) {
-        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
+    private OtherEvidence createOtherEvidence(Evidence evidence, String fileName) {
+        String tempUploadKey = "upload_" + fileName;
+
         return OtherEvidence.builder()
                 .id(evidence)
-                .fileUri(imageUrl)
+                .fileUri(tempUploadKey)
                 .build();
-    }
-
-    /**
-     * MultipartFile을 S3에 업로드하고 URL을 반환합니다.
-     * @param file 업로드할 파일
-     * @return 업로드된 파일의 URL
-     * @throws S3UploadFailedException 업로드 실패 시
-     */
-    private String uploadFile(MultipartFile file) {
-        try {
-            return s3Port.uploadFile(
-                    file.getOriginalFilename(),
-                    file.getInputStream()
-            ).join();
-        } catch (IOException e) {
-            throw new S3UploadFailedException();
-        }
     }
 
     /**
