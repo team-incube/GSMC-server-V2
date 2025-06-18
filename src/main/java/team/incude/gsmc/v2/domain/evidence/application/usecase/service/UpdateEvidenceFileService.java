@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
@@ -17,6 +19,7 @@ import java.io.InputStream;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class UpdateEvidenceFileService implements UpdateEvidenceFileUseCase {
 
     private final S3Port s3Port;
