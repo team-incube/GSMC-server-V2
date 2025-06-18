@@ -1,9 +1,10 @@
 package team.incude.gsmc.v2.global.event.handler;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import team.incude.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 
@@ -22,7 +23,7 @@ public class ScoreUpdatedEventListener {
     private final ScoreApplicationPort scoreApplicationPort;
 
     @Async
-    @EventListener(ScoreUpdatedEvent.class)
+    @TransactionalEventListener(value = ScoreUpdatedEventListener.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handleScoreUpdatedEvent(ScoreUpdatedEvent event) {
         scoreApplicationPort.calculateTotalScore(event.email());
     }

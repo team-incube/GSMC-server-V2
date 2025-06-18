@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import team.incude.gsmc.v2.domain.evidence.application.port.DraftActivityEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.DraftReadingEvidencePersistencePort;
 import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
@@ -22,7 +24,7 @@ public class DraftEvidenceDeleteEventListener {
     private final DraftReadingEvidencePersistencePort readingEvidencePersistencePort;
 
     @Async
-    @EventListener(DraftEvidenceDeleteEvent.class)
+    @TransactionalEventListener(value = DraftEvidenceDeleteEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handleDraftEvidenceDeleteEvent(DraftEvidenceDeleteEvent event) {
 
         if (event.draftId() == null) {
