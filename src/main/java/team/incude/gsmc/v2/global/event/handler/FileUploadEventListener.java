@@ -3,8 +3,6 @@ package team.incude.gsmc.v2.global.event.handler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidenceApplicationPort;
 import team.incude.gsmc.v2.global.event.FileUploadEvent;
@@ -19,7 +17,6 @@ public class FileUploadEventListener {
 
     @Async
     @TransactionalEventListener(phase = AFTER_COMMIT)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleFileUploadEvent(FileUploadEvent event) {
         evidenceApplicationPort.updateEvidenceFile(event.evidenceId(), event.fileName(), event.inputStream(), event.evidenceType());
     }
