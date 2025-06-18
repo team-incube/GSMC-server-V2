@@ -174,6 +174,16 @@ public class OtherEvidencePersistenceAdapter implements OtherEvidencePersistence
                 ).map(otherEvidenceMapper::toDomain).orElseThrow(OtherEvidenceNotFoundException::new);
     }
 
+    @Override
+    public OtherEvidence findOtherEvidenceByIdOrNull(Long id) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(otherEvidenceJpaEntity)
+                        .where(otherEvidenceJpaEntity.id.eq(id))
+                        .fetchOne()
+        ).map(otherEvidenceMapper::toDomain).orElse(null);
+    }
+
     private BooleanExpression memberEmailEq(String email) {
         if (email == null) return null;
         return memberJpaEntity.email.eq(email);
