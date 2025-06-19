@@ -20,45 +20,55 @@ public class DomainAuthorizationConfig {
                     MemberRole.ROLE_ADMIN.name()
                 )
 
-                .requestMatchers(HttpMethod.GET, "/api/v2/members/students/current").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/api/v2/members/students/current")
+                .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
 
                 // /api/v2/certificates
-                .requestMatchers(HttpMethod.GET, "/api/v2/certificates/current").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/api/v2/certificates/current")
+                .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
 
-                .requestMatchers(HttpMethod.GET, "/api/v2/certificates/{email}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/api/v2/certificates/{email}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
 
-                .requestMatchers(HttpMethod.DELETE, "/api/v2/certificates/current/{certificateId}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.DELETE, "/api/v2/certificates/current/{certificateId}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
 
-                .requestMatchers(HttpMethod.DELETE, "/api/v2/certificates/{email}/{certificateId}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.DELETE, "/api/v2/certificates/{email}/{certificateId}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
 
-                .requestMatchers(HttpMethod.PATCH, "/api/v2/certificates/current/{certificateId}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.PATCH, "/api/v2/certificates/current/{certificateId}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
 
                 // /api/v2/score
-                .requestMatchers(HttpMethod.GET, "/api/v2/score/current").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/api/v2/score/current")
+                .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
 
-                .requestMatchers(HttpMethod.GET, "/api/v2/score/{studentCode}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/api/v2/score/{studentCode}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
 
-                .requestMatchers(HttpMethod.PATCH, "/api/v2/score/current").hasAnyAuthority(
+                .requestMatchers(HttpMethod.PATCH, "/api/v2/score/current")
+                .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
 
-                .requestMatchers(HttpMethod.PATCH, "/api/v2/score/{studentCode}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.PATCH, "/api/v2/score/{studentCode}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
 
@@ -71,7 +81,8 @@ public class DomainAuthorizationConfig {
                     MemberRole.ROLE_STUDENT.name()
                 )
 
-                .requestMatchers(HttpMethod.GET, "/api/v2/evidence/{studentCode}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/api/v2/evidence/{studentCode}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
 
@@ -85,11 +96,13 @@ public class DomainAuthorizationConfig {
                     MemberRole.ROLE_STUDENT.name()
                 )
 
-                .requestMatchers(HttpMethod.PATCH, "/api/v2/evidence/{evidenceId}/status").hasAnyAuthority(
+                .requestMatchers(HttpMethod.PATCH, "/api/v2/evidence/{evidenceId}/status")
+                .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
 
-                .requestMatchers(HttpMethod.DELETE, "/api/v2/evidence/current/{evidenceId}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.DELETE, "/api/v2/evidence/current/{evidenceId}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
 
@@ -110,7 +123,8 @@ public class DomainAuthorizationConfig {
                 )
 
                 // /api/v2/sheet
-                .requestMatchers(HttpMethod.GET, "/api/v2/sheet/{grade}/{classNumber}").hasAnyAuthority(
+                .requestMatchers(HttpMethod.GET, "/api/v2/sheet/{grade}/{classNumber}")
+                .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
 
