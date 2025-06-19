@@ -19,7 +19,6 @@ public class DomainAuthorizationConfig {
                 .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
-
                 .requestMatchers(HttpMethod.GET, "/api/v2/members/students/current")
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
@@ -30,22 +29,18 @@ public class DomainAuthorizationConfig {
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
-
                 .requestMatchers(HttpMethod.GET, "/api/v2/certificates/{email}")
                 .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
-
                 .requestMatchers(HttpMethod.DELETE, "/api/v2/certificates/current/{certificateId}")
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
-
                 .requestMatchers(HttpMethod.DELETE, "/api/v2/certificates/{email}/{certificateId}")
                 .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
-
                 .requestMatchers(HttpMethod.PATCH, "/api/v2/certificates/current/{certificateId}")
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
@@ -56,17 +51,14 @@ public class DomainAuthorizationConfig {
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
-
                 .requestMatchers(HttpMethod.GET, "/api/v2/score/{studentCode}")
                 .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
-
                 .requestMatchers(HttpMethod.PATCH, "/api/v2/score/current")
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
-
                 .requestMatchers(HttpMethod.PATCH, "/api/v2/score/{studentCode}")
                 .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
@@ -80,12 +72,10 @@ public class DomainAuthorizationConfig {
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
-
                 .requestMatchers(HttpMethod.GET, "/api/v2/evidence/{studentCode}")
                 .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
-
                 .requestMatchers(HttpMethod.POST, 
                     "/api/v2/evidence/current/activity",
                     "/api/v2/evidence/current/reading",
@@ -95,17 +85,14 @@ public class DomainAuthorizationConfig {
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
-
                 .requestMatchers(HttpMethod.PATCH, "/api/v2/evidence/{evidenceId}/status")
                 .hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
-
                 .requestMatchers(HttpMethod.DELETE, "/api/v2/evidence/current/{evidenceId}")
                 .hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
-
                 .requestMatchers(HttpMethod.POST, 
                     "api/v2/evidence/current/draft/activity",
                     "/api/v2/evidence/current/draft/reading"
