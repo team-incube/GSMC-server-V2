@@ -21,6 +21,7 @@ import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.FileUploadEvent;
+import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
@@ -40,7 +41,6 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
 
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
@@ -61,7 +61,6 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
      */
     @Override
     public void execute(String categoryName, MultipartFile file) {
-        long startTime = System.currentTimeMillis();
         Member member = currentMemberProvider.getCurrentUser();
         Score score = scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, member.getEmail());
 
@@ -77,11 +76,9 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         evidence = evidencePersistencePort.saveEvidence(evidence);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, file.getOriginalFilename());
 
-        long dbStartTime = System.currentTimeMillis();
         otherEvidencePersistencePort.saveOtherEvidence(evidence, otherEvidence);
-        long dbEndTime = System.currentTimeMillis();
-        log.info("DB save time: {}ms", dbEndTime - dbStartTime);
 
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
         try {
             applicationEventPublisher.publishEvent(new FileUploadEvent(
                     evidence.getId(),
@@ -92,9 +89,6 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
         } catch (IOException e) {
             throw new S3UploadFailedException();
         }
-
-        long endTime = System.currentTimeMillis();
-        log.info("Total execution time: {}ms", endTime - startTime);
     }
 
     /**
