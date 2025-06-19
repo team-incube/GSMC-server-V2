@@ -5,8 +5,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateOtherScoringEvidenceUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
@@ -19,6 +19,7 @@ import team.incude.gsmc.v2.domain.score.domain.Category;
 import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
+import team.incude.gsmc.v2.global.event.FileUploadEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
@@ -43,7 +44,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvidenceUseCase {
 
-    private final S3Port s3Port;
+    private final EvidencePersistencePort evidencePersistencePort;
     private final ScorePersistencePort scorePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -81,10 +82,22 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
 
         EvidenceType evidenceType = categoryMap.get(categoryName);
         Evidence evidence = createEvidence(score, evidenceType);
+        evidence = evidencePersistencePort.saveEvidence(evidence);
         OtherEvidence otherEvidence = createOtherEvidence(evidence, file);
 
         otherEvidencePersistencePort.saveOtherEvidence(evidence, otherEvidence);
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
+
+        try {
+            applicationEventPublisher.publishEvent(new FileUploadEvent(
+                    evidence.getId(),
+                    file.getOriginalFilename(),
+                    file.getInputStream(),
+                    evidence.getEvidenceType()
+            ));
+        } catch (IOException e) {
+            throw new S3UploadFailedException();
+        }
     }
 
     /**
@@ -146,34 +159,17 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
     }
 
     /**
-     * S3에 파일을 업로드하고 업로드된 파일의 URI를 반환합니다.
-     * @param file 업로드할 파일
-     * @return 업로드된 파일의 URI
-     * @throws S3UploadFailedException 업로드 실패 시
-     */
-    private String uploadFile(MultipartFile file) {
-        try {
-            return s3Port.uploadFile(
-                    file.getOriginalFilename(),
-                    file.getInputStream()
-            ).join();
-        } catch (
-                IOException e) {
-            throw new S3UploadFailedException();
-        }
-    }
-
-    /**
      * 파일을 업로드한 후, Evidence와 연관된 OtherEvidence 객체를 생성합니다.
      * @param evidence 연관 Evidence 객체
      * @param file 첨부 파일
      * @return 생성된 OtherEvidence 객체
      */
     private OtherEvidence createOtherEvidence(Evidence evidence, MultipartFile file) {
-        String imageUrl = file != null && !file.isEmpty() ? uploadFile(file) : null;
+        String tempUploadKey = "upload_" + file.getOriginalFilename();
+
         return OtherEvidence.builder()
                 .id(evidence)
-                .fileUri(imageUrl)
+                .fileUri(tempUploadKey)
                 .build();
     }
 

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
+import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateActivityEvidenceUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
@@ -20,6 +20,7 @@ import team.incude.gsmc.v2.domain.score.domain.Score;
 import team.incude.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 import team.incude.gsmc.v2.domain.score.exception.ScoreLimitExceededException;
 import team.incude.gsmc.v2.global.event.DraftEvidenceDeleteEvent;
+import team.incude.gsmc.v2.global.event.FileUploadEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
@@ -46,7 +47,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final ScorePersistencePort scorePersistencePort;
-    private final S3Port s3Port;
+    private final EvidencePersistencePort evidencePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -78,11 +79,24 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         score = scorePersistencePort.saveScore(score);
 
         Evidence evidence = createEvidence(score, activityType);
+        evidence = evidencePersistencePort.saveEvidence(evidence);
         ActivityEvidence activityEvidence = createActivityEvidence(evidence, title, content, file, imageUrl);
 
         activityEvidencePersistencePort.saveActivityEvidence(evidence, activityEvidence);
+
         applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
-        applicationEventPublisher.publishEvent(new DraftEvidenceDeleteEvent(draftId));
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                applicationEventPublisher.publishEvent(new FileUploadEvent(
+                        evidence.getId(),
+                        file.getOriginalFilename(),
+                        file.getInputStream(),
+                        evidence.getEvidenceType()));
+            } catch (IOException e) {
+                throw new S3UploadFailedException();
+            }
+        }
     }
 
     /**
@@ -115,7 +129,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         String imageUrl = null;
 
         if (file != null && !file.isEmpty()) {
-            imageUrl = uploadFile(file);
+            imageUrl = "upload_" + file.getOriginalFilename();
         } else if (imageUrlParam != null && !imageUrlParam.isBlank()) {
             imageUrl = imageUrlParam;
         }
@@ -126,23 +140,6 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
                 .content(content)
                 .imageUrl(imageUrl)
                 .build();
-    }
-
-    /**
-     * S3에 파일을 업로드하고 URL을 반환합니다.
-     * @param file 업로드할 MultipartFile
-     * @return 업로드된 파일의 URL
-     * @throws S3UploadFailedException 업로드 중 예외가 발생할 경우
-     */
-    private String uploadFile(MultipartFile file) {
-        try {
-            return s3Port.uploadFile(
-                    file.getOriginalFilename(),
-                    file.getInputStream()
-            ).join();
-        } catch (IOException e) {
-            throw new S3UploadFailedException();
-        }
     }
 
     /**
