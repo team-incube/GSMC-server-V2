@@ -11,6 +11,7 @@ public class DomainAuthorizationConfig {
 
     public void configureAuthorization(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
+                // /api/v2/members
                 .requestMatchers(HttpMethod.GET, 
                     "api/v2/members/students",
                     "api/v2/members/students/search"
@@ -23,6 +24,7 @@ public class DomainAuthorizationConfig {
                     MemberRole.ROLE_STUDENT.name()
                 )
 
+                // /api/v2/certificates
                 .requestMatchers(HttpMethod.GET, "/api/v2/certificates/current").hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
@@ -43,6 +45,7 @@ public class DomainAuthorizationConfig {
                     MemberRole.ROLE_STUDENT.name()
                 )
 
+                // /api/v2/score
                 .requestMatchers(HttpMethod.GET, "/api/v2/score/current").hasAnyAuthority(
                     MemberRole.ROLE_STUDENT.name()
                 )
@@ -59,6 +62,7 @@ public class DomainAuthorizationConfig {
                     MemberRole.ROLE_ADMIN.name()
                 )
 
+                // /api/v2/evidence
                 .requestMatchers(HttpMethod.GET, 
                     "/api/v2/evidence/current",
                     "/api/v2/evidence/search"
@@ -105,6 +109,7 @@ public class DomainAuthorizationConfig {
                     MemberRole.ROLE_STUDENT.name()
                 )
 
+                // /api/v2/sheet
                 .requestMatchers(HttpMethod.GET, "/api/v2/sheet/{grade}/{classNumber}").hasAnyAuthority(
                     MemberRole.ROLE_ADMIN.name()
                 )
