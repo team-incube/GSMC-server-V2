@@ -24,6 +24,7 @@ import team.incude.gsmc.v2.global.event.FileUploadEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
+import team.incude.gsmc.v2.global.thirdparty.discord.service.DiscordAlertService;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CategoryPersistencePort categoryPersistencePort;
+    private final DiscordAlertService discordAlertService;
 
     /**
      * 기타 증빙자료를 생성하고 점수를 갱신하며 이벤트를 발행합니다.
@@ -87,6 +89,12 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
                     evidence.getEvidenceType()
             ));
         } catch (IOException e) {
+            discordAlertService.sendEvidenceUploadFailureAlert(
+                    evidence.getId(),
+                    file.getOriginalFilename(),
+                    member.getEmail(),
+                    e
+            );
             throw new S3UploadFailedException();
         }
     }
