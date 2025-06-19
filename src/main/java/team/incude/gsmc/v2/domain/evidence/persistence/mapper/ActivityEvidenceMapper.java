@@ -66,6 +66,7 @@ public class ActivityEvidenceMapper implements GenericMapper<ActivityEvidenceJpa
                 .imageUrl(draftActivityEvidence.getImageUrl())
                 .evidenceType(draftActivityEvidence.getEvidenceType())
                 .ttl(draftActivityEvidence.getTtl())
+                .email(draftActivityEvidence.getEmail())
                 .build();
     }
 
@@ -83,6 +84,7 @@ public class ActivityEvidenceMapper implements GenericMapper<ActivityEvidenceJpa
                 .imageUrl(draftActivityEvidenceRedisEntity.getImageUrl())
                 .evidenceType(draftActivityEvidenceRedisEntity.getEvidenceType())
                 .ttl(draftActivityEvidenceRedisEntity.getTtl())
+                .email(draftActivityEvidenceRedisEntity.getEmail())
                 .build();
     }
 }
