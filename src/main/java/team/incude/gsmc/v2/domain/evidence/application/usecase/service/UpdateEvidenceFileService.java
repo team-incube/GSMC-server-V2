@@ -29,34 +29,20 @@ public class UpdateEvidenceFileService implements UpdateEvidenceFileUseCase {
 
     @Override
     public void execute(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType) {
-        long startTime = System.currentTimeMillis();
-
-        long uploadStart = System.currentTimeMillis();
         String fileUrl = uploadFile(fileName, inputStream);
-        long uploadEnd = System.currentTimeMillis();
-        log.info("File upload duration: {} ms", uploadEnd - uploadStart);
 
         switch (evidenceType) {
             case MAJOR, HUMANITIES -> {
                 ActivityEvidence ae = activityEvidencePersistencePort.findActivityEvidenceById(evidenceId);
 
-                long saveStart = System.currentTimeMillis();
                 activityEvidencePersistencePort.saveActivityEvidence(ae.getId(), updateActivityEvidence(ae, fileUrl));
-                long saveEnd = System.currentTimeMillis();
-                log.info("ActivityEvidence save duration: {} ms", saveEnd - saveStart);
             }
             default -> {
                 OtherEvidence oe = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
 
-                long saveStart = System.currentTimeMillis();
                 otherEvidencePersistencePort.saveOtherEvidence(oe.getId(), updateOtherEvidence(oe, fileUrl));
-                long saveEnd = System.currentTimeMillis();
-                log.info("OtherEvidence save duration: {} ms", saveEnd - saveStart);
             }
         }
-
-        long endTime = System.currentTimeMillis();
-        log.info("Total execution duration: {} ms", endTime - startTime);
     }
 
     private String uploadFile(String fileName, InputStream inputStream) {
