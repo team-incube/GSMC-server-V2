@@ -1,7 +1,6 @@
 package team.incude.gsmc.v2.domain.evidence.application.port;
 
 import org.springframework.web.multipart.MultipartFile;
-import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.*;
