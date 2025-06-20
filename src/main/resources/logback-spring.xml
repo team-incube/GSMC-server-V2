@@ -6,7 +6,7 @@
         </encoder>
     </appender>
     <springProfile name="!dev &amp; !test">
-        <appender name="DISCORD" class="team.incude.gsmc.v2.global.thirdparty.discord.service.DiscordLogbackService">
+        <appender name="DISCORD" class="team.incude.gsmc.v2.global.thirdparty.discord.usecase.service.DiscordLogbackService">
             <webhookUrl>${discordWebhook}</webhookUrl>
         </appender>
         <root level="INFO">
