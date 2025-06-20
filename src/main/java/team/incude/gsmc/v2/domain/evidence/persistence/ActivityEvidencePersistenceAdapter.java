@@ -171,14 +171,26 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
     @Override
     public ActivityEvidence saveActivityEvidence(Evidence evidence, ActivityEvidence activityEvidence) {
         EvidenceJpaEntity evidenceJpaEntity = evidenceJpaRepository.save(evidenceMapper.toEntity(evidence));
-        ActivityEvidenceJpaEntity activityEvidenceJpaEntity = ActivityEvidenceJpaEntity.builder()
-                .evidence(evidenceJpaEntity)
+
+        ActivityEvidenceJpaEntity existingEntity = activityEvidenceJpaRepository.findById(activityEvidence.getId().getId())
+                .orElse(ActivityEvidenceJpaEntity.builder()
+                        .evidence(evidenceJpaEntity)
+                        .content(activityEvidence.getContent())
+                        .imageUri(activityEvidence.getImageUrl())
+                        .title(activityEvidence.getTitle())
+                        .build());
+
+        ActivityEvidenceJpaEntity updatedEntity = ActivityEvidenceJpaEntity.builder()
+                .id(existingEntity.getId())
+                .evidence(existingEntity.getEvidence())
                 .content(activityEvidence.getContent())
                 .imageUri(activityEvidence.getImageUrl())
                 .title(activityEvidence.getTitle())
                 .build();
-        return activityEvidenceMapper.toDomain(activityEvidenceJpaRepository.save(activityEvidenceJpaEntity));
+
+        return activityEvidenceMapper.toDomain(activityEvidenceJpaRepository.save(updatedEntity));
     }
+
 
     /**
      * 활동 증빙자료 ID를 기반으로 해당 자료를 삭제합니다.

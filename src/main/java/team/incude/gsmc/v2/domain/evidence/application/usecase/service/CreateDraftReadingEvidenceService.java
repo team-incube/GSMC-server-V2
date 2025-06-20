@@ -6,6 +6,8 @@ import team.incude.gsmc.v2.domain.evidence.application.port.DraftReadingEvidence
 import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateDraftReadingEvidenceUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.DraftReadingEvidence;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
+import team.incude.gsmc.v2.domain.member.domain.Member;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 
 import java.util.UUID;
 
@@ -23,6 +25,7 @@ public class CreateDraftReadingEvidenceService implements CreateDraftReadingEvid
 
     private static final Long DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60L; // 7일
 
+    private final CurrentMemberProvider currentMemberProvider;
     private final DraftReadingEvidencePersistencePort draftReadingEvidencePersistencePort;
 
     /**
@@ -36,9 +39,10 @@ public class CreateDraftReadingEvidenceService implements CreateDraftReadingEvid
      */
     @Override
     public CreateDraftEvidenceResponse execute(UUID id, String title, String author, Integer page, String content) {
+        Member member = currentMemberProvider.getCurrentUser();
         UUID draftId = id == null ? UUID.randomUUID() : id;
 
-        DraftReadingEvidence draftReadingEvidence = createReadingEvidence(draftId, title, page, author, content);
+        DraftReadingEvidence draftReadingEvidence = createReadingEvidence(draftId, title, page, author, content, member.getEmail());
 
         draftReadingEvidencePersistencePort.saveDraftReadingEvidence(draftReadingEvidence);
         return new CreateDraftEvidenceResponse(draftId);
@@ -53,7 +57,7 @@ public class CreateDraftReadingEvidenceService implements CreateDraftReadingEvid
      * @param content 독서 내용 요약
      * @return 생성된 DraftReadingEvidence 객체
      */
-    private DraftReadingEvidence createReadingEvidence(UUID id, String title, Integer page, String author, String content) {
+    private DraftReadingEvidence createReadingEvidence(UUID id, String title, Integer page, String author, String content, String email) {
         return DraftReadingEvidence.builder()
                 .id(id)
                 .title(title)
@@ -61,6 +65,7 @@ public class CreateDraftReadingEvidenceService implements CreateDraftReadingEvid
                 .author(author)
                 .content(content)
                 .ttl(DRAFT_TTL_SECONDS)
+                .email(email)
                 .build();
     }
 }

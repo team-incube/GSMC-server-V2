@@ -9,6 +9,8 @@ import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateDraftActivi
 import team.incude.gsmc.v2.domain.evidence.domain.DraftActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.domain.evidence.presentation.data.response.CreateDraftEvidenceResponse;
+import team.incude.gsmc.v2.domain.member.domain.Member;
+import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 
 import java.io.IOException;
@@ -29,6 +31,7 @@ public class CreateDraftActivityEvidenceService implements CreateDraftActivityEv
 
     private static final Long DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60L; // 7일
 
+    private final CurrentMemberProvider currentMemberProvider;
     private final DraftActivityEvidencePersistencePort draftActivityEvidencePersistencePort;
     private final S3Port s3Port;
 
@@ -46,9 +49,10 @@ public class CreateDraftActivityEvidenceService implements CreateDraftActivityEv
      */
     @Override
     public CreateDraftEvidenceResponse execute(UUID id, String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType) {
+        Member member = currentMemberProvider.getCurrentUser();
         UUID draftId = id == null ? UUID.randomUUID() : id;
 
-        DraftActivityEvidence draftActivityEvidence = createActivityEvidence(draftId, categoryName, title, content, file, imageUrl, activityType);
+        DraftActivityEvidence draftActivityEvidence = createActivityEvidence(draftId, categoryName, title, content, file, imageUrl, activityType, member.getEmail());
 
         draftActivityEvidencePersistencePort.saveDraftActivityEvidence(draftActivityEvidence);
         return new CreateDraftEvidenceResponse(draftId);
@@ -66,7 +70,7 @@ public class CreateDraftActivityEvidenceService implements CreateDraftActivityEv
      * @param evidenceType 활동 유형
      * @return 생성된 DraftActivityEvidence 객체
      */
-    private DraftActivityEvidence createActivityEvidence(UUID id, String categoryName, String title, String content, MultipartFile file, String imageUrlParam, EvidenceType evidenceType) {
+    private DraftActivityEvidence createActivityEvidence(UUID id, String categoryName, String title, String content, MultipartFile file, String imageUrlParam, EvidenceType evidenceType, String email) {
         String imageUrl = null;
 
         if (file != null && !file.isEmpty()) {
@@ -83,6 +87,7 @@ public class CreateDraftActivityEvidenceService implements CreateDraftActivityEv
                 .imageUrl(imageUrl)
                 .evidenceType(evidenceType)
                 .ttl(DRAFT_TTL_SECONDS)
+                .email(email)
                 .build();
     }
 

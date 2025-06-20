@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.thirdparty.discord.service;
+package team.incude.gsmc.v2.global.thirdparty.discord.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

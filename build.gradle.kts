@@ -82,6 +82,9 @@ dependencies {
 
 	// prometheus
 	implementation("io.micrometer:micrometer-registry-prometheus")
+
+	// retryable
+	implementation("org.springframework.retry:spring-retry")
 }
 
 tasks.withType<Test> {

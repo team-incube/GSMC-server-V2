@@ -7,6 +7,7 @@ import team.incude.gsmc.v2.domain.evidence.presentation.data.response.*;
 import team.incude.gsmc.v2.global.annotation.PortDirection;
 import team.incude.gsmc.v2.global.annotation.port.Port;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -57,4 +58,6 @@ public interface EvidenceApplicationPort {
     GetDraftReadingEvidenceResponse findDraftReadingEvidenceByDraftId(UUID draftId);
 
     GetDraftEvidenceResponse findDraftEvidenceByCurrentUser();
+
+    void updateEvidenceFile(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType);
 }

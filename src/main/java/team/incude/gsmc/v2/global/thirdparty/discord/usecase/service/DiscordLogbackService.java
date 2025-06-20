@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.thirdparty.discord.service;
+package team.incude.gsmc.v2.global.thirdparty.discord.usecase.service;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
