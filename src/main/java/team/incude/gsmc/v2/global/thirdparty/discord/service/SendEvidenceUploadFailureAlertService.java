@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class DiscordAlertService {
+public class SendEvidenceUploadFailureAlertService {
 
     @Value("${webhook.discord.url}")
     private String webhookUrl;
@@ -21,7 +21,7 @@ public class DiscordAlertService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    public DiscordAlertService() {
+    public SendEvidenceUploadFailureAlertService() {
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
     }
