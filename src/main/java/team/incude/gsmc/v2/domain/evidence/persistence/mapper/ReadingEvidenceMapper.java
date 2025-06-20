@@ -67,6 +67,7 @@ public class ReadingEvidenceMapper implements GenericMapper<ReadingEvidenceJpaEn
                 .page(draftReadingEvidence.getPage())
                 .content(draftReadingEvidence.getContent())
                 .ttl(draftReadingEvidence.getTtl())
+                .email(draftReadingEvidence.getEmail())
                 .build();
     }
 
@@ -83,6 +84,7 @@ public class ReadingEvidenceMapper implements GenericMapper<ReadingEvidenceJpaEn
                 .page(draftReadingEvidenceRedisEntity.getPage())
                 .content(draftReadingEvidenceRedisEntity.getContent())
                 .ttl(draftReadingEvidenceRedisEntity.getTtl())
+                .email(draftReadingEvidenceRedisEntity.getEmail())
                 .build();
     }
 }
