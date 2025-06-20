@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.thirdparty.discord.service;
+package team.incude.gsmc.v2.global.thirdparty.discord.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -8,12 +8,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import team.incude.gsmc.v2.global.thirdparty.discord.service.SendEvidenceUploadFailureAlertUseCase;
 
 import java.util.Map;
 
 @Slf4j
 @Service
-public class SendEvidenceUploadFailureAlertService {
+public class SendEvidenceUploadFailureAlertService implements SendEvidenceUploadFailureAlertUseCase {
 
     @Value("${webhook.discord.url}")
     private String webhookUrl;
