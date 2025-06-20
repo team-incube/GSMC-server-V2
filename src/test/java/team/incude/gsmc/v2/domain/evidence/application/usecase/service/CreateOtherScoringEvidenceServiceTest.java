@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
+import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.member.domain.Member;
 import team.incude.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
@@ -25,7 +25,6 @@ import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.Curre
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -33,9 +32,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("점수제 증빙자료 등록 서비스 클래스의")
 public class CreateOtherScoringEvidenceServiceTest {
-
-    @Mock
-    private S3Port s3Port;
 
     @Mock
     private ScorePersistencePort scorePersistencePort;
@@ -47,10 +43,13 @@ public class CreateOtherScoringEvidenceServiceTest {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Mock
+    private CategoryPersistencePort categoryPersistencePort;
+
+    @Mock
     private OtherEvidencePersistencePort otherEvidencePersistencePort;
 
     @Mock
-    private CategoryPersistencePort categoryPersistencePort;
+    private EvidencePersistencePort evidencePersistencePort;
 
     @InjectMocks
     private CreateOtherScoringEvidenceService createOtherScoringEvidenceService;
@@ -93,16 +92,18 @@ public class CreateOtherScoringEvidenceServiceTest {
                         .build();
 
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(category.getName(), member.getEmail())).thenReturn(score);
-                when(s3Port.uploadFile(Mockito.anyString(), Mockito.any()))
-                        .thenReturn(CompletableFuture.completedFuture(fakeFileUrl));
+                when(scorePersistencePort.findScoreByCategoryNameAndMemberEmailWithLock(categoryName, member.getEmail()))
+                        .thenReturn(score);
+                when(scorePersistencePort.saveScore(any())).thenAnswer(invocation -> invocation.getArgument(0));
+                when(evidencePersistencePort.saveEvidence(any())).thenAnswer(invocation -> invocation.getArgument(0));
                 when(categoryPersistencePort.findAllCategory()).thenReturn(List.of(category));
 
                 // when
                 createOtherScoringEvidenceService.execute(categoryName, file, value);
 
                 // then
-                verify(scorePersistencePort).saveScore(any(Score.class));
+                verify(scorePersistencePort).saveScore(argThat(savedScore -> savedScore.getValue() == 550));
+                verify(evidencePersistencePort).saveEvidence(any(Evidence.class));
                 verify(otherEvidencePersistencePort).saveOtherEvidence(any(), any(OtherEvidence.class));
                 verify(applicationEventPublisher).publishEvent(argThat((Object event) ->
                         event instanceof ScoreUpdatedEvent &&
