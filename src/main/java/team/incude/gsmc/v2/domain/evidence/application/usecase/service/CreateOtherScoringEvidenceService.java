@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team.incude.gsmc.v2.domain.evidence.application.port.DiscordPort;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateOtherScoringEvidenceUseCase;
@@ -23,7 +24,6 @@ import team.incude.gsmc.v2.global.event.FileUploadEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
-import team.incude.gsmc.v2.global.thirdparty.discord.service.DiscordAlertService;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
     private final ApplicationEventPublisher applicationEventPublisher;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
-    private final DiscordAlertService discordAlertService;
+    private final DiscordPort discordPort;
 
     /**
      * 점수 기반 기타 증빙자료를 생성하거나 점수를 갱신합니다.
@@ -98,7 +98,7 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
                     evidence.getEvidenceType()
             ));
         } catch (IOException e) {
-            discordAlertService.sendEvidenceUploadFailureAlert(
+            discordPort.sendEvidenceUploadFailureAlert(
                     evidence.getId(),
                     file.getOriginalFilename(),
                     member.getEmail(),

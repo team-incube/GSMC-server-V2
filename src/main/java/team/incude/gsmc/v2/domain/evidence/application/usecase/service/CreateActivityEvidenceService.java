@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
+import team.incude.gsmc.v2.domain.evidence.application.port.DiscordPort;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.CreateActivityEvidenceUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
@@ -24,7 +25,6 @@ import team.incude.gsmc.v2.global.event.FileUploadEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
-import team.incude.gsmc.v2.global.thirdparty.discord.service.DiscordAlertService;
 import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
     private final EvidencePersistencePort evidencePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final DiscordAlertService discordAlertService;
+    private final DiscordPort discordPort;
 
     /**
      * 활동 증빙자료를 생성하고 점수를 갱신하며 관련 이벤트를 발행합니다.
@@ -96,7 +96,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
                         file.getInputStream(),
                         evidence.getEvidenceType()));
             } catch (IOException e) {
-                discordAlertService.sendEvidenceUploadFailureAlert(
+                discordPort.sendEvidenceUploadFailureAlert(
                         evidence.getId(),
                         file.getOriginalFilename(),
                         member.getEmail(),
