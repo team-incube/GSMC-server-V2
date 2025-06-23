@@ -18,6 +18,6 @@ public class FileUploadEventListener {
     @Async
     @TransactionalEventListener(phase = AFTER_COMMIT)
     public void handleFileUploadEvent(FileUploadEvent event) {
-        evidenceApplicationPort.updateEvidenceFile(event.evidenceId(), event.fileName(), event.inputStream(), event.evidenceType());
+        evidenceApplicationPort.updateEvidenceFile(event.evidenceId(), event.fileName(), event.inputStream(), event.evidenceType(), event.email());
     }
 }
