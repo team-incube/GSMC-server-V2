@@ -22,6 +22,8 @@ public class RetryFileUploadConsumer {
     private final RetryUploadZSetPort retryUploadZSetPort;
     private final EvidenceApplicationPort evidenceApplicationPort;
 
+    private static final long RETRY_DELAY_MILLIS = 60_000L;
+
     @Scheduled(fixedDelay = 10_000)
     public void consume() {
         try {
@@ -55,7 +57,7 @@ public class RetryFileUploadConsumer {
                     }
                 } catch (IOException e) {
                     log.error("업로드 재시도 실패", e);
-                    retryUploadZSetPort.scheduleRetry(message, System.currentTimeMillis() + 60_000); // 1분 뒤 재등록
+                    retryUploadZSetPort.scheduleRetry(message, System.currentTimeMillis() + RETRY_DELAY_MILLIS);
                 } catch (Exception e) {
                     log.error("단일 재시도 메시지 처리 중 예외 발생", e);
                 }
