@@ -2,6 +2,7 @@ package team.incude.gsmc.v2.domain.evidence.presentation.data.request;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
+import team.incude.gsmc.v2.global.annotation.validator.NotEmptyFile;
 
 /**
  * 점수 기반 기타 증빙자료 수정을 위한 요청 DTO입니다.
@@ -13,6 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public record PatchOtherScoringEvidenceRequest(
         @NotNull Integer value,
-        @NotNull MultipartFile file
+        @NotEmptyFile MultipartFile file
 ) {
 }
