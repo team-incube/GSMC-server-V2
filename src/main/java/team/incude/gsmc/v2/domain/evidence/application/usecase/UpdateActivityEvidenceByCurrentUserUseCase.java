@@ -11,5 +11,5 @@ import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
  * @author suuuuuuminnnnnn
  */
 public interface UpdateActivityEvidenceByCurrentUserUseCase {
-    void execute(Long evidenceId, String title, String content, MultipartFile file, EvidenceType evidenceType, String imageUrl);
+    void execute(Long evidenceId, String title, String content, MultipartFile file, EvidenceType evidenceType);
 }
