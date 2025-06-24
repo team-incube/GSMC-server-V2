@@ -7,6 +7,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import team.incude.gsmc.v2.global.thirdparty.aws.data.AwsEnvironment;
 
 
 /**
@@ -19,18 +20,13 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 @Configuration
 public class S3Config {
 
-    @Value("${aws.access-key-id}")
-    private String accessKeyId;
-    @Value("${aws.secret-access-key}")
-    private String secretAccessKey;
-    @Value("${aws.bucket.region}")
-    private String region;
+    private AwsEnvironment awsEnvironment;
 
     @Bean
     public S3AsyncClient s3AsyncClient() {
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(awsEnvironment.accessKeyId(), awsEnvironment.secretAccessKey());
         return S3AsyncClient.builder()
-                .region(Region.of(region))
+                .region(Region.of(awsEnvironment.bucket().region()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }
