@@ -1,4 +1,4 @@
-package team.incude.gsmc.v2.global.security.config;
+package team.incude.gsmc.v2.global.thirdparty.aws.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
