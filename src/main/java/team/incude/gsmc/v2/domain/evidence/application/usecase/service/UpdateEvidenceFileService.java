@@ -21,6 +21,17 @@ import java.io.InputStream;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * 증빙자료의 파일 업로드를 처리하는 유스케이스 구현체입니다.
+ * <p>{@link UpdateEvidenceFileUseCase}를 구현하며,
+ * 증빙자료의 S3 업로드를 수행하고, 업로드 실패 시 {@link RetryUploadCommand}를 생성하여
+ * Redis 기반 재시도 큐에 등록합니다.</p>
+ * <p>성공적으로 업로드되면 증빙자료의 이미지 URL 또는 파일 URI를 갱신합니다.
+ * {@link RetryTemplate}을 이용하여 업로드를 재시도하며,
+ * {@link DiscordPort}를 통해 실패 알림도 전송됩니다.</p>
+ * <p>{@code REQUIRES_NEW} 트랜잭션을 사용하여 재시도 로직과 독립적인 트랜잭션으로 처리합니다.</p>
+ * @author suuuuuuminnnnnn
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -34,6 +45,17 @@ public class UpdateEvidenceFileService implements UpdateEvidenceFileUseCase {
     private final DiscordPort discordPort;
     private final RedisPort redisPort;
 
+    /**
+     * 증빙자료의 파일을 업로드하고, 업로드 URL을 해당 증빙에 반영합니다.
+     * <p>업로드에 실패하면 InputStream을 복제하여 {@link RetryUploadCommand}로 재시도 큐에 등록되며,
+     * {@link DiscordPort}를 통해 실패 알림이 전송됩니다.</p>
+     * @param evidenceId   대상 증빙자료 ID
+     * @param fileName     업로드할 파일명
+     * @param inputStream  업로드할 파일의 InputStream
+     * @param evidenceType 증빙자료 유형
+     * @param email        업로드 요청자의 이메일 (실패 알림 및 재시도 메시지용)
+     * @throws S3UploadFailedException 업로드 실패 시 던져짐
+     */
     @Override
     public void execute(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType, String email) {
         String fileUrl;
