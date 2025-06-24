@@ -1,13 +1,13 @@
 package team.incude.gsmc.v2.global.thirdparty.aws.s3.usecase.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import team.incude.gsmc.v2.global.thirdparty.aws.data.AwsEnvironment;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 import team.incude.gsmc.v2.global.thirdparty.aws.s3.usecase.FileUploadUseCase;
 import team.incude.gsmc.v2.global.util.FileValidationUtil;
@@ -35,24 +35,21 @@ import java.util.concurrent.CompletableFuture;
 public class FileUploadService implements FileUploadUseCase {
 
     private final S3AsyncClient s3AsyncClient;
-    @Value("${aws.bucket.name}")
-    private String bucketName;
-    @Value("${aws.bucket.region}")
-    private String region;
+    private final AwsEnvironment awsEnvironment;
 
     @Override
     @Async
     public CompletableFuture<String> execute(String fileName, InputStream fileInputStream) {
         String uniqueFileName = UUID.randomUUID() + "/" + fileName;
         try {
-            FileValidationUtil.validateFile(fileInputStream, bucketName, region, uniqueFileName);
+            FileValidationUtil.validateFile(fileInputStream, awsEnvironment.bucket().name(), awsEnvironment.bucket().region(), uniqueFileName);
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
+                    .bucket(awsEnvironment.bucket().name())
                     .key(uniqueFileName)
                     .build();
             AsyncRequestBody requestBody = AsyncRequestBody.fromBytes(fileInputStream.readAllBytes());
             CompletableFuture<PutObjectResponse> putObjectResponse = s3AsyncClient.putObject(putObjectRequest, requestBody);
-            return putObjectResponse.thenApply(response -> String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, uniqueFileName));
+            return putObjectResponse.thenApply(response -> String.format("https://%s.s3.%s.amazonaws.com/%s", awsEnvironment.bucket().name(), awsEnvironment.bucket().region(), uniqueFileName));
         } catch (IOException e) {
             throw new S3UploadFailedException();
         }
