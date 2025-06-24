@@ -29,6 +29,7 @@ import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 기타 증빙자료 생성을 담당하는 유스케이스 구현 클래스입니다.
@@ -85,7 +86,8 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
                     evidence.getId(),
                     file.getOriginalFilename(),
                     file.getInputStream(),
-                    evidence.getEvidenceType()
+                    evidence.getEvidenceType(),
+                    member.getEmail()
             ));
         } catch (IOException e) {
             discordPort.sendEvidenceUploadFailureAlert(
@@ -122,7 +124,7 @@ public class CreateOtherEvidenceService implements CreateOtherEvidenceUseCase {
      * @return 생성된 OtherEvidence 객체
      */
     private OtherEvidence createOtherEvidence(Evidence evidence, String fileName) {
-        String tempUploadKey = "upload_" + fileName;
+        String tempUploadKey = "upload_" + fileName + UUID.randomUUID();
 
         return OtherEvidence.builder()
                 .id(evidence)
