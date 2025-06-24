@@ -6,18 +6,19 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import team.incude.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.DiscordPort;
-import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
-import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
+import team.incude.gsmc.v2.domain.evidence.application.port.*;
 import team.incude.gsmc.v2.domain.evidence.application.usecase.UpdateEvidenceFileUseCase;
 import team.incude.gsmc.v2.domain.evidence.domain.ActivityEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
+import team.incude.gsmc.v2.domain.evidence.domain.RetryUploadCommand;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
+import team.incude.gsmc.v2.global.util.InputStreamUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.CompletionException;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -31,6 +32,7 @@ public class UpdateEvidenceFileService implements UpdateEvidenceFileUseCase {
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final RetryTemplate retryTemplate;
     private final DiscordPort discordPort;
+    private final RedisPort redisPort;
 
     @Override
     public void execute(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType, String email) {
@@ -39,16 +41,28 @@ public class UpdateEvidenceFileService implements UpdateEvidenceFileUseCase {
         fileUrl = retryTemplate.execute(context -> {
             try {
                 return s3Port.uploadFile(fileName, inputStream).get();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 Thread.currentThread().interrupt();
-                discordPort.sendEvidenceUploadFailureAlert(
-                        evidenceId,
-                        fileName,
-                        email,
-                        e
-                );
-                throw new S3UploadFailedException();
-            } catch (ExecutionException e) {
+
+                ByteArrayInputStream retryInputStream;
+                try {
+                    retryInputStream = InputStreamUtil.duplicate(inputStream);
+                } catch (IOException ioException) {
+                    log.error("InputStream 복제 실패", ioException);
+                    throw new S3UploadFailedException();
+                }
+
+                RetryUploadCommand command = RetryUploadCommand.builder()
+                        .commandId(UUID.randomUUID().toString())
+                        .evidenceId(evidenceId)
+                        .fileName(fileName)
+                        .tempFilePath(null)
+                        .evidenceType(evidenceType)
+                        .email(email)
+                        .build();
+
+                redisPort.scheduleRetry(command, retryInputStream, 5000);
+
                 discordPort.sendEvidenceUploadFailureAlert(
                         evidenceId,
                         fileName,
