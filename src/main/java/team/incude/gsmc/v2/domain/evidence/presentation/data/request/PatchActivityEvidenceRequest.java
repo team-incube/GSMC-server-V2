@@ -15,6 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 public record PatchActivityEvidenceRequest(
         @Size(max = 100) String title,
         @Size(max = 1500) String content,
-        @NotNull MultipartFile file
+        MultipartFile file
 ) {
 }
