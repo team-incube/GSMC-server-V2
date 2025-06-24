@@ -72,16 +72,16 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      * 전공 활동 증빙자료를 수정합니다.
      */
     @Override
-    public void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl) {
-        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.MAJOR, imageUrl);
+    public void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file) {
+        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.MAJOR);
     }
 
     /**
      * 인문 활동 증빙자료를 수정합니다.
      */
     @Override
-    public void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl) {
-        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.HUMANITIES, imageUrl);
+    public void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file) {
+        updateActivityEvidenceByCurrentUserUseCase.execute(evidenceId, title, content, file, EvidenceType.HUMANITIES);
     }
 
     /**
@@ -96,8 +96,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      * 기타 증빙자료를 수정합니다.
      */
     @Override
-    public void updateOtherEvidenceByCurrentUser(Long evidenceId, MultipartFile file, String imageUrl) {
-        updateOtherEvidenceByCurrentUserUseCase.execute(evidenceId, file, imageUrl);
+    public void updateOtherEvidenceByCurrentUser(Long evidenceId, MultipartFile file) {
+        updateOtherEvidenceByCurrentUserUseCase.execute(evidenceId, file);
     }
 
     /**
@@ -152,8 +152,8 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      * 점수 기반 기타 증빙자료를 수정합니다.
      */
     @Override
-    public void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value, String imageUrl) {
-        updateOtherScoringUseCase.execute(evidenceId, file, value, imageUrl);
+    public void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value) {
+        updateOtherScoringUseCase.execute(evidenceId, file, value);
     }
 
     /**
@@ -196,8 +196,11 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
         return findDraftEvidenceByCurrentUserUseCase.execute();
     }
 
+    /**
+     * 증빙자료의 이미지 파일을 수정합니다.
+     */
     @Override
-    public void updateEvidenceFile(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType) {
-        updateEvidenceFileUseCase.execute(evidenceId, fileName, inputStream, evidenceType);
+    public void updateEvidenceFile(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType, String email) {
+        updateEvidenceFileUseCase.execute(evidenceId, fileName, inputStream, evidenceType, email);
     }
 }

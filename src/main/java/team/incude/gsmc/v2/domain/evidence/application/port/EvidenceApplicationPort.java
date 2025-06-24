@@ -27,13 +27,13 @@ public interface EvidenceApplicationPort {
 
     GetEvidencesResponse findEvidenceByTitleAndType(String title, EvidenceType evidenceType);
 
-    void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl);
+    void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
 
-    void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file, String imageUrl);
+    void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
 
     void updateReadingEvidenceByCurrentUser(Long evidenceId, String title, String author, String content, int page);
 
-    void updateOtherEvidenceByCurrentUser(Long evidenceId, MultipartFile file, String imageUrl);
+    void updateOtherEvidenceByCurrentUser(Long evidenceId, MultipartFile fi);
 
     void deleteEvidence(Long evidenceId);
 
@@ -47,7 +47,7 @@ public interface EvidenceApplicationPort {
 
     void createOtherScoringEvidence(String categoryName, MultipartFile file, int value);
 
-    void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value, String imageUrl);
+    void updateOtherScoringEvidenceByCurrentUser(Long evidenceId, MultipartFile file, int value);
 
     CreateDraftEvidenceResponse createDraftActivityEvidence(UUID draftId, String categoryName, String title, String content, MultipartFile file, String imageUrl, EvidenceType activityType);
 
@@ -59,5 +59,5 @@ public interface EvidenceApplicationPort {
 
     GetDraftEvidenceResponse findDraftEvidenceByCurrentUser();
 
-    void updateEvidenceFile(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType);
+    void updateEvidenceFile(Long evidenceId, String fileName, InputStream inputStream, EvidenceType evidenceType, String email);
 }
