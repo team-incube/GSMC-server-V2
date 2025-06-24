@@ -39,7 +39,6 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
     private final EvidencePersistencePort evidencePersistencePort;
     private final ActivityEvidencePersistencePort activityEvidencePersistencePort;
     private final S3Port s3Port;
-    private final ApplicationEventPublisher eventPublisher;
     private final CurrentMemberProvider currentMemberProvider;
     private final DiscordPort discordPort;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -61,21 +60,25 @@ public class UpdateActivityEvidenceByCurrentUserService implements UpdateActivit
     }
 
     private String deleteAndUploadFile(ActivityEvidence activityEvidence, MultipartFile file, EvidenceType evidenceType, String email, Long evidenceId) {
-        s3Port.deleteFile(activityEvidence.getImageUrl());
+        if (file != null && !file.isEmpty()) {
+            s3Port.deleteFile(activityEvidence.getImageUrl());
 
-        try {
-            eventPublisher.publishEvent(new FileUploadEvent(
-                    evidenceId,
-                    file.getOriginalFilename(),
-                    file.getInputStream(),
-                    evidenceType,
-                    email
-            ));
-        } catch (IOException e) {
-            discordPort.sendEvidenceUploadFailureAlert(evidenceId, file.getOriginalFilename(), email, e);
-            throw new S3UploadFailedException();
+            try {
+                applicationEventPublisher.publishEvent(new FileUploadEvent(
+                        evidenceId,
+                        file.getOriginalFilename(),
+                        file.getInputStream(),
+                        evidenceType,
+                        email
+                ));
+            } catch (IOException e) {
+                discordPort.sendEvidenceUploadFailureAlert(evidenceId, file.getOriginalFilename(), email, e);
+                throw new S3UploadFailedException();
+            }
+            return "upload_" + file.getOriginalFilename() + "_" + UUID.randomUUID();
+        } else {
+            return null;
         }
-        return "upload_" + file.getOriginalFilename() + "_" + UUID.randomUUID();
     }
 
 
