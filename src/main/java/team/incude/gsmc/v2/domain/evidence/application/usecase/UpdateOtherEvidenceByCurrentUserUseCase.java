@@ -9,5 +9,5 @@ import org.springframework.web.multipart.MultipartFile;
  * @author suuuuuuminnnnnn
  */
 public interface UpdateOtherEvidenceByCurrentUserUseCase {
-    void execute(Long evidenceId, MultipartFile file, String imageUrl);
+    void execute(Long evidenceId, MultipartFile file);
 }

@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team.incude.gsmc.v2.domain.evidence.application.port.DiscordPort;
 import team.incude.gsmc.v2.domain.evidence.application.port.EvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incude.gsmc.v2.domain.evidence.application.port.S3Port;
@@ -12,16 +13,15 @@ import team.incude.gsmc.v2.domain.evidence.application.usecase.UpdateOtherScorin
 import team.incude.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incude.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incude.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incude.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
-import team.incude.gsmc.v2.domain.member.domain.Member;
-import team.incude.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incude.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incude.gsmc.v2.domain.score.domain.Score;
+import team.incude.gsmc.v2.global.event.FileUploadEvent;
 import team.incude.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incude.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 import team.incude.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedException;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * 점수 기반 기타 증빙자료를 수정하는 유스케이스 구현 클래스입니다.
@@ -39,11 +39,11 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
 
     private final EvidencePersistencePort evidencePersistencePort;
     private final ScorePersistencePort scorePersistencePort;
-    private final S3Port s3Port;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final DiscordPort discordPort;
+    private final S3Port s3Port;
 
     /**
      * 점수 기반 기타 증빙자료를 수정합니다.
@@ -53,56 +53,55 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
      * @param evidenceId 수정할 증빙자료 ID
      * @param file 새로 첨부할 파일 (선택)
      * @param value 새로운 점수 값
-     * @param imageUrl 대체할 이미지 URL (선택)
      */
     @Override
-    public void execute(Long evidenceId, MultipartFile file, int value, String imageUrl) {
+    public void execute(Long evidenceId, MultipartFile file, int value) {
         Evidence evidence = evidencePersistencePort.findEvidenceByIdWithLock(evidenceId);
-        Member member = currentMemberProvider.getCurrentUser();
         OtherEvidence otherEvidence = otherEvidencePersistencePort.findOtherEvidenceById(evidenceId);
-        StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail());
-        Score score = evidence.getScore();
+        String email = currentMemberProvider.getCurrentUser().getEmail();
 
-        String fileUrl = checkImageUrl(otherEvidence, imageUrl, file);
+        String fileUri = deleteAndUploadFile(otherEvidence, file, evidence.getId());
 
         Evidence newEvidence = createEvidence(evidence);
-        Score newScore = createScore(score, member, value);
-        OtherEvidence newOtherEvidence = createOtherEvidence(newEvidence, fileUrl);
+        Score newScore = createScore(evidence.getScore(), value);
+        OtherEvidence newOtherEvidence = createOtherEvidence(newEvidence, fileUri);
 
         scorePersistencePort.saveScore(newScore);
         otherEvidencePersistencePort.saveOtherEvidence(newOtherEvidence);
 
-        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(studentDetail.getStudentCode()));
+        applicationEventPublisher.publishEvent(new ScoreUpdatedEvent(email));
     }
 
     /**
-     * 기존 파일 URI와 변경 요청된 이미지 URL을 비교하고, 필요 시 S3에서 기존 파일을 삭제합니다.
+     * 기존 파일 URI와 요청된 이미지 URL을 비교하여 변경 여부를 판단합니다.
+     * <p>변경되었다면 기존 파일을 삭제하고, 새 파일이 존재할 경우 업로드 이벤트를 발행합니다.
      * @param otherEvidence 기존 기타 증빙자료
-     * @param imageUrl 요청된 이미지 URL
-     * @param file 새 첨부 파일
-     * @return 최종 저장할 이미지 URI
+     * @param file 새 파일
+     * @return 최종적으로 저장할 파일 URI (업로드 예정 이름)
      */
-    private String checkImageUrl(OtherEvidence otherEvidence, String imageUrl, MultipartFile file) {
-        if (imageUrl != null
-                && !imageUrl.isEmpty()
-                && otherEvidence.getFileUri().equals(imageUrl)) {
-            return imageUrl;
-        }
-
+    private String deleteAndUploadFile(OtherEvidence otherEvidence, MultipartFile file, Long evidenceId) {
         s3Port.deleteFile(otherEvidence.getFileUri());
 
-        if (file != null && !file.isEmpty()){
-            return uploadFile(file);
-        } else {
-            return null;
+        try {
+            applicationEventPublisher.publishEvent(new FileUploadEvent(
+                    evidenceId,
+                    file.getOriginalFilename(),
+                    file.getInputStream(),
+                    otherEvidence.getId().getEvidenceType(),
+                    currentMemberProvider.getCurrentUser().getEmail()
+            ));
+        } catch (IOException e) {
+            discordPort.sendEvidenceUploadFailureAlert(
+                    otherEvidence.getId().getId(),
+                    file.getOriginalFilename(),
+                    currentMemberProvider.getCurrentUser().getEmail(),
+                    e
+            );
+            throw new S3UploadFailedException();
         }
+        return "upload_" + file.getOriginalFilename() + "_" + UUID.randomUUID();
     }
 
-    /**
-     * 수정된 상태를 반영하여 새로운 Evidence 객체를 생성합니다.
-     * @param evidence 기존 Evidence
-     * @return 수정된 Evidence 객체
-     */
     private Evidence createEvidence(Evidence evidence) {
         return Evidence.builder()
                 .id(evidence.getId())
@@ -114,49 +113,19 @@ public class UpdateOtherScoringEvidenceByCurrentUserService implements UpdateOth
                 .build();
     }
 
-    /**
-     * 점수 값을 갱신하여 새로운 Score 객체를 생성합니다.
-     * @param score 기존 Score
-     * @param member 사용자 정보
-     * @param value 새로운 점수 값
-     * @return 수정된 Score 객체
-     */
-    private Score createScore(Score score, Member member, int value) {
+    private Score createScore(Score score, int value) {
         return Score.builder()
                 .id(score.getId())
-                .member(member)
+                .member(score.getMember())
                 .value(value)
                 .category(score.getCategory())
                 .build();
     }
 
-    /**
-     * 파일 URI를 기반으로 새로운 OtherEvidence 객체를 생성합니다.
-     * @param evidence 연관 Evidence
-     * @param fileUrl 이미지 URI
-     * @return 생성된 OtherEvidence 객체
-     */
     private OtherEvidence createOtherEvidence(Evidence evidence, String fileUrl) {
         return OtherEvidence.builder()
                 .id(evidence)
                 .fileUri(fileUrl)
                 .build();
-    }
-
-    /**
-     * MultipartFile을 S3에 업로드하고 URI를 반환합니다.
-     * @param file 업로드할 파일
-     * @return 업로드된 파일의 URI
-     * @throws S3UploadFailedException 업로드 실패 시
-     */
-    private String uploadFile(MultipartFile file) {
-        try {
-            return s3Port.uploadFile(
-                    file.getOriginalFilename(),
-                    file.getInputStream()
-            ).join();
-        } catch (IOException e) {
-            throw new S3UploadFailedException();
-        }
     }
 }

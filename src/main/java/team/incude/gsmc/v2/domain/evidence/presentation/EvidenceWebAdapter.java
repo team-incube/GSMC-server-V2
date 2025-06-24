@@ -125,7 +125,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> patchMajorEvidence(
             @PathVariable Long evidenceId,
             @Valid @ModelAttribute PatchActivityEvidenceRequest request) {
-        evidenceApplicationPort.updateMajorEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file(), request.imageUrl());
+        evidenceApplicationPort.updateMajorEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -139,7 +139,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> patchHumanityEvidence(
             @PathVariable Long evidenceId,
             @Valid @ModelAttribute PatchActivityEvidenceRequest request) {
-        evidenceApplicationPort.updateHumanitiesEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file(), request.imageUrl());
+        evidenceApplicationPort.updateHumanitiesEvidenceByCurrentUser(evidenceId, request.title(), request.content(), request.file());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -167,7 +167,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> patchOtherEvidence(
             @PathVariable Long evidenceId,
             @ModelAttribute PatchOtherEvidenceRequest request) {
-        evidenceApplicationPort.updateOtherEvidenceByCurrentUser(evidenceId, request.file(), request.imageUrl());
+        evidenceApplicationPort.updateOtherEvidenceByCurrentUser(evidenceId, request.file());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -181,7 +181,7 @@ public class EvidenceWebAdapter {
     public ResponseEntity<Void> patchScoringEvidence(
             @PathVariable Long evidenceId,
             @ModelAttribute PatchOtherScoringEvidenceRequest request) {
-        evidenceApplicationPort.updateOtherScoringEvidenceByCurrentUser(evidenceId, request.file(), request.value(), request.imageUrl());
+        evidenceApplicationPort.updateOtherScoringEvidenceByCurrentUser(evidenceId, request.file(), request.value());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

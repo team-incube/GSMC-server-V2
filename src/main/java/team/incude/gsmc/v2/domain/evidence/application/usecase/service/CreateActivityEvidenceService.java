@@ -94,7 +94,9 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
                         evidence.getId(),
                         file.getOriginalFilename(),
                         file.getInputStream(),
-                        evidence.getEvidenceType()));
+                        evidence.getEvidenceType(),
+                        member.getEmail()
+                ));
             } catch (IOException e) {
                 discordPort.sendEvidenceUploadFailureAlert(
                         evidence.getId(),
@@ -137,7 +139,7 @@ public class CreateActivityEvidenceService implements CreateActivityEvidenceUseC
         String imageUrl = null;
 
         if (file != null && !file.isEmpty()) {
-            imageUrl = "upload_" + file.getOriginalFilename();
+            imageUrl = "upload_" + file.getOriginalFilename() + UUID.randomUUID();
         } else if (imageUrlParam != null && !imageUrlParam.isBlank()) {
             imageUrl = imageUrlParam;
         }

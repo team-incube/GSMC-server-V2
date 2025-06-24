@@ -8,6 +8,7 @@ public record FileUploadEvent(
         Long evidenceId,
         String fileName,
         InputStream inputStream,
-        EvidenceType evidenceType
+        EvidenceType evidenceType,
+        String email
 ) {
 }

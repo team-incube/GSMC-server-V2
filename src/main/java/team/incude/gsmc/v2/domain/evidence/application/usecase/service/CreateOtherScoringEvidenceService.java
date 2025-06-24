@@ -29,6 +29,7 @@ import team.incude.gsmc.v2.global.util.ValueLimiterUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -95,7 +96,8 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
                     evidence.getId(),
                     file.getOriginalFilename(),
                     file.getInputStream(),
-                    evidence.getEvidenceType()
+                    evidence.getEvidenceType(),
+                    member.getEmail()
             ));
         } catch (IOException e) {
             discordPort.sendEvidenceUploadFailureAlert(
@@ -173,7 +175,7 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
      * @return 생성된 OtherEvidence 객체
      */
     private OtherEvidence createOtherEvidence(Evidence evidence, MultipartFile file) {
-        String tempUploadKey = "upload_" + file.getOriginalFilename();
+        String tempUploadKey = "upload_" + file.getOriginalFilename() + UUID.randomUUID();
 
         return OtherEvidence.builder()
                 .id(evidence)
