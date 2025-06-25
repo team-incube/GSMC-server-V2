@@ -1,0 +1,154 @@
+name: Auto Create PR from develop to main
+
+on:
+  schedule:
+    # 매 2주마다 월요일 오전 9시 (UTC)에 실행
+    # 분 시 일 월 요일 (0=일요일, 1=월요일)
+    - cron: '0 9 * * 1'
+
+  # 수동 실행 가능하도록 설정
+  workflow_dispatch:
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check for differences between develop and main
+        id: check_diff
+        run: |
+          git fetch origin develop
+          git fetch origin main
+          
+          # develop과 main 브랜치 간의 차이점 확인
+          if git diff --quiet origin/main origin/develop; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes found between develop and main branches"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes found between develop and main branches"
+          fi
+
+      - name: Get current date
+        id: date
+        run: |
+          echo "current_date=$(date +'%Y/%m/%d')" >> $GITHUB_OUTPUT
+          echo "current_week=$(date +'%Y-W%V')" >> $GITHUB_OUTPUT
+
+      - name: Check if PR already exists and get deployment count
+        id: check_pr
+        if: steps.check_diff.outputs.has_changes == 'true'
+        run: |
+          # 이미 열린 PR이 있는지 확인
+          pr_exists=$(gh pr list --base main --head develop --state open --json number --jq 'length')
+          if [ "$pr_exists" -gt 0 ]; then
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+            echo "PR already exists from develop to main"
+          else
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+            echo "No existing PR found"
+          fi
+          
+          # 가장 최근 "배포"로 끝나는 PR에서 차수 추출
+          latest_deployment_pr=$(gh pr list --base main --state merged --limit 50 --json title --jq '[.[] | select(.title | endswith("배포"))] | .[0].title // ""')
+          
+          if [ -n "$latest_deployment_pr" ]; then
+            echo "Latest deployment PR found: $latest_deployment_pr"
+            # 제n차 패턴에서 숫자 추출 (정규식으로 "제{숫자}차" 패턴 찾기)
+            current_number=$(echo "$latest_deployment_pr" | grep -o '제[0-9]\+차' | grep -o '[0-9]\+')
+            if [ -n "$current_number" ]; then
+              next_deployment=$((current_number + 1))
+              echo "Found deployment number: $current_number, next will be: $next_deployment"
+            else
+              echo "Could not extract number from PR title, defaulting to 1"
+              next_deployment=1
+            fi
+          else
+            echo "No previous deployment PR found, starting with 1"
+            next_deployment=1
+          fi
+          
+          echo "deployment_number=$next_deployment" >> $GITHUB_OUTPUT
+          echo "Next deployment number: $next_deployment"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get commit authors for assignees
+        id: get_authors
+        if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        run: |
+          # develop 브랜치에서 main보다 앞선 커밋들의 작성자 가져오기
+          authors=$(git log origin/main..origin/develop --pretty=format:"%ae" | sort | uniq)
+          
+          # GitHub 사용자명으로 변환하기 위해 @ 기호 제거하고 도메인 제거
+          github_users=""
+          for email in $authors; do
+            # 이메일에서 사용자명 추출 (@ 앞부분)
+            username=$(echo $email | cut -d'@' -f1)
+            if [ -n "$github_users" ]; then
+              github_users="$github_users,$username"
+            else
+              github_users="$username"
+            fi
+          done
+          
+          echo "assignees=$github_users" >> $GITHUB_OUTPUT
+          echo "Found commit authors: $github_users"
+
+      - name: Create Pull Request
+        if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        run: |
+          # PR 생성
+          gh pr create \
+            --base main \
+            --head develop \
+            --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
+            --body "## 📋 작업 내용
+          > Github Action을 통하여 자동 생성된 Pull Request 입니다,작업 내용을 수정하여주세요
+          ## 🤝 리뷰 시 참고사항
+          > Github Action을 통하여 자동 생성된 Pull Request 입니다
+          ## ✅ 체크리스트
+          - [x] 이 작업으로 인해 변경이 필요한 문서를 작성 또는 수정했나요? (e.g. \`README\`, \`.env.example\`)
+          - [x] 작업한 코드가 정상적으로 동작하는지 확인했나요?
+          - [x] 작업한 코드에 대한 테스트 코드를 작성하거나 수정했나요?
+          - [x] Merge 대상 브랜치를 올바르게 설정했나요?
+          - [x] 해당 PR과 관련 없는 작업이 포함되지는 않았나요?
+          - [x] PR의 올바른 라벨과 리뷰어를 설정했나요?" \
+            --assignee "${{ steps.get_authors.outputs.assignees }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add labels to PR
+        if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        run: |
+          # 방금 생성된 PR에 라벨 추가
+          pr_number=$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')
+          gh pr edit $pr_number --add-label "🗓️ 정기배포"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create summary
+        run: |
+          echo "## 🤖 Auto PR Creation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "**실행 시간:** ${{ steps.date.outputs.current_date }}" >> $GITHUB_STEP_SUMMARY
+          echo "**브랜치:** develop → main" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.check_diff.outputs.has_changes }}" == "false" ]; then
+            echo "**결과:** ✅ 변경사항 없음 - PR 생성하지 않음" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.check_pr.outputs.pr_exists }}" == "true" ]; then
+            echo "**결과:** ⚠️ 이미 열린 PR 존재 - 새 PR 생성하지 않음" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**결과:** 🚀 제${{ steps.check_pr.outputs.deployment_number }}차 배포 PR 생성 완료" >> $GITHUB_STEP_SUMMARY
+            echo "**Assignees:** ${{ steps.get_authors.outputs.assignees }}" >> $GITHUB_STEP_SUMMARY
+          fi
