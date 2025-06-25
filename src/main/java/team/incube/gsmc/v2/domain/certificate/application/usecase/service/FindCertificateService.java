@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incube.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incube.gsmc.v2.domain.certificate.application.usecase.FindCertificateUseCase;
-import team.incube.gsmc.v2.domain.certificate.persentation.data.GetCertificateDto;
-import team.incube.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.GetCertificateDto;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.response.GetCertificateResponse;
 import team.incube.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incube.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 

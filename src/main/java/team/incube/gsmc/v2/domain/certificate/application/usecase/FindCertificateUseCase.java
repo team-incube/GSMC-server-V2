@@ -1,6 +1,6 @@
 package team.incube.gsmc.v2.domain.certificate.application.usecase;
 
-import team.incube.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.response.GetCertificateResponse;
 
 /**
  * 자격증 조회 기능을 제공하는 인터페이스입니다.

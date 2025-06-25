@@ -1,7 +1,7 @@
 package team.incube.gsmc.v2.domain.certificate.application.port;
 
 import org.springframework.web.multipart.MultipartFile;
-import team.incube.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.response.GetCertificateResponse;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.port.Port;
 

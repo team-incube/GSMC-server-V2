@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import team.incube.gsmc.v2.domain.certificate.application.port.CertificatePersistencePort;
 import team.incube.gsmc.v2.domain.certificate.domain.Certificate;
-import team.incube.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.response.GetCertificateResponse;
 import team.incube.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incube.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incube.gsmc.v2.domain.member.domain.Member;

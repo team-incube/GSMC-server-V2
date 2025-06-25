@@ -1,4 +1,4 @@
-package team.incube.gsmc.v2.domain.certificate.persentation.data;
+package team.incube.gsmc.v2.domain.certificate.presentation.data;
 
 
 /**
