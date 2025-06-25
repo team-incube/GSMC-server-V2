@@ -1,6 +1,6 @@
-package team.incube.gsmc.v2.domain.certificate.persentation.data.response;
+package team.incube.gsmc.v2.domain.certificate.presentation.data.response;
 
-import team.incube.gsmc.v2.domain.certificate.persentation.data.GetCertificateDto;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.GetCertificateDto;
 
 import java.util.List;
 

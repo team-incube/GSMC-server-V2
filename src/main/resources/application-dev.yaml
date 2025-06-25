@@ -11,8 +11,8 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: localhost
+      port: 6379
   sql:
     init:
       mode: always

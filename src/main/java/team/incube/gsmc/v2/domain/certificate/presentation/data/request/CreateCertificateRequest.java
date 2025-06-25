@@ -1,4 +1,4 @@
-package team.incube.gsmc.v2.domain.certificate.persentation.data.request;
+package team.incube.gsmc.v2.domain.certificate.presentation.data.request;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;

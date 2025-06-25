@@ -1,14 +1,14 @@
-package team.incube.gsmc.v2.domain.certificate.persentation;
+package team.incube.gsmc.v2.domain.certificate.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import team.incube.gsmc.v2.domain.certificate.persentation.data.request.CreateCertificateRequest;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.request.CreateCertificateRequest;
 import team.incube.gsmc.v2.domain.certificate.application.port.CertificateApplicationPort;
-import team.incube.gsmc.v2.domain.certificate.persentation.data.request.PatchCertificateRequest;
-import team.incube.gsmc.v2.domain.certificate.persentation.data.response.GetCertificateResponse;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.request.PatchCertificateRequest;
+import team.incube.gsmc.v2.domain.certificate.presentation.data.response.GetCertificateResponse;
 
 /**
  * 자격증 관련 HTTP 요청을 처리하는 Web 어댑터 클래스입니다.
