@@ -1,5 +1,6 @@
 package team.incube.gsmc.v2.global.thirdparty.aws.s3.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -17,9 +18,10 @@ import team.incube.gsmc.v2.global.thirdparty.aws.data.AwsEnvironment;
  * @author snowykte0426
  */
 @Configuration
+@RequiredArgsConstructor
 public class S3Config {
 
-    private AwsEnvironment awsEnvironment;
+    private final AwsEnvironment awsEnvironment;
 
     @Bean
     public S3AsyncClient s3AsyncClient() {
