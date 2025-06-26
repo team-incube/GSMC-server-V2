@@ -6,9 +6,9 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incube.gsmc.v2.domain.member.domain.constant.MemberRole;
+import team.incube.gsmc.v2.global.security.jwt.data.JwtEnvironment;
 import team.incube.gsmc.v2.global.security.jwt.persistence.repository.RefreshTokenRedisRepository;
 import team.incube.gsmc.v2.global.security.jwt.application.usecase.JwtParserUseCase;
 
@@ -32,18 +32,16 @@ import javax.crypto.SecretKey;
 @Service
 @RequiredArgsConstructor
 public class JwtParserService implements JwtParserUseCase {
-    @Value("${jwt.access-token.secret}")
-    private String accessTokenSecret;
-    @Value("${jwt.refresh-token.secret}")
-    private String refreshTokenSecret;
+
     private SecretKey accessTokenKey;
     private SecretKey refreshTokenKey;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final JwtEnvironment jwtEnvironment;
 
     @PostConstruct
     public void init() {
-        accessTokenKey = Keys.hmacShaKeyFor(accessTokenSecret.getBytes());
-        refreshTokenKey = Keys.hmacShaKeyFor(refreshTokenSecret.getBytes());
+        accessTokenKey = Keys.hmacShaKeyFor(jwtEnvironment.accessToken().secret().getBytes());
+        refreshTokenKey = Keys.hmacShaKeyFor(jwtEnvironment.refreshToken().secret().getBytes());
     }
 
     @Override
