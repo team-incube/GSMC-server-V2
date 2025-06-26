@@ -2,11 +2,8 @@ name: Auto Create PR from develop to main
 
 on:
   schedule:
-    # 매 2주마다 월요일 오전 9시 (UTC)에 실행
-    # 분 시 일 월 요일 (0=일요일, 1=월요일)
     - cron: '0 9 * * 1'
 
-  # 수동 실행 가능하도록 설정
   workflow_dispatch:
 
 jobs:
@@ -31,7 +28,6 @@ jobs:
           git fetch origin develop
           git fetch origin main
           
-          # develop과 main 브랜치 간의 차이점 확인
           if git diff --quiet origin/main origin/develop; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "No changes found between develop and main branches"
@@ -50,7 +46,6 @@ jobs:
         id: check_pr
         if: steps.check_diff.outputs.has_changes == 'true'
         run: |
-          # 이미 열린 PR이 있는지 확인
           pr_exists=$(gh pr list --base main --head develop --state open --json number --jq 'length')
           if [ "$pr_exists" -gt 0 ]; then
             echo "pr_exists=true" >> $GITHUB_OUTPUT
@@ -60,12 +55,10 @@ jobs:
             echo "No existing PR found"
           fi
           
-          # 가장 최근 "배포"로 끝나는 PR에서 차수 추출
           latest_deployment_pr=$(gh pr list --base main --state merged --limit 50 --json title --jq '[.[] | select(.title | endswith("배포"))] | .[0].title // ""')
           
           if [ -n "$latest_deployment_pr" ]; then
             echo "Latest deployment PR found: $latest_deployment_pr"
-            # 제n차 패턴에서 숫자 추출 (정규식으로 "제{숫자}차" 패턴 찾기)
             current_number=$(echo "$latest_deployment_pr" | grep -o '제[0-9]\+차' | grep -o '[0-9]\+')
             if [ -n "$current_number" ]; then
               next_deployment=$((current_number + 1))
@@ -132,7 +125,6 @@ jobs:
       - name: Add labels to PR
         if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         run: |
-          # 방금 생성된 PR에 라벨 추가
           pr_number=$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')
           gh pr edit $pr_number --add-label "🗓️ 정기배포"
         env:
