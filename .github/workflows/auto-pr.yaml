@@ -67,21 +67,14 @@ jobs:
           
           if [ -n "$latest_deployment_pr" ]; then
             echo "Latest deployment PR found: $latest_deployment_pr"
-            current_number=$(echo "$latest_deployment_pr" | sed -n 's/.*\([0-9]\+\)차.*/\1/p')
+            current_number=$(echo "$latest_deployment_pr" | grep -o '[0-9]\+차' | grep -o '[0-9]\+')
             if [ -n "$current_number" ] && [ "$current_number" -gt 0 ] 2>/dev/null; then
               next_deployment=$((current_number + 1))
               echo "Found deployment number: $current_number, next will be: $next_deployment"
             else
               echo "Could not extract valid number from PR title: $latest_deployment_pr"
-              echo "Trying alternative extraction method..."
-              current_number=$(echo "$latest_deployment_pr" | grep -o '[0-9]\+차' | grep -o '[0-9]\+' | head -1)
-              if [ -n "$current_number" ] && [ "$current_number" -gt 0 ] 2>/dev/null; then
-                next_deployment=$((current_number + 1))
-                echo "Alternative method succeeded: $current_number, next will be: $next_deployment"
-              else
-                echo "All extraction methods failed, defaulting to deployment number 1"
-                next_deployment=1
-              fi
+              echo "All extraction methods failed, defaulting to deployment number 1"
+              next_deployment=1
             fi
           else
             echo "No previous deployment PR found, starting with 1"
