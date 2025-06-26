@@ -1,6 +1,9 @@
 name: Auto Create PR from develop to main
 
 on:
+  push:
+    branches:
+      - feat/*
   schedule:
     - cron: '0 9 * * 1'
 
