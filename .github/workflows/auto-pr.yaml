@@ -1,9 +1,6 @@
 name: Auto Create PR from develop to main
 
 on:
-  push:
-    branches:
-      - feat/*
   schedule:
     - cron: '0 9 * * 1'
 
@@ -157,14 +154,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - name: Add labels to PR
-        if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
-        run: |
-          pr_number=$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')
-          gh pr edit $pr_number --add-label "🗓️ 정기배포"
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
-
       - name: Create summary
         run: |
           echo "## 🤖 Auto PR Creation Summary" >> $GITHUB_STEP_SUMMARY
@@ -178,4 +167,5 @@ jobs:
           else
             echo "**결과:** 🚀 제${{ steps.check_pr.outputs.deployment_number }}차 배포 PR 생성 완료" >> $GITHUB_STEP_SUMMARY
             echo "**Assignees:** ${{ steps.get_authors.outputs.assignees }}" >> $GITHUB_STEP_SUMMARY
+            echo "**안내:** 🏷️ 정기배포 라벨은 수동으로 추가하세요" >> $GITHUB_STEP_SUMMARY
           fi
