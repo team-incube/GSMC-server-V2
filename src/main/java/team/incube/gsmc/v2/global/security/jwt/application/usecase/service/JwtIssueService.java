@@ -4,10 +4,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import team.incube.gsmc.v2.domain.member.domain.constant.MemberRole;
 import team.incube.gsmc.v2.global.security.jwt.application.usecase.JwtIssueUseCase;
+import team.incube.gsmc.v2.global.security.jwt.data.JwtEnvironment;
 import team.incube.gsmc.v2.global.security.jwt.persistence.entity.RefreshTokenRedisEntity;
 import team.incube.gsmc.v2.global.security.jwt.persistence.repository.RefreshTokenRedisRepository;
 import team.incube.gsmc.v2.global.security.jwt.data.TokenDto;
@@ -34,27 +34,20 @@ import java.time.ZoneId;
 public class JwtIssueService implements JwtIssueUseCase {
 
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
-    @Value("${jwt.access-token.secret}")
-    private String accessTokenSecret;
-    @Value("${jwt.refresh-token.secret}")
-    private String refreshTokenSecret;
-    @Value("${jwt.access-token.expiration}")
-    private long accessTokenExpiration;
-    @Value("${jwt.refresh-token.expiration}")
-    private long refreshTokenExpiration;
+    private final JwtEnvironment jwtEnvironment;
 
     private SecretKey accessTokenKey;
     private SecretKey refreshTokenKey;
 
     @PostConstruct
     public void init() {
-        accessTokenKey = Keys.hmacShaKeyFor(accessTokenSecret.getBytes());
-        refreshTokenKey = Keys.hmacShaKeyFor(refreshTokenSecret.getBytes());
+        accessTokenKey = Keys.hmacShaKeyFor(jwtEnvironment.accessToken().secret().getBytes());
+        refreshTokenKey = Keys.hmacShaKeyFor(jwtEnvironment.refreshToken().secret().getBytes());
     }
 
     @Override
     public TokenDto issueAccessToken(String email, MemberRole roles) {
-        LocalDateTime expiration = LocalDateTime.now().plusSeconds(accessTokenExpiration);
+        LocalDateTime expiration = LocalDateTime.now().plusSeconds(jwtEnvironment.accessToken().expiration());
         return new TokenDto(
                 Jwts.builder()
                         .claim("sub", email)
@@ -69,7 +62,7 @@ public class JwtIssueService implements JwtIssueUseCase {
 
     @Override
     public TokenDto issueRefreshToken(String email) {
-        LocalDateTime expiration = LocalDateTime.now().plusSeconds(refreshTokenExpiration);
+        LocalDateTime expiration = LocalDateTime.now().plusSeconds(jwtEnvironment.refreshToken().expiration());
         TokenDto token = new TokenDto(
                 Jwts.builder()
                         .claim("sub", email)
