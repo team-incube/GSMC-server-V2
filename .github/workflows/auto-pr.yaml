@@ -92,44 +92,70 @@ jobs:
         id: get_authors
         if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         run: |
-          # develop 브랜치에서 main보다 앞선 커밋들의 작성자 가져오기
           authors=$(git log origin/main..origin/develop --pretty=format:"%ae" | sort | uniq)
           
-          # GitHub 사용자명으로 변환하기 위해 @ 기호 제거하고 도메인 제거
-          github_users=""
+          valid_users=""
           for email in $authors; do
-            # 이메일에서 사용자명 추출 (@ 앞부분)
             username=$(echo $email | cut -d'@' -f1)
-            if [ -n "$github_users" ]; then
-              github_users="$github_users,$username"
+          
+            if gh api users/$username >/dev/null 2>&1; then
+              echo "✅ Valid GitHub user found: $username"
+              if [ -n "$valid_users" ]; then
+                valid_users="$valid_users,$username"
+              else
+                valid_users="$username"
+              fi
             else
-              github_users="$username"
+              echo "❌ GitHub user not found or inaccessible: $username (from email: $email)"
             fi
           done
           
-          echo "assignees=$github_users" >> $GITHUB_OUTPUT
-          echo "Found commit authors: $github_users"
+          echo "assignees=$valid_users" >> $GITHUB_OUTPUT
+          echo "Final assignees: $valid_users"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
         if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         run: |
-          # PR 생성
-          gh pr create \
-            --base main \
-            --head develop \
-            --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
-            --body "## 📋 작업 내용
-          > Github Action을 통하여 자동 생성된 Pull Request 입니다,작업 내용을 수정하여주세요
-          ## 🤝 리뷰 시 참고사항
-          > Github Action을 통하여 자동 생성된 Pull Request 입니다
-          ## ✅ 체크리스트
-          - [x] 이 작업으로 인해 변경이 필요한 문서를 작성 또는 수정했나요? (e.g. \`README\`, \`.env.example\`)
-          - [x] 작업한 코드가 정상적으로 동작하는지 확인했나요?
-          - [x] 작업한 코드에 대한 테스트 코드를 작성하거나 수정했나요?
-          - [x] Merge 대상 브랜치를 올바르게 설정했나요?
-          - [x] 해당 PR과 관련 없는 작업이 포함되지는 않았나요?
-          - [x] PR의 올바른 라벨과 리뷰어를 설정했나요?" \
-            --assignee "${{ steps.get_authors.outputs.assignees }}"
+          assignees="${{ steps.get_authors.outputs.assignees }}"
+          
+          if [ -n "$assignees" ]; then
+            gh pr create \
+              --base main \
+              --head develop \
+              --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
+              --body "## 📋 작업 내용
+            > Github Action을 통하여 자동 생성된 Pull Request 입니다,작업 내용을 수정하여주세요
+            ## 🤝 리뷰 시 참고사항
+            > Github Action을 통하여 자동 생성된 Pull Request 입니다
+            ## ✅ 체크리스트
+            - [x] 이 작업으로 인해 변경이 필요한 문서를 작성 또는 수정했나요? (e.g. \`README\`, \`.env.example\`)
+            - [x] 작업한 코드가 정상적으로 동작하는지 확인했나요?
+            - [x] 작업한 코드에 대한 테스트 코드를 작성하거나 수정했나요?
+            - [x] Merge 대상 브랜치를 올바르게 설정했나요?
+            - [x] 해당 PR과 관련 없는 작업이 포함되지는 않았나요?
+            - [x] PR의 올바른 라벨과 리뷰어를 설정했나요?" \
+              --assignee "$assignees"
+            echo "🚀 PR created with assignees: $assignees"
+          else
+            gh pr create \
+              --base main \
+              --head develop \
+              --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
+              --body "## 📋 작업 내용
+            > Github Action을 통하여 자동 생성된 Pull Request 입니다,작업 내용을 수정하여주세요
+            ## 🤝 리뷰 시 참고사항
+            > Github Action을 통하여 자동 생성된 Pull Request 입니다
+            ## ✅ 체크리스트
+            - [x] 이 작업으로 인해 변경이 필요한 문서를 작성 또는 수정했나요? (e.g. \`README\`, \`.env.example\`)
+            - [x] 작업한 코드가 정상적으로 동작하는지 확인했나요?
+            - [x] 작업한 코드에 대한 테스트 코드를 작성하거나 수정했나요?
+            - [x] Merge 대상 브랜치를 올바르게 설정했나요?
+            - [x] 해당 PR과 관련 없는 작업이 포함되지는 않았나요?
+            - [x] PR의 올바른 라벨과 리뷰어를 설정했나요?"
+            echo "🚀 PR created without assignees"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
