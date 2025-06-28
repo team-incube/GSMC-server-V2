@@ -1,4 +1,4 @@
-name: Auto Create PR from develop to main
+name: Auto Deploy PR Creation
 
 on:
   schedule:
@@ -12,7 +12,7 @@ permissions:
   issues: write
 
 jobs:
-  create-pr:
+  create-deploy-pr:
     runs-on: ubuntu-latest
 
     steps:
