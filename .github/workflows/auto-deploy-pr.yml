@@ -191,6 +191,9 @@ jobs:
               next_even_week=$((week_number + 1))
             fi
             next_date=$(date -d "$year-W$next_even_week-1" +'%Y-%m-%d' 2>/dev/null)
+            if [ -z "$next_date" ]; then
+              next_date=$(date -d "next monday" +'%Y-%m-%d')
+            fi
             echo "결과: 격주 스케줄에 따라 실행이 건너뜀(홀수 주차)" >> $GITHUB_STEP_SUMMARY
             echo "다음 실행: $next_even_week주차 월요일 ($next_date)" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.check_diff.outputs.has_changes }}" == "false" ]; then
