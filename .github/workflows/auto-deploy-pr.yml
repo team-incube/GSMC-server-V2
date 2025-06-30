@@ -1,6 +1,9 @@
 name: Auto Deploy PR Creation
 
 on:
+  push:
+    branches:
+      - feat/*
   schedule:
     - cron: '0 9 * * 1'
 
@@ -132,7 +135,7 @@ jobs:
             gh pr create \
               --base main \
               --head develop \
-              --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포 (격주 배포)" \
+              --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
               --body "## 📋 작업 내용
             > Github Action을 통하여 자동 생성된 Pull Request 입니다 (격주 배포 스케줄)
             > 작업 내용을 수정하여주세요
@@ -180,14 +183,40 @@ jobs:
           echo "**현재 주차:** $(date +'%Y-W%V')" >> $GITHUB_STEP_SUMMARY
           echo "**브랜치:** develop → main" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.check_biweekly.outputs.should_run }}" == "false" ]; then
-            echo "**결과:** ⏭️ 격주 스케줄에 따라 실행 건너뜀 (홀수 주차)" >> $GITHUB_STEP_SUMMARY
-            echo "**다음 실행:** 다음 짝수 주차 월요일" >> $GITHUB_STEP_SUMMARY
+            echo "결과: 격주 스케줄에 따라 실행이 건너뜀(홀수 주차)" >> $GITHUB_STEP_SUMMARY
+            echo "다음 실행: - name: Create summary
+                    run: |
+                      echo \"## Auto PR Creation Summary\" >> $GITHUB_STEP_SUMMARY
+                      echo "실행 시간: ${{ steps.date.outputs.current_date || 'N/A' }}" >> $GITHUB_STEP_SUMMARY
+                      echo "현재 주차: $(date +'%Y-W%V')" >> $GITHUB_STEP_SUMMARY
+                      echo "브랜치: develop → main" >> $GITHUB_STEP_SUMMARY
+                      if [ "${{ steps.check_biweekly.outputs.should_run }}" == "false" ]; then
+                        # 다음 짝수 주차 월요일 날짜 계산
+                        week_number=$(date +%V)
+                        year=$(date +%Y)
+                        if [ $((week_number % 2)) -eq 0 ]; then
+                          next_even_week=$((week_number + 2))
+                        else
+                          next_even_week=$((week_number + 1))
+                        fi
+                        next_date=$(date -d "$year-W$next_even_week-1" +'%Y-%m-%d' 2>/dev/null || date -v+1w -vmon +'%Y-%m-%d')
+                        echo "결과: 격주 스케줄에 따라 실행이 건너뜀(홀수 주차)" >> $GITHUB_STEP_SUMMARY
+                        echo "다음 실행: $next_even_week주차 월요일 ($next_date)" >> $GITHUB_STEP_SUMMARY
+                      elif [ "${{ steps.check_diff.outputs.has_changes }}" == "false" ]; then
+                        echo "결과: 변경사항 없음 - PR을 생성하지 않음" >> $GITHUB_STEP_SUMMARY
+                      elif [ "${{ steps.check_pr.outputs.pr_exists }}" == "true" ]; then
+                        echo "결과: 이미 열린 PR이 존재하여 새 PR을 생성하지 않음" >> $GITHUB_STEP_SUMMARY
+                      else
+                        echo "결과: 제${{ steps.check_pr.outputs.deployment_number }}차 격주 배포 PR이 생성됨" >> $GITHUB_STEP_SUMMARY
+                        echo "담당자: ${{ steps.get_authors.outputs.assignees }}" >> $GITHUB_STEP_SUMMARY
+                        echo "안내: 정기배포 라벨은 수동으로 추가해야 합니다" >> $GITHUB_STEP_SUMMARY
+                      fi다음 짝수 주차 월요일" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.check_diff.outputs.has_changes }}" == "false" ]; then
-            echo "**결과:** ✅ 변경사항 없음 - PR 생성하지 않음" >> $GITHUB_STEP_SUMMARY
+            echo "결과: 변경사항 없음 - PR을 생성하지 않음" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.check_pr.outputs.pr_exists }}" == "true" ]; then
-            echo "**결과:** ⚠️ 이미 열린 PR 존재 - 새 PR 생성하지 않음" >> $GITHUB_STEP_SUMMARY
+            echo "결과: 이미 열린 PR이 존재하여 새 PR을 생성하지 않음" >> $GITHUB_STEP_SUMMARY
           else
-            echo "**결과:** 🚀 제${{ steps.check_pr.outputs.deployment_number }}차 격주 배포 PR 생성 완료" >> $GITHUB_STEP_SUMMARY
-            echo "**Assignees:** ${{ steps.get_authors.outputs.assignees }}" >> $GITHUB_STEP_SUMMARY
-            echo "**안내:** 🏷️ 정기배포 라벨은 수동으로 추가하세요" >> $GITHUB_STEP_SUMMARY
+            echo "결과: 제${{ steps.check_pr.outputs.deployment_number }}차 격주 배포 PR이 생성됨" >> $GITHUB_STEP_SUMMARY
+            echo "담당자: ${{ steps.get_authors.outputs.assignees }}" >> $GITHUB_STEP_SUMMARY
+            echo "안내: 정기배포 라벨은 수동으로 추가해야 합니다" >> $GITHUB_STEP_SUMMARY
           fi
