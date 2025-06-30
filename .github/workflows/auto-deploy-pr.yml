@@ -27,8 +27,22 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Check if it's biweekly execution time
+        id: check_biweekly
+        run: |
+          week_number=$(date +%V)
+          year=$(date +%Y)
+          echo "Current week: $year-W$week_number"
+          if [ $((week_number % 2)) -eq 0 ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "✅ Biweekly execution - Week $week_number is even, proceeding with workflow"
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "⏭️ Skipping execution - Week $week_number is odd, waiting for next even week"
+          fi
       - name: Check for differences between develop and main
         id: check_diff
+        if: steps.check_biweekly.outputs.should_run == 'true'
         run: |
           git fetch origin develop
           git fetch origin main
@@ -40,16 +54,15 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
             echo "Changes found between develop and main branches"
           fi
-
       - name: Get current date
         id: date
+        if: steps.check_biweekly.outputs.should_run == 'true'
         run: |
           echo "current_date=$(date +'%Y/%m/%d')" >> $GITHUB_OUTPUT
           echo "current_week=$(date +'%Y-W%V')" >> $GITHUB_OUTPUT
-
       - name: Check if PR already exists and get deployment count
         id: check_pr
-        if: steps.check_diff.outputs.has_changes == 'true'
+        if: steps.check_biweekly.outputs.should_run == 'true' && steps.check_diff.outputs.has_changes == 'true'
         run: |
           pr_exists=$(gh pr list --base main --head develop --state open --json number --jq 'length')
           if [ "$pr_exists" -gt 0 ]; then
@@ -85,7 +98,7 @@ jobs:
 
       - name: Get commit authors for assignees
         id: get_authors
-        if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        if: steps.check_biweekly.outputs.should_run == 'true' && steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         run: |
           authors=$(git log origin/main..origin/develop --pretty=format:"%ae" | sort | uniq)
           
@@ -111,7 +124,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
-        if: steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
+        if: steps.check_biweekly.outputs.should_run == 'true' && steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
         run: |
           assignees="${{ steps.get_authors.outputs.assignees }}"
           
@@ -119,9 +132,14 @@ jobs:
             gh pr create \
               --base main \
               --head develop \
-              --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
+              --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포 (격주 배포)" \
               --body "## 📋 작업 내용
-            > Github Action을 통하여 자동 생성된 Pull Request 입니다,작업 내용을 수정하여주세요
+            > Github Action을 통하여 자동 생성된 Pull Request 입니다 (격주 배포 스케줄)
+            > 작업 내용을 수정하여주세요
+            
+            **배포 주기:** 2주마다 (짝수 주차)
+            **현재 주차:** ${{ steps.date.outputs.current_week }}
+            
             ## 🤝 리뷰 시 참고사항
             > Github Action을 통하여 자동 생성된 Pull Request 입니다
             ## ✅ 체크리스트
@@ -139,7 +157,8 @@ jobs:
               --head develop \
               --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
               --body "## 📋 작업 내용
-            > Github Action을 통하여 자동 생성된 Pull Request 입니다,작업 내용을 수정하여주세요
+            > Github Action을 통하여 자동 생성된 Pull Request 입니다 (격주 배포 스케줄)
+            > 작업 내용을 수정하여주세요           
             ## 🤝 리뷰 시 참고사항
             > Github Action을 통하여 자동 생성된 Pull Request 입니다
             ## ✅ 체크리스트
@@ -157,15 +176,18 @@ jobs:
       - name: Create summary
         run: |
           echo "## 🤖 Auto PR Creation Summary" >> $GITHUB_STEP_SUMMARY
-          echo "**실행 시간:** ${{ steps.date.outputs.current_date }}" >> $GITHUB_STEP_SUMMARY
+          echo "**실행 시간:** ${{ steps.date.outputs.current_date || 'N/A' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**현재 주차:** $(date +'%Y-W%V')" >> $GITHUB_STEP_SUMMARY
           echo "**브랜치:** develop → main" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ steps.check_diff.outputs.has_changes }}" == "false" ]; then
+          if [ "${{ steps.check_biweekly.outputs.should_run }}" == "false" ]; then
+            echo "**결과:** ⏭️ 격주 스케줄에 따라 실행 건너뜀 (홀수 주차)" >> $GITHUB_STEP_SUMMARY
+            echo "**다음 실행:** 다음 짝수 주차 월요일" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.check_diff.outputs.has_changes }}" == "false" ]; then
             echo "**결과:** ✅ 변경사항 없음 - PR 생성하지 않음" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.check_pr.outputs.pr_exists }}" == "true" ]; then
             echo "**결과:** ⚠️ 이미 열린 PR 존재 - 새 PR 생성하지 않음" >> $GITHUB_STEP_SUMMARY
           else
-            echo "**결과:** 🚀 제${{ steps.check_pr.outputs.deployment_number }}차 배포 PR 생성 완료" >> $GITHUB_STEP_SUMMARY
+            echo "**결과:** 🚀 제${{ steps.check_pr.outputs.deployment_number }}차 격주 배포 PR 생성 완료" >> $GITHUB_STEP_SUMMARY
             echo "**Assignees:** ${{ steps.get_authors.outputs.assignees }}" >> $GITHUB_STEP_SUMMARY
             echo "**안내:** 🏷️ 정기배포 라벨은 수동으로 추가하세요" >> $GITHUB_STEP_SUMMARY
           fi
