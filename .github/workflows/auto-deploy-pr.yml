@@ -7,9 +7,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   issues: write
+  actions: read
+  checks: read
+  repository-projects: read
 
 jobs:
   create-deploy-pr:
@@ -33,6 +36,8 @@ jobs:
           week_number=$(date +%V)
           year=$(date +%Y)
           echo "Current week: $year-W$week_number"
+          
+          # 수동 실행(workflow_dispatch)인 경우 항상 실���
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "🚀 Manual execution - Running workflow regardless of week number"
@@ -131,55 +136,93 @@ jobs:
         run: |
           assignees="${{ steps.get_authors.outputs.assignees }}"
           
+          # PR 생성 권한 확인
+          echo "🔍 Checking GitHub Actions permissions..."
+          echo "GITHUB_TOKEN permissions: ${{ toJSON(github.token) }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Event: ${{ github.event_name }}"
+          
+          # PR 생성 시도
           if [ -n "$assignees" ]; then
-            gh pr create \
+            echo "📝 Creating PR with assignees: $assignees"
+            if gh pr create \
               --base main \
               --head develop \
               --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
               --body "## 📋 작업 내용
-            > Github Action을 통하여 자동 생성된 Pull Request 입니다 (격주 배포 스케줄)
-            > 작업 내용을 수정하여주세요
-            **배포 주기:** 2주마다 (짝수 주차)
-            **현재 주차:** ${{ steps.date.outputs.current_week }}
-            ## 🤝 리뷰 시 참고사항
-            > Github Action을 통하여 자동 생성된 Pull Request 입니다
-            ## ✅ 체크리스트
-            - [x] 이 작업으로 인해 변경이 필요한 문서를 작성 또는 수정했나요? (e.g. \`README\`, \`.env.example\`)
-            - [x] 작업한 코드가 정상적으로 동작하는지 확인했나요?
-            - [x] 작업한 코드에 대한 테스트 코드를 작성하거나 수정했나요?
-            - [x] Merge 대상 브랜치를 올바르게 설정했나요?
-            - [x] 해당 PR과 관련 없는 작업이 포함되지는 않았나요?
-            - [x] PR의 올바른 라벨과 리뷰어를 설정했나요?" \
-              --assignee "$assignees"
-            echo "🚀 PR created with assignees: $assignees"
+
+> Github Action을 통하여 자동 생성된 Pull Request 입니다 (격주 배포 스케줄)
+> 작업 내용을 수정하여주세요
+
+**배포 주기:** 2주마다 (짝수 주차)
+**현재 주차:** ${{ steps.date.outputs.current_week }}
+
+## 🤝 리뷰 시 참고사항
+> Github Action을 통하여 자동 생성된 Pull Request 입니다
+
+## ✅ ��크리스트
+- [x] 이 작업으로 인해 변경이 필요한 문서를 작성 또는 수정했나요? (e.g. \`README\`, \`.env.example\`)
+- [x] 작업한 코드가 정상적으로 동작하는지 확인했나요?
+- [x] 작업한 코드에 대한 테스트 코드를 작성하거나 수정했나요?
+- [x] Merge 대상 브랜치를 올바르게 설정했나요?
+- [x] ���당 PR과 관련 없는 작업이 포함되지는 않았나요?
+- [x] PR의 올바른 라벨과 리뷰어를 설정했나요?" \
+              --assignee "$assignees"; then
+              echo "🚀 PR created successfully with assignees: $assignees"
+            else
+              echo "❌ Failed to create PR with assignees. Error code: $?"
+              echo "🔧 Troubleshooting steps:"
+              echo "1. Repository Settings → Actions → General → Workflow permissions"
+              echo "2. Select 'Read and write permissions'"
+              echo "3. Check 'Allow GitHub Actions to create and approve pull requests'"
+              exit 1
+            fi
           else
-            gh pr create \
+            echo "📝 Creating PR without assignees"
+            if gh pr create \
               --base main \
               --head develop \
               --title "${{ steps.date.outputs.current_date }} 제${{ steps.check_pr.outputs.deployment_number }}차 배포" \
               --body "## 📋 작업 내용
-            > Github Action을 통하여 자동 생성된 Pull Request 입니다 (격주 배포 스케줄)
-            > 작업 내용을 수정하여주세요           
-            ## 🤝 리뷰 시 참고사항
-            > Github Action을 통하여 자동 생성된 Pull Request 입니다
-            ## ✅ 체크리스트
-            - [x] 이 작업으로 인해 변경이 필요한 문서를 작성 또는 수정했나요? (e.g. \`README\`, \`.env.example\`)
-            - [x] 작업한 코드가 정상적으로 동작하는지 확인했나요?
-            - [x] 작업한 코드에 대한 테스트 코드를 작성하거나 수정했나요?
-            - [x] Merge 대상 브랜치를 올바르게 설정했나요?
-            - [x] 해당 PR과 관련 없는 작업이 포함되지는 않았나요?
-            - [x] PR의 올바른 라벨과 리뷰어를 설정했나요?"
-            echo "🚀 PR created without assignees"
+
+> Github Action을 통하여 자동 생성된 Pull Request 입니다 (격주 배포 스케줄)
+> 작업 내용을 수정하여주세요
+
+**배포 주기:** 2주마다 (짝수 주차)
+**현재 주차:** ${{ steps.date.outputs.current_week }}
+
+## 🤝 리뷰 시 참고사항
+> Github Action을 통하여 자동 생성된 Pull Request 입니다
+
+## ✅ 체크리스트
+- [x] 이 작업으로 인해 변경이 필요한 문서를 작성 또는 수정했나요? (e.g. \`README\`, \`.env.example\`)
+- [x] 작업한 코드가 정상적으로 동작하는지 확인했나요?
+- [x] 작업한 코드에 대한 테스트 코드를 작성하거나 수정했나요?
+- [x] Merge 대상 브랜치를 올바르게 설정했나요?
+- [x] 해당 PR과 관련 없는 작업이 포함되지는 않았나요?
+- [x] PR의 올바른 라벨과 리뷰어를 설정했나요?"; then
+              echo "🚀 PR created successfully without assignees"
+            else
+              echo "❌ Failed to create PR. Error code: $?"
+              echo "🔧 Troubleshooting steps:"
+              echo "1. Repository Settings → Actions → General → Workflow permissions"
+              echo "2. Select 'Read and write permissions'"
+              echo "3. Check 'Allow GitHub Actions to create and approve pull requests'"
+              exit 1
+            fi
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create summary
+        if: always()
         run: |
           echo "## Auto PR Creation Summary" >> $GITHUB_STEP_SUMMARY
           echo "**실행 시간:** $(date +'%Y/%m/%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
           echo "**현재 주차:** $(date +'%Y-W%V')" >> $GITHUB_STEP_SUMMARY
           echo "**브랜치:** develop → main" >> $GITHUB_STEP_SUMMARY
+          echo "**실행 방식:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          
           if [ "${{ steps.check_biweekly.outputs.should_run }}" == "false" ]; then
             week_number=$(date +%V)
             year=$(date +%Y)
@@ -192,14 +235,18 @@ jobs:
             if [ -z "$next_date" ]; then
               next_date=$(date -d "next monday" +'%Y-%m-%d' || true)
             fi
-            echo "결과: 격주 스케줄에 따라 실행이 건너뜀(홀수 주차)" >> $GITHUB_STEP_SUMMARY
-            echo "다음 실행: $next_even_week주차 월요일 ($next_date)" >> $GITHUB_STEP_SUMMARY
+            echo "**결과:** 격주 스케줄에 따라 실행이 건너뜀(홀수 주차)" >> $GITHUB_STEP_SUMMARY
+            echo "**다음 실행:** $next_even_week주차 월요일 ($next_date)" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.check_diff.outputs.has_changes }}" == "false" ]; then
-            echo "결과: 변경사항 없음 - PR을 생성하지 않음" >> $GITHUB_STEP_SUMMARY
+            echo "**결과:** 변경사항 없음 - PR을 생성하지 않음" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.check_pr.outputs.pr_exists }}" == "true" ]; then
-            echo "결과: 이미 열린 PR이 존재하여 새 PR을 생성하지 않음" >> $GITHUB_STEP_SUMMARY
+            echo "**결��:** 이미 열린 PR이 존재하여 새 PR을 생성하지 않음" >> $GITHUB_STEP_SUMMARY
           else
-            echo "결과: 제${{ steps.check_pr.outputs.deployment_number }}차 격주 배포 PR이 생성됨" >> $GITHUB_STEP_SUMMARY
-            echo "담당자: ${{ steps.get_authors.outputs.assignees }}" >> $GITHUB_STEP_SUMMARY
-            echo "안내: 정기배포 라벨은 수동으로 추가해야 합니다" >> $GITHUB_STEP_SUMMARY
+            echo "**결과:** 제${{ steps.check_pr.outputs.deployment_number }}차 격주 배포 PR 생성 시도" >> $GITHUB_STEP_SUMMARY
+            echo "**담당자:** ${{ steps.get_authors.outputs.assignees }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🔧 권한 설정 확인사항" >> $GITHUB_STEP_SUMMARY
+            echo "Repository Settings → Actions → General에서:" >> $GITHUB_STEP_SUMMARY
+            echo "1. Workflow permissions: **Read and write permissions** 선택" >> $GITHUB_STEP_SUMMARY
+            echo "2. **Allow GitHub Actions to create and approve pull requests** 체크" >> $GITHUB_STEP_SUMMARY
           fi
