@@ -174,10 +174,9 @@ jobs:
       - name: Create summary
         run: |
           echo "## Auto PR Creation Summary" >> $GITHUB_STEP_SUMMARY
-          echo "**실행 시간:** $(date +'%Y/%m/%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY # 현재 시간 추가
+          echo "**실행 시간:** $(date +'%Y/%m/%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
           echo "**현재 주차:** $(date +'%Y-W%V')" >> $GITHUB_STEP_SUMMARY
           echo "**브랜치:** develop → main" >> $GITHUB_STEP_SUMMARY
-          # if 문을 사용하여 각 조건에 따른 결과 출력
           if [ "${{ steps.check_biweekly.outputs.should_run }}" == "false" ]; then
             week_number=$(date +%V)
             year=$(date +%Y)
@@ -186,11 +185,8 @@ jobs:
             else
               next_even_week=$((week_number + 1))
             fi
-            # 'date -d'는 GNU date에 특화되어 있으므로, macOS 등에서는 동작하지 않을 수 있음.
-            # 범용성을 위해 ISO 8601 week date (YYYY-Www-D)를 사용하여 날짜 계산
-            # 실제 실행 요일은 월요일이므로 -1
             next_date=$(date -d "$year-W$next_even_week-1" +'%Y-%m-%d' 2>/dev/null || true)
-            if [ -z "$next_date" ]; then # 만약 next_date 계산이 실패하면 다음 월요일로 대체
+            if [ -z "$next_date" ]; then
               next_date=$(date -d "next monday" +'%Y-%m-%d' || true)
             fi
             echo "결과: 격주 스케줄에 따라 실행이 건너뜀(홀수 주차)" >> $GITHUB_STEP_SUMMARY
