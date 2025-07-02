@@ -313,7 +313,6 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                         .select(studentDetailJpaEntity.totalScore)
                         .from(studentDetailJpaEntity)
                         .join(studentDetailJpaEntity.member, memberJpaEntity)
-                        .fetchJoin()
                         .where(memberJpaEntity.email.eq(email))
                         .fetchOne()
         ).orElseThrow(MemberInvalidException::new);
