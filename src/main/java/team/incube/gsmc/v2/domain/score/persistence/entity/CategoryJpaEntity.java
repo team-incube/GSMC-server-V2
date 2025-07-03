@@ -37,5 +37,6 @@ public class CategoryJpaEntity {
         this.maximumValue = maximumValue;
         this.weight = weight;
         this.isEvidenceRequired = isEvidenceRequired;
+        this.koreanName = koreanName;
     }
 }
