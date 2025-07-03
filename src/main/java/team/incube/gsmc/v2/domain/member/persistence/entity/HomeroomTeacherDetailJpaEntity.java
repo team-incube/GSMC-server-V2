@@ -15,7 +15,7 @@ public class HomeroomTeacherDetailJpaEntity {
     @Column(name = "homeroom_teacher_detail_id")
     private Long id;
 
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", unique = true)
     @OneToOne
     private MemberJpaEntity member;
 
