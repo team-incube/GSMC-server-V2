@@ -7,9 +7,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   issues: write
+  actions: read
+  checks: read
+  repository-projects: read
 
 jobs:
   create-deploy-pr:
@@ -20,20 +23,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Check if it's biweekly execution time
         id: check_biweekly
         run: |
           week_number=$(date +%V)
           year=$(date +%Y)
           echo "Current week: $year-W$week_number"
-          if [ $((week_number % 2)) -eq 0 ]; then
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "🚀 Manual execution - Running workflow regardless of week number"
+          elif [ $((week_number % 2)) -eq 0 ]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "✅ Biweekly execution - Week $week_number is even, proceeding with workflow"
           else
@@ -94,7 +99,7 @@ jobs:
           echo "deployment_number=$next_deployment" >> $GITHUB_OUTPUT
           echo "Next deployment number: $next_deployment"
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get commit authors for assignees
         id: get_authors
@@ -121,7 +126,7 @@ jobs:
           echo "assignees=$valid_users" >> $GITHUB_OUTPUT
           echo "Final assignees: $valid_users"
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
         if: steps.check_biweekly.outputs.should_run == 'true' && steps.check_diff.outputs.has_changes == 'true' && steps.check_pr.outputs.pr_exists == 'false'
@@ -169,7 +174,7 @@ jobs:
             echo "🚀 PR created without assignees"
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create summary
         run: |
