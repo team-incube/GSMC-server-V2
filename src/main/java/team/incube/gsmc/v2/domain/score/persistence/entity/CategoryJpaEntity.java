@@ -15,7 +15,7 @@ public class CategoryJpaEntity {
     @Column(name = "category_id")
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "maximum_value", nullable = false)
