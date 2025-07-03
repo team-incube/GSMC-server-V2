@@ -23,7 +23,7 @@ public class ScoreUpdatedEventListener {
     private final ScoreApplicationPort scoreApplicationPort;
 
     @Async
-    @TransactionalEventListener(value = ScoreUpdatedEventListener.class, phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(value = ScoreUpdatedEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handleScoreUpdatedEvent(ScoreUpdatedEvent event) {
         scoreApplicationPort.calculateTotalScore(event.email());
     }

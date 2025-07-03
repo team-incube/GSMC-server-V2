@@ -301,7 +301,7 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     /**
-     * 학생 코드로 총합 점수를 조회합니다.
+     * 학생 이메일로 총합 점수를 조회합니다.
      * @param email 학생 이메일
      * @return 총합 점수
      * @throws MemberInvalidException 학생이 존재하지 않을 경우
@@ -313,7 +313,6 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                         .select(studentDetailJpaEntity.totalScore)
                         .from(studentDetailJpaEntity)
                         .join(studentDetailJpaEntity.member, memberJpaEntity)
-                        .fetchJoin()
                         .where(memberJpaEntity.email.eq(email))
                         .fetchOne()
         ).orElseThrow(MemberInvalidException::new);
