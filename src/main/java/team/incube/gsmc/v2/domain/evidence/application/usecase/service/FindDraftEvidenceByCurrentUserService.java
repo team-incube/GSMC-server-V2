@@ -56,10 +56,10 @@ public class FindDraftEvidenceByCurrentUserService implements FindDraftEvidenceB
         return activityEvidences.stream()
                 .map(e -> new GetDraftActivityEvidenceResponse(
                         e.getId(),
+                        e.getCategoryName(),
                         e.getTitle(),
                         e.getContent(),
                         e.getImageUrl(),
-                        e.getCategoryName(),
                         e.getEvidenceType()
                 ))
                 .toList();
