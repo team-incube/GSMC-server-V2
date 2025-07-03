@@ -12,7 +12,7 @@ import java.util.UUID;
  * @param categoryName 활동 카테고리명
  * @param title 활동 제목
  * @param content 활동 내용
- * @param imageUrl 첨부된 이미지 URL
+ * @param imageUri 첨부된 이미지 URL
  * @param activityType 활동 유형 (EXTERNAL, INTERNAL 등)
  * @author suuuuuuminnnnnn
  */
@@ -21,7 +21,7 @@ public record GetDraftActivityEvidenceResponse(
         String categoryName,
         String title,
         String content,
-        String imageUrl,
+        String imageUri,
         EvidenceType activityType
 ) {
 }
