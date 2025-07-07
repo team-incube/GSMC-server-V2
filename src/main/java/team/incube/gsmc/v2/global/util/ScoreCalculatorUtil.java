@@ -27,6 +27,16 @@ public class ScoreCalculatorUtil {
             return 0;
         }
 
+        boolean isBooleanCategory = categoryName.equals("humanitiesReadingReadAThonTurtle") ||
+                                  categoryName.equals("humanitiesReadingReadAThonCrocodile") ||
+                                  categoryName.equals("humanitiesReadingReadAThonRabbitOver") ||
+                                  categoryName.equals("humanitiesCertificateChineseCharacter") ||
+                                  categoryName.equals("humanitiesCertificateKoreanHistory");
+        
+        if (isBooleanCategory && value instanceof Integer) {
+            value = !value.equals(0);
+        }
+
         return switch (categoryName) {
             case "majorAwardCareerOutSchoolOfficial",
                  "majorAwardCareerOutSchoolUnofficial",
