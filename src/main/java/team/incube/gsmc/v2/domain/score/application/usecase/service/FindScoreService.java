@@ -11,6 +11,8 @@ import team.incube.gsmc.v2.domain.score.domain.Score;
 import team.incube.gsmc.v2.domain.score.presentation.data.GetScoreDto;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incube.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
+import team.incube.gsmc.v2.global.util.ScoreCalculatorUtil;
+import team.incube.gsmc.v2.global.util.SnakeKebabToCamelCaseConverterUtil;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class FindScoreService implements FindScoreUseCase {
     /**
      * 현재 로그인한 사용자의 점수를 조회합니다.
      * @return 총합 점수 및 카테고리별 점수를 포함한 응답 객체
+     * @author snowykte0426
      */
     @Override
     public GetScoreResponse execute() {
@@ -65,7 +68,8 @@ public class FindScoreService implements FindScoreUseCase {
                 scores.stream()
                         .map(score -> new GetScoreDto(
                                 score.getCategory().getName(),
-                                score.getValue()
+                                score.getValue(),
+                                ScoreCalculatorUtil.calculateScore(SnakeKebabToCamelCaseConverterUtil.toCamelCase(score.getCategory().getName()), score.getValue(), score.getCategory().getWeight())
                         )).toList()
         );
     }
