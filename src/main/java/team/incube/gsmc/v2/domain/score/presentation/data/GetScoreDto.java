@@ -16,6 +16,7 @@ import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreRespo
  */
 public record GetScoreDto(
         String categoryName,
-        Integer value
+        Integer value,
+        Integer convertedValue
 ) {
 }
