@@ -15,4 +15,6 @@ import team.incube.gsmc.v2.global.annotation.port.Port;
 @Port(direction = PortDirection.INBOUND)
 public interface SheetApplicationPort {
     MultipartFile getSheet(Integer grade, Integer classNumber);
+
+    MultipartFile getAllSheets();
 }
