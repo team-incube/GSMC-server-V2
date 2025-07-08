@@ -12,8 +12,8 @@ public class DomainAuthorizationConfig {
         http.authorizeHttpRequests(auth -> auth
                 /* /api/v2/members */
                 .requestMatchers(HttpMethod.GET,
-                        "api/v2/members/students",
-                        "api/v2/members/students/search"
+                        "/api/v2/members/students",
+                        "/api/v2/members/students/search"
                 )
                 .hasAnyAuthority(
                         MemberRole.ROLE_ADMIN.name(),
