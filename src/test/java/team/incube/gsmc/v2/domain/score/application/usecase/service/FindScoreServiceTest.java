@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import team.incube.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incube.gsmc.v2.domain.member.domain.Member;
-import team.incube.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incube.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incube.gsmc.v2.domain.score.domain.Category;
 import team.incube.gsmc.v2.domain.score.domain.Score;
@@ -20,7 +19,6 @@ import team.incube.gsmc.v2.global.security.jwt.application.usecase.service.Curre
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +42,7 @@ class FindScoreServiceTest {
     class Describe_executeWithEmail {
 
         @Nested
-        @DisplayName("유효한 email 주어졌을 때")
+        @DisplayName("유효한 email이 주어졌을 때")
         class Context_with_valid_email {
 
             @Test
@@ -54,29 +52,38 @@ class FindScoreServiceTest {
                 String email = "s24058@gsm.hs.kr";
                 List<Score> scores = List.of(
                         Score.builder()
-                                .category(Category.builder().name("MAJOR-CERTIFICATE-NUM").build())
+                                .category(Category.builder()
+                                        .name("MAJOR-CERTIFICATE-NUM")
+                                        .weight(60.0f)
+                                        .build())
                                 .value(5)
                                 .build(),
                         Score.builder()
-                                .category(Category.builder().name("HUMANITIES-CERTIFICATE-KOREAN-HISTORY").build())
-                                .value(2)
+                                .category(Category.builder()
+                                        .name("HUMANITIES-READING")
+                                        .weight(20.0f)
+                                        .build())
+                                .value(8)
                                 .build()
                 );
                 when(scorePersistencePort.findScoreByMemberEmail(email)).thenReturn(scores);
-                when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(95);
+                when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(460);
 
                 // when
                 GetScoreResponse response = findScoreService.execute(email);
 
                 // then
-                assertThat(response.totalScore()).isEqualTo(95);
+                assertThat(response.totalScore()).isEqualTo(460);
                 assertThat(response.scores()).hasSize(2);
                 assertThat(response.scores())
                         .extracting(GetScoreDto::categoryName)
-                        .containsExactly("MAJOR-CERTIFICATE-NUM", "HUMANITIES-CERTIFICATE-KOREAN-HISTORY");
+                        .containsExactly("MAJOR-CERTIFICATE-NUM", "HUMANITIES-READING");
                 assertThat(response.scores())
                         .extracting(GetScoreDto::value)
-                        .containsExactly(5, 2);
+                        .containsExactly(5, 8);
+                assertThat(response.scores())
+                        .extracting(GetScoreDto::convertedValue)
+                        .containsExactly(300, 160);
             }
         }
     }
@@ -90,26 +97,33 @@ class FindScoreServiceTest {
         class Context_with_authenticated_user {
 
             @Test
-            @DisplayName("해당 사용자의 점수 목록과 총점을 반환한다")
+            @DisplayName("현재 로그인된 사용자의 점수 목록과 총점을 반환한다")
             void it_returns_scores_and_total_score_of_current_user() {
                 // given
-                String studentCode = "24058";
                 String email = "current@gsm.hs.kr";
                 Member member = Member.builder().email(email).build();
-                StudentDetail studentDetail = StudentDetail.builder()
-                        .studentCode(studentCode)
-                        .member(member)
-                        .build();
+                List<Score> scores = List.of(
+                        Score.builder()
+                                .category(Category.builder()
+                                        .name("FOREIGN-LANG-TOEIC-SCORE")
+                                        .weight(null)
+                                        .build())
+                                .value(750)
+                                .build()
+                );
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
-                when(scorePersistencePort.findScoreByMemberEmail(email)).thenReturn(List.of());
-                when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(0);
+                when(scorePersistencePort.findScoreByMemberEmail(email)).thenReturn(scores);
+                when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(500);
 
                 // when
                 GetScoreResponse response = findScoreService.execute();
 
                 // then
-                assertThat(response.totalScore()).isEqualTo(0);
-                assertThat(response.scores()).isEmpty();
+                assertThat(response.totalScore()).isEqualTo(500);
+                assertThat(response.scores()).hasSize(1);
+                assertThat(response.scores().getFirst().categoryName()).isEqualTo("FOREIGN-LANG-TOEIC-SCORE");
+                assertThat(response.scores().getFirst().value()).isEqualTo(750);
+                assertThat(response.scores().getFirst().convertedValue()).isEqualTo(500); // TOEIC 750점 = 500점 (최고등급)
             }
         }
     }

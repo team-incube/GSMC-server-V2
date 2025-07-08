@@ -3,6 +3,7 @@ package team.incube.gsmc.v2.domain.sheet.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import team.incube.gsmc.v2.domain.sheet.application.port.SheetApplicationPort;
+import team.incube.gsmc.v2.domain.sheet.application.usecase.GetAllSheetUseCase;
 import team.incube.gsmc.v2.domain.sheet.application.usecase.GetSheetUseCase;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.adapter.Adapter;
@@ -18,6 +19,7 @@ import team.incube.gsmc.v2.global.annotation.adapter.Adapter;
 public class SheetApplicationAdapter implements SheetApplicationPort {
 
     private final GetSheetUseCase getSheetUseCase;
+    private final GetAllSheetUseCase getAllSheetUseCase;
 
     /**
      * 특정 학년과 반에 해당하는 시트 파일을 조회합니다.
@@ -28,5 +30,14 @@ public class SheetApplicationAdapter implements SheetApplicationPort {
     @Override
     public MultipartFile getSheet(Integer grade, Integer classNumber) {
         return getSheetUseCase.execute(grade, classNumber);
+    }
+
+    /**
+     * 모든 학급에 대한 시트 파일을 조회합니다.
+     * @return MultipartFile 형태의 모든 시트 파일
+     */
+    @Override
+    public MultipartFile getAllSheets() {
+        return getAllSheetUseCase.execute();
     }
 }
