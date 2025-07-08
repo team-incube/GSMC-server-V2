@@ -74,7 +74,6 @@ class GetAllSheetServiceTest {
                     .totalScore(180)
                     .member(member2)
                     .build();
-
             List<Category> categories = List.of(
                     Category.builder().id(1L).name("MAJOR-AWARD_CAREER-OUT_SCHOOL-OFFICIAL").weight(50f).koreanName("전공 영역-수상경력-교외-공문을 통한 전공분야 대회").build(),
                     Category.builder().id(2L).name("MAJOR-AWARD_CAREER-OUT_SCHOOL-UNOFFICIAL").weight(50f).koreanName("전공 영역-수상경력-교외-전공 분야 대회 개별 참여").build(),
@@ -151,10 +150,15 @@ class GetAllSheetServiceTest {
             assertThat(result.getContentType()).isEqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             assertThat(result.getSize()).isGreaterThan(0);
         }
+    }
+
+    @Nested
+    @DisplayName("학생 데이터가 없는 경우")
+    class Context_with_no_students {
 
         @Test
-        @DisplayName("학생이 없는 경우에도 정상적으로 빈 엑셀 파일을 반환한다")
-        void it_returns_empty_excel_file_when_no_students() {
+        @DisplayName("정상적으로 빈 엑셀 파일을 반환한다")
+        void it_returns_empty_excel_file() {
             // given
             List<Category> categories = List.of(
                     Category.builder().id(1L).name("MAJOR-AWARD_CAREER-OUT_SCHOOL-OFFICIAL").weight(50f).koreanName("전공 영역-수상경력-교외-공문을 통한 전공분야 대회").build(),
@@ -165,6 +169,8 @@ class GetAllSheetServiceTest {
                     .thenReturn(Collections.emptyList());
             when(categoryPersistencePort.findAllCategory())
                     .thenReturn(categories);
+
+            // when
             MultipartFile result = getAllSheetService.execute();
 
             // then
