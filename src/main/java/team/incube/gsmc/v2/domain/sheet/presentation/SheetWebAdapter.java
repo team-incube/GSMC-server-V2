@@ -2,6 +2,7 @@ package team.incube.gsmc.v2.domain.sheet.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,10 +41,25 @@ public class SheetWebAdapter {
     @GetMapping("/{grade}/{classNumber}")
     public ResponseEntity<byte[]> getSheet(@PathVariable Integer grade, @PathVariable Integer classNumber) throws IOException {
         MultipartFile file = sheetApplicationPort.getSheet(grade, classNumber);
-        return ResponseEntity.ok()
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getOriginalFilename() + "\"")
                 .contentType(MediaType.parseMediaType(file.getContentType()))
                 .body(file.getBytes());
     }
 
+    /**
+     * 모든 학급에 대한 시트 파일을 조회하여 파일로 반환합니다.
+     * @return 다운로드 가능한 바이너리 파일 응답
+     * @throws IOException 파일 읽기 실패 시 발생
+     */
+    @GetMapping
+    public ResponseEntity<byte[]> getAllSheets() throws IOException {
+        MultipartFile file = sheetApplicationPort.getAllSheets();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getOriginalFilename() + "\"")
+                .contentType(MediaType.parseMediaType(file.getContentType()))
+                .body(file.getBytes());
+    }
 }
