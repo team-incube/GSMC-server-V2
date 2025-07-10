@@ -67,12 +67,17 @@ jobs:
             docker rm gsmc-server-v2 || true
             docker rmi ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }} || true
             docker pull ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+            cat > .env << 'EOF'
+            ${{ secrets.ENV_FILE }}
+            EOF
             docker run -d \
               --name gsmc-server-v2 \
               --restart unless-stopped \
               -p 8080:8080 \
+              --env-file .env \
               -e SPRING_PROFILES_ACTIVE=prod \
               ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+            rm -f .env
             sleep 30
             docker ps | grep gsmc-server-v2
       - name: Notify Discord on Success
