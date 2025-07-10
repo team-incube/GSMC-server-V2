@@ -58,7 +58,7 @@ jobs:
 
       - name: Build and run Docker Compose
         run: |
-          docker compose -f docker-compose.test.yml up -d
+          docker compose -f docker-compose.test.yaml up -d
           sleep 120
           for i in {1..30}; do
             if curl -s http://localhost:8080/api/v2/health/check | grep -q '"OK"'; then
@@ -73,7 +73,7 @@ jobs:
 
       - name: Stop Docker Compose
         if: always()
-        run: docker compose -f docker-compose.test.yml down
+        run: docker compose -f docker-compose.test.yaml down
 
   CD-dev:
     runs-on: ubuntu-latest
