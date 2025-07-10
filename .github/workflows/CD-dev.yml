@@ -59,16 +59,37 @@ jobs:
       - name: Build and run Docker Compose
         run: |
           docker compose -f docker-compose.test.yaml up -d
-          sleep 120
+          sleep 30
+          echo "=== Docker 컨테이너 상태 ==="
+          docker ps -a
+          echo "=== 애플리케이션 로그 ==="
+          docker logs gsmc-server-v2-app-1 || true
+          echo "=== Redis 로그 ==="
+          docker logs gsmc-server-v2-redis-1 || true
+          echo "=== 포트 상태 확인 ==="
+          netstat -tlnp | grep :8080 || echo "8080 포트가 열려있지 않습니다"
+          echo "=== 헬스체크 시도 ==="
           for i in {1..30}; do
-            if curl -s http://localhost:8080/api/v2/health/check | grep -q '"OK"'; then
+            if curl -v http://localhost:8080/api/v2/health/check 2>&1 | grep -q '200\|OK'; then
               echo "Application is up!"
               exit 0
             fi
             echo "Waiting for application... ($i/30)"
-            sleep 2
+            
+            # 10회마다 상세 로그 출력
+            if [ $((i % 10)) -eq 0 ]; then
+              echo "=== 상세 디버깅 정보 ($i회차) ==="
+              docker logs --tail 20 gsmc-server-v2-app-1 || true
+              curl -v http://localhost:8080/api/v2/health/check || true
+            fi
+            
+            sleep 3
           done
           echo "Application failed to start"
+          
+          # 최종 로그 출력
+          echo "=== 최종 애플리케이션 로그 ==="
+          docker logs gsmc-server-v2-app-1 || true
           exit 1
 
       - name: Stop Docker Compose
