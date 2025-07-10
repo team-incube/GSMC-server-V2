@@ -4,14 +4,13 @@ on:
   push:
     branches:
         - main
-        - feat/cicd
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/gsmc-server-v2
   DOCKER_TAG: latest
 
 jobs:
-  build-and-deploy:
+  CD-prod:
     runs-on: ubuntu-latest
     
     steps:
