@@ -15,7 +15,7 @@ permissions:
   repository-projects: read
 
 jobs:
-  create-deploy-pr:
+  Create-Deploy-PR:
     runs-on: ubuntu-latest
 
     steps:
