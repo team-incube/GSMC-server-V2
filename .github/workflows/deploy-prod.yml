@@ -68,6 +68,9 @@ jobs:
             docker system prune -af --volumes
             docker image prune -af
             docker pull ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+            docker network create gsmc-network || true
+            docker network connect gsmc-network mysql-server || true
+            docker network connect gsmc-network redis-server || true
             cat > .env << 'EOF'
             ${{ secrets.ENV_FILE }}
             EOF
