@@ -1,4 +1,4 @@
-name: CD(Dev)
+name: GSMC CD(Dev)
 
 on:
   push:
