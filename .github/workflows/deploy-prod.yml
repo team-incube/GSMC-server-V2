@@ -68,22 +68,21 @@ jobs:
             docker system prune -af --volumes
             docker image prune -af
             docker pull ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
-            docker network create gsmc-network || true
-            docker network connect gsmc-network mysql-server || true
-            docker network connect gsmc-network redis-server || true
             cat > .env << 'EOF'
             ${{ secrets.ENV_FILE }}
             EOF
             docker run -d \
               --name gsmc-server-v2 \
               --restart unless-stopped \
-              -p 8080:8080 \
+              --network host \
               --env-file .env \
               -e SPRING_PROFILES_ACTIVE=prod \
               ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
             rm -f .env
             sleep 30
             docker ps | grep gsmc-server-v2
+            sleep 10
+            curl -f http://localhost:8080/actuator/health || echo "Health check failed"
       - name: Notify Discord on Success
         if: success()
         env:
@@ -125,6 +124,11 @@ jobs:
                      {
                        "name": "Server",
                        "value": "gsmsv-1.yujun.kr:30071",
+                       "inline": true
+                     },
+                     {
+                       "name": "Service URL",
+                       "value": "http://gsmsv-1.yujun.kr:8080",
                        "inline": true
                      }
                    ],
@@ -168,6 +172,11 @@ jobs:
                      {
                        "name": "Workflow Run",
                        "value": "[${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+                       "inline": false
+                     },
+                     {
+                       "name": "Error Details",
+                       "value": "Check the workflow logs for detailed error information",
                        "inline": false
                      }
                    ],
