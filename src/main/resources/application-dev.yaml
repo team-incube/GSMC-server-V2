@@ -33,10 +33,10 @@ webhook:
   discord:
     url: ${DISCORD_WEBHOOK_URL:https://discordapp.com/api/webhooks/test}
 aws:
-  access-key-id: ${AWS_ACCESS_KEY_ID:dsd}
-  secret-access-key: ${AWS_SECRET_ACCESS_KEY:sdds}
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   bucket:
-    name: ${AWS_S3_BUCKET:asdasd}
+    name: ${AWS_S3_BUCKET}
     region: ${AWS_REGION:ap-northeast-2}
 
 mail:
