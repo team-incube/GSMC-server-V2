@@ -21,7 +21,7 @@ spring:
       name: prometheus
       password: prometheus
     cors:
-      allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001}
+      allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001,https://gsmc-client.vercel.app,https://gsmc.io.kr}
 jwt:
   access-token:
     secret: ${JWT_ACCESS_TOKEN_SECRET:f2ba6a534025117d28f915841d241bb1ecb758550803220812374020ef48d3cf}
@@ -31,7 +31,7 @@ jwt:
     expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800}
 webhook:
   discord:
-    url: ${DISCORD_WEBHOOK_URL}
+    url: ${DISCORD_WEBHOOK_URL:https://discordapp.com/api/webhooks/test}
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
@@ -42,7 +42,7 @@ aws:
 mail:
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  username: ${EMAIL_USERNAME:wangjajihooon@gmail.com}
-  password: ${EMAIL_PASSWORD:glaqmpwiqtuwalps}
+  username: ${EMAIL_USERNAME}
+  password: ${EMAIL_PASSWORD}
   ttl: ${EMAIL_TTL:300}
   attempt-limits: 5
