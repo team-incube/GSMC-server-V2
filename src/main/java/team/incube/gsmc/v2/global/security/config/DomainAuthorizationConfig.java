@@ -67,13 +67,13 @@ public class DomainAuthorizationConfig {
                 .hasAnyAuthority(
                         MemberRole.ROLE_STUDENT.name()
                 )
-                .requestMatchers(HttpMethod.GET,
-                        "/api/v2/score/{studentCode}"
-                )
-                .hasAnyAuthority(
-                        MemberRole.ROLE_ADMIN.name(),
-                        MemberRole.ROLE_TEACHER.name()
-                )
+//                .requestMatchers(HttpMethod.GET,
+//                        "/api/v2/score/{studentCode}"
+//                )
+//                .hasAnyAuthority(
+//                        MemberRole.ROLE_ADMIN.name(),
+//                        MemberRole.ROLE_TEACHER.name()
+//                )
                 .requestMatchers(HttpMethod.PATCH,
                         "/api/v2/score/current"
                 )
