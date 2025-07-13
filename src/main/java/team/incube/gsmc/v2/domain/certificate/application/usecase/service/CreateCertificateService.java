@@ -74,6 +74,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         String fileUri = uploadFileToS3(file);
         OtherEvidence otherEvidence = otherEvidencePersistencePort.saveOtherEvidence(createOtherEvidence(evidence, fileUri));
         saveCertificate(name, member, acquisitionDate, otherEvidence);
+        // TODO: 업데이트 이벤트 파라미터 문제
         applicationContext.publishEvent(new ScoreUpdatedEvent(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail()).getStudentCode()));
     }
 
