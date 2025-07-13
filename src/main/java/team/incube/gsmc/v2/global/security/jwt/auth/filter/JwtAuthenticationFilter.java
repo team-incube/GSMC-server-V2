@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = jwtPort.resolveToken(request);
         String uri = request.getRequestURI();
-        if (uri.startsWith("/api/v2/auth") || uri.startsWith("/actuator/prometheus") || uri.startsWith("/api/v2/health")||uri.startsWith("/")) {
+        if (uri.startsWith("/api/v2/auth") || uri.startsWith("/actuator/prometheus") || uri.startsWith("/api/v2/health")) {
             filterChain.doFilter(request, response);
             return;
         }
