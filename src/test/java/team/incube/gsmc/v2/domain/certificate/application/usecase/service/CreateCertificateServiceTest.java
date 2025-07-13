@@ -83,7 +83,6 @@ class CreateCertificateServiceTest {
                 when(scorePersistencePort.saveScore(any())).thenAnswer(invocation -> invocation.getArgument(0));
                 when(s3Port.uploadFile(any(), any())).thenReturn(CompletableFuture.completedFuture("https://s3.com/cert.pdf"));
                 when(otherEvidencePersistencePort.saveOtherEvidence(any())).thenAnswer(invocation -> invocation.getArgument(0));
-                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(StudentDetail.builder().studentCode("24058").build());
 
                 // when
                 createCertificateService.execute(certificateName, date, file);
@@ -115,8 +114,6 @@ class CreateCertificateServiceTest {
                 when(scorePersistencePort.saveScore(any())).thenAnswer(invocation -> invocation.getArgument(0));
                 when(s3Port.uploadFile(any(), any())).thenReturn(CompletableFuture.completedFuture("https://s3.com/cert.pdf"));
                 when(otherEvidencePersistencePort.saveOtherEvidence(any())).thenAnswer(invocation -> invocation.getArgument(0));
-                when(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail())).thenReturn(StudentDetail.builder().studentCode("24058").build());
-
                 // when
                 createCertificateService.execute(certificateName, date, file);
 
