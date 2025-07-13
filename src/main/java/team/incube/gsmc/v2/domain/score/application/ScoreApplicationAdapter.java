@@ -120,7 +120,7 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
             Integer foreignLangOpicGrade,
             Integer foreignLangJptScore,
             Integer foreignLangCptScore,
-            Integer foreignLangHskScore
+            Integer foreignLangHskGrade
     ) {
         return simulateScoreUseCase.execute(
                 majorAwardCareerOutSchoolOfficial,
@@ -163,7 +163,7 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
                 foreignLangOpicGrade,
                 foreignLangJptScore,
                 foreignLangCptScore,
-                foreignLangHskScore
+                foreignLangHskGrade
         );
     }
 

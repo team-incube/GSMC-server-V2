@@ -188,10 +188,10 @@ public class CreateOtherScoringEvidenceService implements CreateOtherScoringEvid
             Map.entry("FOREIGN_LANG-TOEFL_SCORE", EvidenceType.TOEFL),
             Map.entry("FOREIGN_LANG-TEPS_SCORE", EvidenceType.TEPS),
             Map.entry("FOREIGN_LANG-TOEIC_SPEAKING_LEVEL", EvidenceType.TOEIC_SPEAKING),
-            Map.entry("FOREIGN_LANG-OPIC_SCORE", EvidenceType.OPIC),
+            Map.entry("FOREIGN_LANG-OPIC_GRADE", EvidenceType.OPIC),
             Map.entry("FOREIGN_LANG-JPT_SCORE", EvidenceType.JPT),
             Map.entry("FOREIGN_LANG-CPT_SCORE", EvidenceType.CPT),
-            Map.entry("FOREIGN_LANG-HSK_SCORE", EvidenceType.HSK),
+            Map.entry("FOREIGN_LANG-HSK_GRADE", EvidenceType.HSK),
             Map.entry("MAJOR-TOPCIT_SCORE", EvidenceType.TOPCIT)
     );
 }

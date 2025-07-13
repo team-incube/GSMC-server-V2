@@ -63,7 +63,7 @@ public class SimulateScoreUtil {
             Integer foreignLangOpicGrade,
             Integer foreignLangJptScore,
             Integer foreignLangCptScore,
-            Integer foreignLangHskScore,
+            Integer foreignLangHskGrade,
             Map<String, Float> categoryWeightMap
     ) {
         int major = majorScore(
@@ -113,7 +113,7 @@ public class SimulateScoreUtil {
                 foreignLangOpicGrade,
                 foreignLangJptScore,
                 foreignLangCptScore,
-                foreignLangHskScore
+                foreignLangHskGrade
         );
         return Tuples.of(
                 major,
