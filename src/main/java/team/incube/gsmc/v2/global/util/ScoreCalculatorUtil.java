@@ -1,6 +1,7 @@
 package team.incube.gsmc.v2.global.util;
 
 import lombok.experimental.UtilityClass;
+import team.incube.gsmc.v2.domain.score.exception.CategoryNotFoundException;
 
 /**
  * 특정 카테고리명과 값을 기반으로 개별 점수를 계산하는 유틸리티 클래스입니다.
@@ -66,17 +67,14 @@ public class ScoreCalculatorUtil {
             case "humanitiesAwardCareerHumanityInSchool",
                  "humanitiesAwardCareerHumanityOutSchool" -> calculateHumanitiesAwardScore((Integer) value, weight);
 
-            case "humanitiesReadingReadAThonTurtle" -> (Boolean) value ? Math.round(weight) : 0;
-            case "humanitiesReadingReadAThonCrocodile" -> (Boolean) value ? Math.round(weight) : 0;
-            case "humanitiesReadingReadAThonRabbitOver" -> (Boolean) value ? Math.round(weight) : 0;
+            case "humanitiesReadingReadAThonTurtle", "humanitiesReadingReadAThonCrocodile",
+                 "humanitiesReadingReadAThonRabbitOver", "humanitiesCertificateChineseCharacter",
+                 "humanitiesCertificateKoreanHistory" -> (Boolean) value ? Math.round(weight) : 0;
             case "humanitiesReading" -> calculateReadingScore((Integer) value, weight);
 
             case "humanitiesServiceActivity" -> calculateServiceActivityScore((Integer) value, weight);
             case "humanitiesServiceClubSemester1",
                  "humanitiesServiceClubSemester2" -> calculateServiceClubScore((Integer) value, weight);
-
-            case "humanitiesCertificateChineseCharacter" -> (Boolean) value ? Math.round(weight) : 0;
-            case "humanitiesCertificateKoreanHistory" -> (Boolean) value ? Math.round(weight) : 0;
 
             case "humanitiesActivitiesNewrrowS" -> calculateNewrrowSScore((Integer) value, weight);
             case "humanitiesActivitiesSelfDirectedActivities" -> calculateSelfDirectedScore((Integer) value, weight);
@@ -85,15 +83,15 @@ public class ScoreCalculatorUtil {
             case "foreignLangToeflScore" -> calculateToeflScore((Integer) value);
             case "foreignLangTepsScore" -> calculateTepsScore((Integer) value);
             case "foreignLangToeicSpeakingLevel" -> calculateToeicSpeakingScore((Integer) value);
-            case "foreignLangOpicGrade" -> calculateOpicScore((Integer) value);
+            case "foreignLangOpicGrade" -> calculateOpicGrade((Integer) value);
             case "foreignLangJptScore" -> calculateJptScore((Integer) value);
             case "foreignLangCptScore" -> calculateCptScore((Integer) value);
-            case "foreignLangHskScore" -> calculateHskScore((Integer) value);
+            case "foreignLangHskGrade" -> calculateHskGrade((Integer) value);
 
             // 특별 처리 필요
             case "foreignLangAttendanceToeicAcademyStatus" -> 0; // TOEIC 점수와 함께 계산되어야 함
 
-            default -> throw new IllegalArgumentException("지원하지 않는 카테고리입니다: " + categoryName);
+            default -> throw new CategoryNotFoundException();
         };
     }
 
@@ -263,7 +261,7 @@ public class ScoreCalculatorUtil {
         return mapScoreByThreshold(level, cutoffs, scores);
     }
 
-    private int calculateOpicScore(Integer grade) {
+    private int calculateOpicGrade(Integer grade) {
         if (grade == null) {
             return 0;
         }
@@ -290,7 +288,7 @@ public class ScoreCalculatorUtil {
         return mapScoreByThreshold(score, cutoffs, scores);
     }
 
-    private int calculateHskScore(Integer level) {
+    private int calculateHskGrade(Integer level) {
         if (level == null) {
             return 0;
         }

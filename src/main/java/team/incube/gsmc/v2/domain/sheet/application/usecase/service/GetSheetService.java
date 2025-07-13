@@ -287,10 +287,10 @@ public class GetSheetService implements GetSheetUseCase {
                     raw.getOrDefault("foreignLangToeflScore", 0),
                     raw.getOrDefault("foreignLangTepsScore", 0),
                     raw.getOrDefault("foreignLangToeicSpeakingLevel", 0),
-                    raw.getOrDefault("foreignLangOpicScore", 0),
+                    raw.getOrDefault("foreignLangOpicGrade", 0),
                     raw.getOrDefault("foreignLangJptScore", 0),
                     raw.getOrDefault("foreignLangCptScore", 0),
-                    raw.getOrDefault("foreignLangHskScore", 0),
+                    raw.getOrDefault("foreignLangHskGrade", 0),
                     weights
             );
 

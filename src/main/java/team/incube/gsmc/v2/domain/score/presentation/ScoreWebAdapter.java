@@ -96,7 +96,7 @@ public class ScoreWebAdapter {
                 request.foreignLangOpicGrade(),
                 request.foreignLangJptScore(),
                 request.foreignLangCptScore(),
-                request.foreignLangHskScore()
+                request.foreignLangHskGrade()
         ));
     }
 }

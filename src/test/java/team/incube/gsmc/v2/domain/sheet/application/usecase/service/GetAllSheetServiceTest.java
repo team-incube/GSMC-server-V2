@@ -112,7 +112,7 @@ class GetAllSheetServiceTest {
                     Category.builder().id(35L).name("FOREIGN_LANG-TOEFL_SCORE").weight(-1f).koreanName("외국어 영역-외국어 공인 시험-TOEFL").build(),
                     Category.builder().id(36L).name("FOREIGN_LANG-TEPS_SCORE").weight(-1f).koreanName("외국어 영역-외국어 공인 시험-TEPS").build(),
                     Category.builder().id(37L).name("FOREIGN_LANG-TOEIC_SPEAKING_LEVEL").weight(-1f).koreanName("외국어 영역-외국어 공인 시험-TOEIC Speaking").build(),
-                    Category.builder().id(38L).name("FOREIGN_LANG-OPIC_SCORE").weight(-1f).koreanName("외국어 영역-외국어 공인 시험-OPIc").build(),
+                    Category.builder().id(38L).name("FOREIGN_LANG-OPIC_GRADE").weight(-1f).koreanName("외국어 영역-외국어 공인 시험-OPIc").build(),
                     Category.builder().id(39L).name("FOREIGN_LANG-JPT_SCORE").weight(-1f).koreanName("외국어 영역-외국어 공인 시험-JPT").build(),
                     Category.builder().id(40L).name("FOREIGN_LANG-CPT_SCORE").weight(-1f).koreanName("외국어 영역-외국어 공인 시험-CPT").build(),
                     Category.builder().id(41L).name("FOREIGN_LANG-HSK_SCORE").weight(-1f).koreanName("외국어 영역-외국어 공인 시험-HSK").build()
