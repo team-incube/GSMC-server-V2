@@ -347,8 +347,6 @@ public class GetAllSheetService implements GetAllSheetUseCase {
                 String key = SnakeKebabToCamelCaseConverterUtil.toCamelCase(c.getName());
                 r.createCell(dc++).setCellValue(raw.getOrDefault(key, 0));
             }
-
-            // 현재 시트의 영역에 따라 해당 영역 점수 표시
             String areaDisplayName = extractAreaFromSheetTitle(title);
             r.createCell(areaCol).setCellValue(
                     areaDisplayName.equals(CategoryArea.MAJOR.getDisplayName()) ? majorScore :
