@@ -243,6 +243,7 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
      * @param grade 학년
      * @return 해당 학년의 학생 수
      */
+    @Override
     public Long countTotalStudentsInGrade(Integer grade) {
         return jpaQueryFactory
                 .select(studentDetailJpaEntity.count())
