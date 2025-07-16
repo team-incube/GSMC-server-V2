@@ -5,6 +5,6 @@ import team.incube.gsmc.v2.global.error.exception.GsmcException;
 
 public class StudentClassMismatchException extends GsmcException {
     public StudentClassMismatchException() {
-        super(ErrorCode.STUDENT_CLASS_MISMATCH);
+        super(ErrorCode.INVALID_STUDENT_GROUP);
     }
 }
