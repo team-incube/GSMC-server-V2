@@ -1,10 +1,13 @@
 package team.incube.gsmc.v2.domain.score.persistence;
 
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import team.incube.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incube.gsmc.v2.domain.score.domain.Score;
+import team.incube.gsmc.v2.domain.score.exception.StudentClassMismatchException;
 import team.incube.gsmc.v2.domain.score.persistence.mapper.ScoreMapper;
 import team.incube.gsmc.v2.domain.score.persistence.repository.ScoreJpaRepository;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
@@ -106,5 +109,155 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     @Override
     public Score saveScore(Score score) {
         return scoreMapper.toDomain(scoreJpaRepository.save(scoreMapper.toEntity(score)));
+    }
+
+    @Override
+    public Integer getStudentHighPercentileByEmailInClass(String email, Integer grade, Integer classNumber) {
+
+        Boolean exists = jpaQueryFactory
+                .selectOne()
+                .from(studentDetailJpaEntity)
+                .join(memberJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+                .where(
+                        memberJpaEntity.email.eq(email),
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.classNumber.eq(classNumber)
+                )
+                .fetchFirst() != null;
+
+        if (!exists) {
+            throw new StudentClassMismatchException();
+        }
+
+        NumberTemplate<Double> topPercentile = Expressions.numberTemplate(Double.class,
+                "ROUND(100 * (1 - PERCENT_RANK() OVER (PARTITION BY {0}, {1} ORDER BY {2})), 2)",
+                studentDetailJpaEntity.grade,
+                studentDetailJpaEntity.classNumber,
+                studentDetailJpaEntity.totalScore
+        );
+
+        Double percentile = jpaQueryFactory
+                .select(topPercentile)
+                .from(memberJpaEntity)
+                .join(studentDetailJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+                .where(
+                        memberJpaEntity.email.eq(email),
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.classNumber.eq(classNumber)
+                )
+                .fetchOne();
+
+        return percentile != null ? Math.toIntExact(Math.round(percentile)) : 0;
+    }
+
+    @Override
+    public Integer getStudentLowPercentileByEmailInClass(String email, Integer grade, Integer classNumber) {
+
+        Boolean exists = jpaQueryFactory
+                .selectOne()
+                .from(studentDetailJpaEntity)
+                .join(memberJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+                .where(
+                        memberJpaEntity.email.eq(email),
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.classNumber.eq(classNumber)
+                )
+                .fetchFirst() != null;
+
+        if (!exists) {
+            throw new StudentClassMismatchException();
+        }
+
+        NumberTemplate<Double> bottomPercentile = Expressions.numberTemplate(Double.class,
+                "ROUND(100 * PERCENT_RANK() OVER (PARTITION BY {0}, {1} ORDER BY {2}), 2)",
+                studentDetailJpaEntity.grade,
+                studentDetailJpaEntity.classNumber,
+                studentDetailJpaEntity.totalScore
+        );
+
+        Double percentile = jpaQueryFactory
+                .select(bottomPercentile)
+                .from(memberJpaEntity)
+                .join(studentDetailJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+                .where(
+                        memberJpaEntity.email.eq(email),
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.classNumber.eq(classNumber)
+                )
+                .fetchOne();
+
+        return percentile != null ? Math.toIntExact(Math.round(percentile)) : 0;
+    }
+
+    @Override
+    public Integer getStudentHighPercentileByEmailInGrade(String email, Integer grade) {
+
+        Boolean exists = jpaQueryFactory
+                .selectOne()
+                .from(studentDetailJpaEntity)
+                .join(memberJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+                .where(
+                        memberJpaEntity.email.eq(email),
+                        studentDetailJpaEntity.grade.eq(grade)
+                )
+                .fetchFirst() != null;
+
+        if (!exists) {
+            throw new StudentClassMismatchException();
+        }
+
+        NumberTemplate<Double> topPercentile = Expressions.numberTemplate(Double.class,
+                "ROUND(100 * (1 - PERCENT_RANK() OVER (PARTITION BY {0} ORDER BY {1})), 2)",
+                studentDetailJpaEntity.grade,
+                studentDetailJpaEntity.totalScore
+        );
+
+        Double percentile = jpaQueryFactory
+                .select(topPercentile)
+                .from(memberJpaEntity)
+                .join(studentDetailJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+                .where(
+                        memberJpaEntity.email.eq(email),
+                        studentDetailJpaEntity.grade.eq(grade)
+                )
+                .fetchOne();
+
+        return percentile != null ? Math.toIntExact(Math.round(percentile)) : 0;
+    }
+
+    @Override
+    public Integer getStudentLowPercentileByEmailInGrade(String email, Integer grade) {
+
+        Boolean exists = jpaQueryFactory
+                .selectOne()
+                .from(studentDetailJpaEntity)
+                .join(memberJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+                .where(
+                        memberJpaEntity.email.eq(email),
+                        studentDetailJpaEntity.grade.eq(grade)
+                )
+                .fetchFirst() != null;
+
+        if (!exists) {
+            throw new StudentClassMismatchException();
+        }
+
+        NumberTemplate<Double> bottomPercentile = Expressions.numberTemplate(Double.class,
+                "ROUND(100 * PERCENT_RANK() OVER (PARTITION BY {0} ORDER BY {1}), 2)",
+                studentDetailJpaEntity.grade,
+                studentDetailJpaEntity.totalScore
+        );
+
+        Double percentile = jpaQueryFactory
+                .select(bottomPercentile)
+                .from(memberJpaEntity)
+                .join(studentDetailJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+                .where(
+                        memberJpaEntity.email.eq(email),
+                        studentDetailJpaEntity.grade.eq(grade)
+                )
+                .fetchOne();
+
+        return percentile != null ? Math.toIntExact(Math.round(percentile)) : 0;
     }
 }

@@ -27,4 +27,12 @@ public interface ScorePersistencePort {
     List<Score> findScoreByStudentDetailStudentCodes(List<String> studentCodes);
 
     Score saveScore(Score score);
+
+    Integer getStudentHighPercentileByEmailInClass(String email, Integer grade, Integer classNumber);
+
+    Integer getStudentLowPercentileByEmailInClass(String email, Integer grade, Integer classNumber);
+
+    Integer getStudentHighPercentileByEmailInGrade(String email, Integer grade);
+
+    Integer getStudentLowPercentileByEmailInGrade(String email, Integer grade);
 }
