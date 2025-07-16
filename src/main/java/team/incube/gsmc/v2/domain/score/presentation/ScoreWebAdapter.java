@@ -102,12 +102,12 @@ public class ScoreWebAdapter {
     }
 
     @GetMapping("/percentile/{grade}/{classNumber}")
-    public ResponseEntity<Integer> getStudentPercentInClass(@RequestParam PercentileType percentileType, @PathVariable(value = "grade") Integer grade, @PathVariable(value = "classNumber") Integer classNumber) {
+    public ResponseEntity<Integer> getStudentPercentInClass(@RequestParam(value = "percentileType") PercentileType percentileType, @PathVariable(value = "grade") Integer grade, @PathVariable(value = "classNumber") Integer classNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.getStudentPercentInClass(percentileType, grade, classNumber));
     }
 
     @GetMapping("/percentile/{grade}")
-    public ResponseEntity<Integer> getStudentPercentInGrade(@RequestParam PercentileType percentileType, @PathVariable(value = "grade") Integer grade) {
+    public ResponseEntity<Integer> getStudentPercentInGrade(@RequestParam(value = "percentileType") PercentileType percentileType, @PathVariable(value = "grade") Integer grade) {
         return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.getStudentPercentInGrade(percentileType, grade));
     }
 }
