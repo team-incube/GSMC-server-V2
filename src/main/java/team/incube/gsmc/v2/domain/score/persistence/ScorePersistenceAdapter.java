@@ -1,13 +1,10 @@
 package team.incube.gsmc.v2.domain.score.persistence;
 
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import team.incube.gsmc.v2.domain.score.application.port.ScorePersistencePort;
 import team.incube.gsmc.v2.domain.score.domain.Score;
-import team.incube.gsmc.v2.domain.score.exception.StudentClassMismatchException;
 import team.incube.gsmc.v2.domain.score.persistence.mapper.ScoreMapper;
 import team.incube.gsmc.v2.domain.score.persistence.repository.ScoreJpaRepository;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
@@ -31,8 +28,12 @@ import static team.incube.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntit
  *   <li>학생 코드 기반 점수 목록 조회</li>
  *   <li>다중 학생 코드 기반 점수 일괄 조회</li>
  *   <li>점수 저장</li>
+ *   <li>특정 학년 및 반에 속한 학생의 상위/하위 백분위수 조회</li>
+ *   <li>특정 학년에서 점수가 주어진 값보다 낮은 학생 수 조회</li>
+ *   <li>특정 학년의 학생 총 수 조회</li>
+ *   <li>특정 학년과 반에 속한 학생의 총 수 조회</li>
  * </ul>
- * @author snowykte0426
+ * @author snowykte0426, jihoonwjj
  */
 @Adapter(direction = PortDirection.OUTBOUND)
 @RequiredArgsConstructor
@@ -111,11 +112,17 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
         return scoreMapper.toDomain(scoreJpaRepository.save(scoreMapper.toEntity(score)));
     }
 
+    /**
+     * 특정 이메일, 학년, 반에 해당하는 학생의 상위 백분위수를 조회합니다.
+     * @param email 학생 이메일
+     * @param grade 학년
+     * @param classNumber 반 번호
+     * @return 해당 학생의 상위 백분위수 점수
+     */
     @Override
     public Integer getStudentHighPercentileByEmailInClass(String email, Integer grade, Integer classNumber) {
-
-        Boolean exists = jpaQueryFactory
-                .selectOne()
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.totalScore)
                 .from(studentDetailJpaEntity)
                 .join(memberJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
                 .where(
@@ -123,38 +130,20 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
                         studentDetailJpaEntity.grade.eq(grade),
                         studentDetailJpaEntity.classNumber.eq(classNumber)
                 )
-                .fetchFirst() != null;
-
-        if (exists.equals(Boolean.FALSE)) {
-            throw new StudentClassMismatchException();
-        }
-
-        NumberTemplate<Double> topPercentile = Expressions.numberTemplate(Double.class,
-                "ROUND(100 * (1 - PERCENT_RANK() OVER (PARTITION BY {0}, {1} ORDER BY {2})), 2)",
-                studentDetailJpaEntity.grade,
-                studentDetailJpaEntity.classNumber,
-                studentDetailJpaEntity.totalScore
-        );
-
-        Double percentile = jpaQueryFactory
-                .select(topPercentile)
-                .from(memberJpaEntity)
-                .join(studentDetailJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
-                .where(
-                        memberJpaEntity.email.eq(email),
-                        studentDetailJpaEntity.grade.eq(grade),
-                        studentDetailJpaEntity.classNumber.eq(classNumber)
-                )
                 .fetchOne();
-
-        return percentile != null ? Math.toIntExact(Math.round(percentile)) : 0;
     }
 
+    /**
+     * 특정 이메일, 학년, 반에 해당하는 학생의 하위 백분위수를 조회합니다.
+     * @param email 학생 이메일
+     * @param grade 학년
+     * @param classNumber 반 번호
+     * @return 해당 학생의 하위 백분위수 점수
+     */
     @Override
     public Integer getStudentLowPercentileByEmailInClass(String email, Integer grade, Integer classNumber) {
-
-        Boolean exists = jpaQueryFactory
-                .selectOne()
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.totalScore)
                 .from(studentDetailJpaEntity)
                 .join(memberJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
                 .where(
@@ -162,102 +151,103 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
                         studentDetailJpaEntity.grade.eq(grade),
                         studentDetailJpaEntity.classNumber.eq(classNumber)
                 )
-                .fetchFirst() != null;
-
-        if (!exists) {
-            throw new StudentClassMismatchException();
-        }
-
-        NumberTemplate<Double> bottomPercentile = Expressions.numberTemplate(Double.class,
-                "ROUND(100 * PERCENT_RANK() OVER (PARTITION BY {0}, {1} ORDER BY {2}), 2)",
-                studentDetailJpaEntity.grade,
-                studentDetailJpaEntity.classNumber,
-                studentDetailJpaEntity.totalScore
-        );
-
-        Double percentile = jpaQueryFactory
-                .select(bottomPercentile)
-                .from(memberJpaEntity)
-                .join(studentDetailJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
-                .where(
-                        memberJpaEntity.email.eq(email),
-                        studentDetailJpaEntity.grade.eq(grade),
-                        studentDetailJpaEntity.classNumber.eq(classNumber)
-                )
                 .fetchOne();
-
-        return percentile != null ? Math.toIntExact(Math.round(percentile)) : 0;
     }
 
+    /**
+     * 특정 이메일, 학년에 해당하는 학생의 상위 백분위수를 조회합니다.
+     * @param email 학생 이메일
+     * @param grade 학년
+     * @return 해당 학생의 상위 백분위수 점수
+     */
     @Override
     public Integer getStudentHighPercentileByEmailInGrade(String email, Integer grade) {
-
-        Boolean exists = jpaQueryFactory
-                .selectOne()
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.totalScore)
                 .from(studentDetailJpaEntity)
                 .join(memberJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
                 .where(
                         memberJpaEntity.email.eq(email),
                         studentDetailJpaEntity.grade.eq(grade)
                 )
-                .fetchFirst() != null;
-
-        if (!exists) {
-            throw new StudentClassMismatchException();
-        }
-
-        NumberTemplate<Double> topPercentile = Expressions.numberTemplate(Double.class,
-                "ROUND(100 * (1 - PERCENT_RANK() OVER (PARTITION BY {0} ORDER BY {1})), 2)",
-                studentDetailJpaEntity.grade,
-                studentDetailJpaEntity.totalScore
-        );
-
-        Double percentile = jpaQueryFactory
-                .select(topPercentile)
-                .from(memberJpaEntity)
-                .join(studentDetailJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
-                .where(
-                        memberJpaEntity.email.eq(email),
-                        studentDetailJpaEntity.grade.eq(grade)
-                )
                 .fetchOne();
-
-        return percentile != null ? Math.toIntExact(Math.round(percentile)) : 0;
     }
 
+    /**
+     * 특정 이메일, 학년에 해당하는 학생의 하위 백분위수를 조회합니다.
+     * @param email 학생 이메일
+     * @param grade 학년
+     * @return 해당 학생의 하위 백분위수 점수
+     */
     @Override
     public Integer getStudentLowPercentileByEmailInGrade(String email, Integer grade) {
-
-        Boolean exists = jpaQueryFactory
-                .selectOne()
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.totalScore)
                 .from(studentDetailJpaEntity)
                 .join(memberJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
                 .where(
                         memberJpaEntity.email.eq(email),
                         studentDetailJpaEntity.grade.eq(grade)
                 )
-                .fetchFirst() != null;
+                .fetchOne();
+    }
 
-        if (!exists) {
-            throw new StudentClassMismatchException();
-        }
-
-        NumberTemplate<Double> bottomPercentile = Expressions.numberTemplate(Double.class,
-                "ROUND(100 * PERCENT_RANK() OVER (PARTITION BY {0} ORDER BY {1}), 2)",
-                studentDetailJpaEntity.grade,
-                studentDetailJpaEntity.totalScore
-        );
-
-        Double percentile = jpaQueryFactory
-                .select(bottomPercentile)
-                .from(memberJpaEntity)
-                .join(studentDetailJpaEntity).on(memberJpaEntity.id.eq(studentDetailJpaEntity.member.id))
+    public Long countStudentsWithLowerScoreInClass(Integer score, Integer grade, Integer classNumber) {
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
                 .where(
-                        memberJpaEntity.email.eq(email),
-                        studentDetailJpaEntity.grade.eq(grade)
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.classNumber.eq(classNumber),
+                        studentDetailJpaEntity.totalScore.lt(score)
                 )
                 .fetchOne();
+    }
 
-        return percentile != null ? Math.toIntExact(Math.round(percentile)) : 0;
+    /**
+     * 특정 학년과 반에 속한 학생의 총 수를 조회합니다.
+     * @param grade 학년
+     * @param classNumber 반 번호
+     * @return 해당 학년과 반의 학생 수
+     */
+    public Long countTotalStudentsInClass(Integer grade, Integer classNumber) {
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
+                .where(
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.classNumber.eq(classNumber)
+                )
+                .fetchOne();
+    }
+
+    /**
+     * 특정 학년에서 점수가 주어진 값보다 낮은 학생의 수를 조회합니다.
+     * @param score 기준 점수
+     * @param grade 학년
+     * @return 해당 학년에서 주어진 점수보다 낮은 학생의 수
+     */
+    public Long countStudentsWithLowerScoreInGrade(Integer score, Integer grade) {
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
+                .where(
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.totalScore.lt(score)
+                )
+                .fetchOne();
+    }
+
+    /**
+     * 특정 학년의 학생 총 수를 조회합니다.
+     * @param grade 학년
+     * @return 해당 학년의 학생 수
+     */
+    public Long countTotalStudentsInGrade(Integer grade) {
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
+                .where(studentDetailJpaEntity.grade.eq(grade))
+                .fetchOne();
     }
 }
