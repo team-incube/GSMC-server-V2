@@ -3,7 +3,7 @@ package team.incube.gsmc.v2.domain.score.application;
 import lombok.RequiredArgsConstructor;
 import team.incube.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
 import team.incube.gsmc.v2.domain.score.application.usecase.*;
-import team.incube.gsmc.v2.domain.score.domain.constant.ScoreOrder;
+import team.incube.gsmc.v2.domain.score.domain.constant.PercentileType;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
@@ -177,12 +177,12 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     }
 
     @Override
-    public Integer getStudentPercentInClass(ScoreOrder scoreOrder, Integer grade, Integer classNumber) {
-        return getStudentPercentInClassUseCase.execute(scoreOrder, grade, classNumber);
+    public Integer getStudentPercentInClass(PercentileType percentileType, Integer grade, Integer classNumber) {
+        return getStudentPercentInClassUseCase.execute(percentileType, grade, classNumber);
     }
 
     @Override
-    public Integer getStudentPercentInGrade(ScoreOrder scoreOrder, Integer grade) {
-        return getStudentPercentInGradeUseCase.execute(scoreOrder, grade);
+    public Integer getStudentPercentInGrade(PercentileType percentileType, Integer grade) {
+        return getStudentPercentInGradeUseCase.execute(percentileType, grade);
     }
 }

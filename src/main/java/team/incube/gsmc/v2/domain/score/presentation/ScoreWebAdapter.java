@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team.incube.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
-import team.incube.gsmc.v2.domain.score.domain.constant.ScoreOrder;
+import team.incube.gsmc.v2.domain.score.domain.constant.PercentileType;
 import team.incube.gsmc.v2.domain.score.presentation.data.request.GetScoreSimulateRequest;
 import team.incube.gsmc.v2.domain.score.presentation.data.request.PatchScoreRequest;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
@@ -102,12 +102,12 @@ public class ScoreWebAdapter {
     }
 
     @GetMapping("/percentile/{grade}/{classNumber}")
-    public ResponseEntity<Integer> getStudentPercentInClass(@RequestParam ScoreOrder scoreOrder, @PathVariable(value = "grade") Integer grade, @PathVariable(value = "classNumber") Integer classNumber) {
-        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.getStudentPercentInClass(scoreOrder, grade, classNumber));
+    public ResponseEntity<Integer> getStudentPercentInClass(@RequestParam PercentileType percentileType, @PathVariable(value = "grade") Integer grade, @PathVariable(value = "classNumber") Integer classNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.getStudentPercentInClass(percentileType, grade, classNumber));
     }
 
     @GetMapping("/percentile/{grade}")
-    public ResponseEntity<Integer> getStudentPercentInGrade(@RequestParam ScoreOrder scoreOrder, @PathVariable(value = "grade") Integer grade) {
-        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.getStudentPercentInGrade(scoreOrder, grade));
+    public ResponseEntity<Integer> getStudentPercentInGrade(@RequestParam PercentileType percentileType, @PathVariable(value = "grade") Integer grade) {
+        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.getStudentPercentInGrade(percentileType, grade));
     }
 }

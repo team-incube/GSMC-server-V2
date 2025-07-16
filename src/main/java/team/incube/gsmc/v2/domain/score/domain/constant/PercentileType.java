@@ -1,5 +1,5 @@
 package team.incube.gsmc.v2.domain.score.domain.constant;
 
-public enum ScoreOrder {
+public enum PercentileType {
     HIGH, LOW
 }
