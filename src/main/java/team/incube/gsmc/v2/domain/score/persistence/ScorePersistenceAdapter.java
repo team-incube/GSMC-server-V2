@@ -125,7 +125,7 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
                 )
                 .fetchFirst() != null;
 
-        if (!exists) {
+        if (exists.equals(Boolean.FALSE)) {
             throw new StudentClassMismatchException();
         }
 
