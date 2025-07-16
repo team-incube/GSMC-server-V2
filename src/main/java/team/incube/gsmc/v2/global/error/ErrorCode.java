@@ -42,7 +42,7 @@ public enum ErrorCode {
     SCORE_MAXIMUM_VALUE_EXCEEDED("Score Maximum Value Exceeded", HttpStatus.UNPROCESSABLE_ENTITY.value()),
     INVALID_SCORE_VALUE("Invalid Score Value", HttpStatus.UNPROCESSABLE_ENTITY.value()),
     REQUIRED_EVIDENCE_CATEGORY("Required Evidence Category", HttpStatus.CONFLICT.value()),
-    STUDENT_CLASS_MISMATCH("Student Class Mismatch", HttpStatus.FORBIDDEN.value()),
+    INVALID_STUDENT_GROUP("Invalid Student Group", HttpStatus.FORBIDDEN.value()),
 
     // Member
     MEMBER_NOT_FOUND("Member Not Found", HttpStatus.NOT_FOUND.value()),
