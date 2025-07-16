@@ -192,6 +192,14 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
                 .fetchOne();
     }
 
+    /**
+     * 특정 학년과 반에 속한 학생의 점수가 주어진 값보다 낮은 학생의 수를 조회합니다.
+     * @param score 기준 점수
+     * @param grade 학년
+     * @param classNumber 반 번호
+     * @return 해당 학년과 반에서 주어진 점수보다 낮은 학생의 수
+     */
+    @Override
     public Long countStudentsWithLowerScoreInClass(Integer score, Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .select(studentDetailJpaEntity.count())
@@ -210,6 +218,7 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
      * @param classNumber 반 번호
      * @return 해당 학년과 반의 학생 수
      */
+    @Override
     public Long countTotalStudentsInClass(Integer grade, Integer classNumber) {
         return jpaQueryFactory
                 .select(studentDetailJpaEntity.count())
@@ -227,6 +236,7 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
      * @param grade 학년
      * @return 해당 학년에서 주어진 점수보다 낮은 학생의 수
      */
+    @Override
     public Long countStudentsWithLowerScoreInGrade(Integer score, Integer grade) {
         return jpaQueryFactory
                 .select(studentDetailJpaEntity.count())
@@ -243,6 +253,7 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
      * @param grade 학년
      * @return 해당 학년의 학생 수
      */
+    @Override
     public Long countTotalStudentsInGrade(Integer grade) {
         return jpaQueryFactory
                 .select(studentDetailJpaEntity.count())
