@@ -2,10 +2,8 @@ package team.incube.gsmc.v2.domain.score.application;
 
 import lombok.RequiredArgsConstructor;
 import team.incube.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
-import team.incube.gsmc.v2.domain.score.application.usecase.CalculateTotalScoreUseCase;
-import team.incube.gsmc.v2.domain.score.application.usecase.FindScoreUseCase;
-import team.incube.gsmc.v2.domain.score.application.usecase.SimulateScoreUseCase;
-import team.incube.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
+import team.incube.gsmc.v2.domain.score.application.usecase.*;
+import team.incube.gsmc.v2.domain.score.domain.constant.ScoreOrder;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
@@ -32,6 +30,8 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     private final UpdateScoreUseCase updateScoreUseCase;
     private final SimulateScoreUseCase simulateScoreUseCase;
     private final CalculateTotalScoreUseCase calculateTotalScoreUseCase;
+    private final GetStudentPercentInClassUseCase getStudentPercentInClassUseCase;
+    private final GetStudentPercentInGradeUseCase getStudentPercentInGradeUseCase;
 
     /**
      * 현재 로그인한 사용자의 점수를 조회합니다.
@@ -174,5 +174,15 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     @Override
     public void calculateTotalScore(String studentCode) {
         calculateTotalScoreUseCase.execute(studentCode);
+    }
+
+    @Override
+    public Integer getStudentPercentInClass(ScoreOrder scoreOrder, Integer grade, Integer classNumber) {
+        return getStudentPercentInClassUseCase.execute(scoreOrder, grade, classNumber);
+    }
+
+    @Override
+    public Integer getStudentPercentInGrade(ScoreOrder scoreOrder, Integer grade) {
+        return getStudentPercentInGradeUseCase.execute(scoreOrder, grade);
     }
 }
