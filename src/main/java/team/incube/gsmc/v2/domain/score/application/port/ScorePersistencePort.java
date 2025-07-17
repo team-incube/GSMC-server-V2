@@ -27,4 +27,12 @@ public interface ScorePersistencePort {
     List<Score> findScoreByStudentDetailStudentCodes(List<String> studentCodes);
 
     Score saveScore(Score score);
+
+    Long countStudentsWithLowerScoreInClass(Integer score, Integer grade, Integer classNumber);
+
+    Long countTotalStudentsInClass(Integer grade, Integer classNumber);
+
+    Long countStudentsWithLowerScoreInGrade(Integer score, Integer grade);
+
+    Long countTotalStudentsInGrade(Integer grade);
 }

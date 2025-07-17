@@ -28,8 +28,12 @@ import static team.incube.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntit
  *   <li>학생 코드 기반 점수 목록 조회</li>
  *   <li>다중 학생 코드 기반 점수 일괄 조회</li>
  *   <li>점수 저장</li>
+ *   <li>특정 학년 및 반에 속한 학생의 상위/하위 백분위수 조회</li>
+ *   <li>특정 학년에서 점수가 주어진 값보다 낮은 학생 수 조회</li>
+ *   <li>특정 학년의 학생 총 수 조회</li>
+ *   <li>특정 학년과 반에 속한 학생의 총 수 조회</li>
  * </ul>
- * @author snowykte0426
+ * @author snowykte0426, jihoonwjj
  */
 @Adapter(direction = PortDirection.OUTBOUND)
 @RequiredArgsConstructor
@@ -106,5 +110,75 @@ public class ScorePersistenceAdapter implements ScorePersistencePort {
     @Override
     public Score saveScore(Score score) {
         return scoreMapper.toDomain(scoreJpaRepository.save(scoreMapper.toEntity(score)));
+    }
+
+    /**
+     * 특정 학년과 반에 속한 학생의 점수가 주어진 값보다 낮은 학생의 수를 조회합니다.
+     * @param score 기준 점수
+     * @param grade 학년
+     * @param classNumber 반 번호
+     * @return 해당 학년과 반에서 주어진 점수보다 낮은 학생의 수
+     */
+    @Override
+    public Long countStudentsWithLowerScoreInClass(Integer score, Integer grade, Integer classNumber) {
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
+                .where(
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.classNumber.eq(classNumber),
+                        studentDetailJpaEntity.totalScore.lt(score)
+                )
+                .fetchOne();
+    }
+
+    /**
+     * 특정 학년과 반에 속한 학생의 총 수를 조회합니다.
+     * @param grade 학년
+     * @param classNumber 반 번호
+     * @return 해당 학년과 반의 학생 수
+     */
+    @Override
+    public Long countTotalStudentsInClass(Integer grade, Integer classNumber) {
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
+                .where(
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.classNumber.eq(classNumber)
+                )
+                .fetchOne();
+    }
+
+    /**
+     * 특정 학년에서 점수가 주어진 값보다 낮은 학생의 수를 조회합니다.
+     * @param score 기준 점수
+     * @param grade 학년
+     * @return 해당 학년에서 주어진 점수보다 낮은 학생의 수
+     */
+    @Override
+    public Long countStudentsWithLowerScoreInGrade(Integer score, Integer grade) {
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
+                .where(
+                        studentDetailJpaEntity.grade.eq(grade),
+                        studentDetailJpaEntity.totalScore.lt(score)
+                )
+                .fetchOne();
+    }
+
+    /**
+     * 특정 학년의 학생 총 수를 조회합니다.
+     * @param grade 학년
+     * @return 해당 학년의 학생 수
+     */
+    @Override
+    public Long countTotalStudentsInGrade(Integer grade) {
+        return jpaQueryFactory
+                .select(studentDetailJpaEntity.count())
+                .from(studentDetailJpaEntity)
+                .where(studentDetailJpaEntity.grade.eq(grade))
+                .fetchOne();
     }
 }
