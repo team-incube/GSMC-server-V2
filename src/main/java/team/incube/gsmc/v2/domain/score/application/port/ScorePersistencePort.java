@@ -28,14 +28,6 @@ public interface ScorePersistencePort {
 
     Score saveScore(Score score);
 
-    Integer getStudentHighPercentileByEmailInClass(String email, Integer grade, Integer classNumber);
-
-    Integer getStudentLowPercentileByEmailInClass(String email, Integer grade, Integer classNumber);
-
-    Integer getStudentHighPercentileByEmailInGrade(String email, Integer grade);
-
-    Integer getStudentLowPercentileByEmailInGrade(String email, Integer grade);
-
     Long countStudentsWithLowerScoreInClass(Integer score, Integer grade, Integer classNumber);
 
     Long countTotalStudentsInClass(Integer grade, Integer classNumber);
