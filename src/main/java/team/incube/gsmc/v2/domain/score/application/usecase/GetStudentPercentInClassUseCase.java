@@ -1,6 +1,7 @@
 package team.incube.gsmc.v2.domain.score.application.usecase;
 
 import team.incube.gsmc.v2.domain.score.domain.constant.PercentileType;
+import team.incube.gsmc.v2.domain.score.presentation.data.response.GetStudentPercentResponse;
 
 /**
  * 학급 내 학생의 백분위(Percentile)를 조회하는 유즈케이스 인터페이스입니다.
@@ -20,5 +21,5 @@ public interface GetStudentPercentInClassUseCase {
      * @return 해당 정렬 기준에서의 학생 백분위 (0~100 범위의 정수값)
      *         반환값이 {@code null}일 수 있으므로 주의가 필요합니다.
      */
-    Integer execute(PercentileType percentileType, Integer grade, Integer classNumber);
+    GetStudentPercentResponse execute(PercentileType percentileType, Integer grade, Integer classNumber);
 }
