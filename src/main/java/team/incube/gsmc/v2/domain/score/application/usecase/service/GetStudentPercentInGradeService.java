@@ -26,7 +26,6 @@ public class GetStudentPercentInGradeService implements GetStudentPercentInGrade
 
     /**
      * 현재 로그인된 학생의 학년 내 백분위를 조회합니다.
-     *
      * @param percentileType 백분위 유형 (상위 또는 하위)
      * @param grade 조회 대상 학년
      * @return 계산된 백분위 (0~100 범위의 정수)
@@ -34,7 +33,6 @@ public class GetStudentPercentInGradeService implements GetStudentPercentInGrade
      */
 
     public GetStudentPercentResponse execute(PercentileType percentileType, Integer grade) {
-
         String email = currentMemberProvider.getCurrentUser().getEmail();
 
         StudentDetail studentDetail = studentDetailPersistencePort.findStudentDetailByEmail(email);

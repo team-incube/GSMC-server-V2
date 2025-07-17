@@ -52,7 +52,6 @@ class GetStudentPercentInClassServiceTest {
                 Integer grade = 2;
                 Integer classNumber = 4;
                 Integer studentScore = 450;
-
                 Member member = Member.builder().email(email).build();
                 StudentDetail studentDetail = StudentDetail.builder()
                         .grade(grade)
@@ -86,7 +85,6 @@ class GetStudentPercentInClassServiceTest {
                         .grade(grade)
                         .classNumber(classNumber)
                         .build();
-
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByEmail(email)).thenReturn(studentDetail);
                 when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(studentScore);
@@ -108,13 +106,11 @@ class GetStudentPercentInClassServiceTest {
                 Integer grade = 2;
                 Integer classNumber = 4;
                 Integer studentScore = 600;
-
                 Member member = Member.builder().email(email).build();
                 StudentDetail studentDetail = StudentDetail.builder()
                         .grade(grade)
                         .classNumber(classNumber)
                         .build();
-
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByEmail(email)).thenReturn(studentDetail);
                 when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(studentScore);
@@ -138,13 +134,11 @@ class GetStudentPercentInClassServiceTest {
                 Integer grade = 2;
                 Integer classNumber = 4;
                 Integer studentScore = 100;
-
                 Member member = Member.builder().email(email).build();
                 StudentDetail studentDetail = StudentDetail.builder()
                         .grade(grade)
                         .classNumber(classNumber)
                         .build();
-
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByEmail(email)).thenReturn(studentDetail);
                 when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(studentScore);
@@ -168,13 +162,11 @@ class GetStudentPercentInClassServiceTest {
                 Integer grade = 2;
                 Integer classNumber = 4;
                 Integer studentScore = 450;
-
                 Member member = Member.builder().email(email).build();
                 StudentDetail studentDetail = StudentDetail.builder()
                         .grade(grade)
                         .classNumber(classNumber)
                         .build();
-
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByEmail(email)).thenReturn(studentDetail);
                 when(studentDetailPersistencePort.findTotalScoreByEmail(email)).thenReturn(studentScore);
@@ -200,13 +192,11 @@ class GetStudentPercentInClassServiceTest {
                 String email = "s24058@gsm.hs.kr";
                 Integer requestGrade = 2;
                 Integer requestClassNumber = 4;
-
                 Member member = Member.builder().email(email).build();
                 StudentDetail studentDetail = StudentDetail.builder()
-                        .grade(3) // 다른 학년
+                        .grade(3)
                         .classNumber(requestClassNumber)
                         .build();
-
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByEmail(email)).thenReturn(studentDetail);
 
@@ -222,13 +212,11 @@ class GetStudentPercentInClassServiceTest {
                 String email = "s24058@gsm.hs.kr";
                 Integer requestGrade = 2;
                 Integer requestClassNumber = 4;
-
                 Member member = Member.builder().email(email).build();
                 StudentDetail studentDetail = StudentDetail.builder()
                         .grade(requestGrade)
-                        .classNumber(5) // 다른 반
+                        .classNumber(5)
                         .build();
-
                 when(currentMemberProvider.getCurrentUser()).thenReturn(member);
                 when(studentDetailPersistencePort.findStudentDetailByEmail(email)).thenReturn(studentDetail);
 
