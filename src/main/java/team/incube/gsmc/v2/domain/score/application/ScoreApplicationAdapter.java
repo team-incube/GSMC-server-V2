@@ -6,6 +6,7 @@ import team.incube.gsmc.v2.domain.score.application.usecase.*;
 import team.incube.gsmc.v2.domain.score.domain.constant.PercentileType;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
+import team.incube.gsmc.v2.domain.score.presentation.data.response.GetStudentPercentResponse;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.adapter.Adapter;
 
@@ -177,12 +178,12 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     }
 
     @Override
-    public Integer getStudentPercentInClass(PercentileType percentileType, Integer grade, Integer classNumber) {
+    public GetStudentPercentResponse getStudentPercentInClass(PercentileType percentileType, Integer grade, Integer classNumber) {
         return getStudentPercentInClassUseCase.execute(percentileType, grade, classNumber);
     }
 
     @Override
-    public Integer getStudentPercentInGrade(PercentileType percentileType, Integer grade) {
+    public GetStudentPercentResponse getStudentPercentInGrade(PercentileType percentileType, Integer grade) {
         return getStudentPercentInGradeUseCase.execute(percentileType, grade);
     }
 }
