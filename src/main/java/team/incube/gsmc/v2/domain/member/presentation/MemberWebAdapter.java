@@ -49,7 +49,7 @@ public class MemberWebAdapter {
             @RequestParam(value = "page", defaultValue = "0") @Min(value = 0) Integer page,
             @RequestParam(value = "size", defaultValue = "10") @Positive Integer size
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.searchStudents(name, grade, classNumber, page, size));
+        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.searchStudents(name, grade, classNumber, sortBy, page, size));
     }
 
     @GetMapping("/students/current")

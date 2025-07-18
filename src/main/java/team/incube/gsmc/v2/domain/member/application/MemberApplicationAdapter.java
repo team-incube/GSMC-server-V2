@@ -6,6 +6,7 @@ import team.incube.gsmc.v2.domain.member.application.usecase.FindAllStudentUseCa
 import team.incube.gsmc.v2.domain.member.application.usecase.FindCurrentStudentUseCase;
 import team.incube.gsmc.v2.domain.member.application.usecase.FindStudentByEmailUseCase;
 import team.incube.gsmc.v2.domain.member.application.usecase.SearchStudentUseCase;
+import team.incube.gsmc.v2.domain.member.domain.constant.MemberSortDirection;
 import team.incube.gsmc.v2.domain.member.presentation.data.response.GetStudentResponse;
 import team.incube.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
@@ -41,8 +42,8 @@ public class MemberApplicationAdapter implements MemberApplicationPort {
     }
 
     @Override
-    public SearchStudentResponse searchStudents(String name, Integer grade, Integer classNumber, Integer page, Integer size) {
-        return searchStudentUseCase.execute(name, grade, classNumber, page, size);
+    public SearchStudentResponse searchStudents(String name, Integer grade, Integer classNumber, MemberSortDirection sortBy, Integer page, Integer size) {
+        return searchStudentUseCase.execute(name, grade, classNumber, sortBy, page, size);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package team.incube.gsmc.v2.domain.member.application.usecase;
 
+import team.incube.gsmc.v2.domain.member.domain.constant.MemberSortDirection;
 import team.incube.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
 
 /**
@@ -9,5 +10,5 @@ import team.incube.gsmc.v2.domain.member.presentation.data.response.SearchStuden
  * @author snowykte0426
  */
 public interface SearchStudentUseCase {
-    SearchStudentResponse execute(String name, Integer grade, Integer classNumber, Integer page, Integer size);
+    SearchStudentResponse execute(String name, Integer grade, Integer classNumber, MemberSortDirection sortBy, Integer page, Integer size);
 }
