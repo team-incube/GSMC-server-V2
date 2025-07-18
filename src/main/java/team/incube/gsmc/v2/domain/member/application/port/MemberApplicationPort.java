@@ -1,5 +1,6 @@
 package team.incube.gsmc.v2.domain.member.application.port;
 
+import team.incube.gsmc.v2.domain.member.domain.constant.MemberSortDirection;
 import team.incube.gsmc.v2.domain.member.presentation.data.response.GetStudentResponse;
 import team.incube.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
@@ -24,7 +25,7 @@ import java.util.List;
 public interface MemberApplicationPort {
     List<GetStudentResponse> findAllStudents();
 
-    SearchStudentResponse searchStudents(String name, Integer grade, Integer classNumber, Integer page, Integer size);
+    SearchStudentResponse searchStudents(String name, Integer grade, Integer classNumber, MemberSortDirection sortBy, Integer page, Integer size);
 
     GetStudentResponse findCurrentStudent();
 

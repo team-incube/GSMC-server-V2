@@ -12,6 +12,7 @@ import team.incube.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
 import team.incube.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incube.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incube.gsmc.v2.domain.member.domain.StudentDetailWithEvidence;
+import team.incube.gsmc.v2.domain.member.domain.constant.MemberSortDirection;
 import team.incube.gsmc.v2.domain.member.exception.MemberInvalidException;
 import team.incube.gsmc.v2.domain.member.exception.MemberNotFoundException;
 import team.incube.gsmc.v2.domain.member.persistence.mapper.StudentDetailMapper;
@@ -69,22 +70,6 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     /**
-     * 학생 코드를 기준으로 학생 상세 정보를 조회합니다.
-     * @param studentCode 학생 고유 코드
-     * @return 학생 상세 도메인 객체
-     * @throws MemberInvalidException 학생이 존재하지 않을 경우
-     */
-    @Override
-    public StudentDetail findStudentDetailByStudentCode(String studentCode) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .selectFrom(studentDetailJpaEntity)
-                        .where(studentDetailJpaEntity.studentCode.eq(studentCode))
-                        .fetchOne()
-        ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
-    }
-
-    /**
      * 학생 코드를 기준으로 비관적 락을 걸고 학생 정보를 조회합니다.
      * @param studentCode 학생 고유 코드
      * @return 락이 걸린 학생 상세 도메인 객체
@@ -136,39 +121,6 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                 .stream()
                 .map(studentDetailMapper::toDomain)
                 .toList();
-    }
-
-    /**
-     * 학생 코드를 기준으로 증빙 포함 학생 정보를 조회합니다.
-     * @param email 학생 이메일
-     * @return 증빙 포함 학생 상세 정보
-     * @throws MemberNotFoundException 학생이 존재하지 않을 경우
-     */
-    @Override
-    public StudentDetailWithEvidence findStudentDetailWithEvidenceByEmail(String email) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .select(
-                                Projections.constructor(
-                                        StudentProjection.class,
-                                        studentDetailJpaEntity.member.email,
-                                        studentDetailJpaEntity.member.name,
-                                        studentDetailJpaEntity.grade,
-                                        studentDetailJpaEntity.classNumber,
-                                        studentDetailJpaEntity.number,
-                                        studentDetailJpaEntity.totalScore,
-                                        evidenceJpaEntity.id.isNotNull(),
-                                        studentDetailJpaEntity.member.role
-                                )
-                        )
-                        .from(studentDetailJpaEntity)
-                        .leftJoin(evidenceJpaEntity)
-                        .on(evidenceJpaEntity.score.member.id.eq(studentDetailJpaEntity.member.id))
-                        .join(studentDetailJpaEntity.member, memberJpaEntity)
-                        .fetchJoin()
-                        .where(memberJpaEntity.email.eq(email))
-                        .fetchOne()
-        ).map(studentDetailMapper::fromProjection).orElseThrow(MemberNotFoundException::new);
     }
 
     /**
@@ -241,17 +193,18 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     }
 
     /**
-     * 검토 상태가 존재하는 학생 중 검색 조건에 부합하는 목록을 페이징하여 조회합니다.
+     * 검토 상태가 존재하는 학생 중 검색 조건에 부합하는 목록을 정렬 및 페이징하여 조회합니다.
      * @param name 학생 이름 필터
      * @param grade 학년 필터
      * @param classNumber 반 번호 필터
+     * @param sortBy 정렬 방향
      * @param pageable 페이징 정보
      * @return 페이징된 학생 상세 정보 목록
      */
     @Override
     public Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(
-            String name, Integer grade, Integer classNumber, Pageable pageable) {
-        List<StudentProjection> content = jpaQueryFactory
+            String name, Integer grade, Integer classNumber, MemberSortDirection sortBy, Pageable pageable) {
+        var queryBuilder = jpaQueryFactory
                 .select(
                         Projections.constructor(
                                 StudentProjection.class,
@@ -279,8 +232,15 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                         grade != null ? studentDetailJpaEntity.grade.eq(grade) : null,
                         classNumber != null ? studentDetailJpaEntity.classNumber.eq(classNumber) : null
                 )
-                .groupBy(studentDetailJpaEntity.member.id)
-                .orderBy(studentDetailJpaEntity.studentCode.min().asc())
+                .groupBy(studentDetailJpaEntity.member.id);
+
+        if (sortBy != null) {
+            queryBuilder = queryBuilder.orderBy(sortBy.getOrderSpecifiers());
+        } else {
+            queryBuilder = queryBuilder.orderBy(studentDetailJpaEntity.studentCode.min().asc());
+        }
+
+        List<StudentProjection> contentResult = queryBuilder
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -294,7 +254,7 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                         classNumber != null ? studentDetailJpaEntity.classNumber.eq(classNumber) : null
                 )
                 .fetchOne();
-        List<StudentDetailWithEvidence> result = content.stream()
+        List<StudentDetailWithEvidence> result = contentResult.stream()
                 .map(studentDetailMapper::fromProjection)
                 .toList();
         return new PageImpl<>(result, pageable, total != null ? total : 0);
@@ -326,24 +286,5 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
     @Override
     public StudentDetail saveStudentDetail(StudentDetail studentDetail) {
         return studentDetailMapper.toDomain(studentDetailJpaRepository.save(studentDetailMapper.toEntity(studentDetail)));
-    }
-
-    /**
-     * 이메일을 기준으로 비관적 락을 걸고 학생 정보를 조회합니다.
-     * @param email 회원 이메일
-     * @return 락이 걸린 학생 상세 도메인 객체
-     * @throws MemberInvalidException 학생이 존재하지 않을 경우
-     */
-    @Override
-    public StudentDetail findStudentDetailByEmailWithLock(String email) {
-        return Optional.ofNullable(
-                jpaQueryFactory
-                        .selectFrom(studentDetailJpaEntity)
-                        .join(studentDetailJpaEntity.member, memberJpaEntity)
-                        .fetchJoin()
-                        .where(memberJpaEntity.email.eq(email))
-                        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                        .fetchOne()
-        ).map(studentDetailMapper::toDomain).orElseThrow(MemberInvalidException::new);
     }
 }

@@ -49,13 +49,11 @@ class SearchStudentServiceTest {
                 Integer classNumber = 1;
                 Integer page = 0;
                 Integer size = 10;
-
                 Member member = Member.builder()
                         .email("hong@gsm.hs.kr")
                         .name(name)
                         .role(MemberRole.ROLE_STUDENT)
                         .build();
-
                 StudentDetail studentDetail = StudentDetail.builder()
                         .member(member)
                         .grade(grade)
@@ -63,24 +61,21 @@ class SearchStudentServiceTest {
                         .number(5)
                         .totalScore(90)
                         .build();
-
                 StudentDetailWithEvidence studentDetailWithEvidence = StudentDetailWithEvidence.builder()
                         .studentDetail(studentDetail)
                         .hasPendingEvidence(true)
                         .build();
-
                 Page<StudentDetailWithEvidence> studentPage = new PageImpl<>(
                         List.of(studentDetailWithEvidence),
                         PageRequest.of(page, size),
                         1
                 );
-
                 when(studentDetailPersistencePort.searchStudentDetailWithEvidenceReviewStatusNotNullMember(
-                        name, grade, classNumber, PageRequest.ofSize(size)
+                        name, grade, classNumber, null, PageRequest.of(page, size)
                 )).thenReturn(studentPage);
 
                 // when
-                SearchStudentResponse response = searchStudentService.execute(name, grade, classNumber, page, size);
+                SearchStudentResponse response = searchStudentService.execute(name, grade, classNumber, null, page, size);
 
                 // then
                 assertThat(response.totalPage()).isEqualTo(1);
@@ -110,24 +105,90 @@ class SearchStudentServiceTest {
                 Integer classNumber = 2;
                 Integer page = 0;
                 Integer size = 10;
-
                 Page<StudentDetailWithEvidence> emptyPage = new PageImpl<>(
                         List.of(),
                         PageRequest.of(page, size),
                         0
                 );
-
                 when(studentDetailPersistencePort.searchStudentDetailWithEvidenceReviewStatusNotNullMember(
-                        name, grade, classNumber, PageRequest.ofSize(size)
+                        name, grade, classNumber, null, PageRequest.of(page, size)
                 )).thenReturn(emptyPage);
 
                 // when
-                SearchStudentResponse response = searchStudentService.execute(name, grade, classNumber, page, size);
+                SearchStudentResponse response = searchStudentService.execute(name, grade, classNumber, null, page, size);
 
                 // then
                 assertThat(response.totalPage()).isEqualTo(0);
                 assertThat(response.totalElements()).isEqualTo(0);
                 assertThat(response.results()).isEmpty();
+            }
+        }
+
+        @Nested
+        @DisplayName("정렬 조건이 있을 때")
+        class Context_with_sort_direction {
+
+            @Test
+            @DisplayName("총점 내림차순으로 정렬된 학생 목록을 반환한다")
+            void it_returns_students_sorted_by_total_score_desc() {
+                // given
+                String name = null;
+                Integer grade = null;
+                Integer classNumber = null;
+                team.incube.gsmc.v2.domain.member.domain.constant.MemberSortDirection sortBy = team.incube.gsmc.v2.domain.member.domain.constant.MemberSortDirection.TOTAL_SCORE_DESC;
+                Integer page = 0;
+                Integer size = 10;
+                Member member1 = Member.builder()
+                        .email("student1@gsm.hs.kr")
+                        .name("학생1")
+                        .role(MemberRole.ROLE_STUDENT)
+                        .build();
+                Member member2 = Member.builder()
+                        .email("student2@gsm.hs.kr")
+                        .name("학생2")
+                        .role(MemberRole.ROLE_STUDENT)
+                        .build();
+                StudentDetail studentDetail1 = StudentDetail.builder()
+                        .member(member1)
+                        .grade(2)
+                        .classNumber(1)
+                        .number(1)
+                        .totalScore(85)
+                        .build();
+                StudentDetail studentDetail2 = StudentDetail.builder()
+                        .member(member2)
+                        .grade(2)
+                        .classNumber(1)
+                        .number(2)
+                        .totalScore(95)
+                        .build();
+                StudentDetailWithEvidence evidence1 = StudentDetailWithEvidence.builder()
+                        .studentDetail(studentDetail1)
+                        .hasPendingEvidence(false)
+                        .build();
+
+                StudentDetailWithEvidence evidence2 = StudentDetailWithEvidence.builder()
+                        .studentDetail(studentDetail2)
+                        .hasPendingEvidence(true)
+                        .build();
+                Page<StudentDetailWithEvidence> studentPage = new PageImpl<>(
+                        List.of(evidence2, evidence1),
+                        PageRequest.of(page, size),
+                        2
+                );
+                when(studentDetailPersistencePort.searchStudentDetailWithEvidenceReviewStatusNotNullMember(
+                        name, grade, classNumber, sortBy, PageRequest.of(page, size)
+                )).thenReturn(studentPage);
+
+                // when
+                SearchStudentResponse response = searchStudentService.execute(name, grade, classNumber, sortBy, page, size);
+
+                // then
+                assertThat(response.totalPage()).isEqualTo(1);
+                assertThat(response.totalElements()).isEqualTo(2);
+                assertThat(response.results()).hasSize(2);
+                assertThat(response.results().get(0).totalScore()).isEqualTo(95); // 첫 번째가 더 높은 점수
+                assertThat(response.results().get(1).totalScore()).isEqualTo(85); // 두 번째가 더 낮은 점수
             }
         }
     }
