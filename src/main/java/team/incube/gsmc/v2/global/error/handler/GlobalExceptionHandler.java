@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
      * @return 표준화된 오류 응답
      */
     @ExceptionHandler(GsmcException.class)
-    public ResponseEntity<ErrorResponse> handleGroomException(GsmcException e) {
+    public ResponseEntity<ErrorResponse> handleGsmcException(GsmcException e) {
         return ResponseEntity
                 .status(e.getErrorCode().getStatus())
                 .body(new ErrorResponse(e.getErrorCode().getMessage(), e.getErrorCode().getStatus()));
