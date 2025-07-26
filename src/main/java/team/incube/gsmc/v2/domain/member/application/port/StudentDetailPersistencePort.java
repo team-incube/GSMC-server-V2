@@ -4,8 +4,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import team.incube.gsmc.v2.domain.member.domain.StudentDetail;
 import team.incube.gsmc.v2.domain.member.domain.StudentDetailWithEvidence;
+import team.incube.gsmc.v2.domain.member.domain.constant.MemberSortDirection;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.port.Port;
+import com.querydsl.core.types.OrderSpecifier;
 
 import java.util.List;
 
@@ -29,10 +31,6 @@ import java.util.List;
 @Port(direction = PortDirection.OUTBOUND)
 public interface StudentDetailPersistencePort {
     StudentDetail findStudentDetailByEmail(String email);
-
-    StudentDetail findStudentDetailByEmailWithLock(String email);
-    
-    StudentDetail findStudentDetailByStudentCode(String studentCode);
     
     StudentDetail findStudentDetailByStudentCodeWithLock(String studentCode);
 
@@ -40,13 +38,11 @@ public interface StudentDetailPersistencePort {
 
     List<StudentDetail> findStudentDetailByGradeAndClassNumberAndMemberNotNull(Integer grade, Integer classNumber);
 
-    StudentDetailWithEvidence findStudentDetailWithEvidenceByEmail(String email);
-
     StudentDetailWithEvidence findStudentDetailWithEvidenceByMemberEmail(String email);
 
     List<StudentDetailWithEvidence> findStudentDetailWithEvidenceReviewStatusNotNullMember();
 
-    Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(String name, Integer grade, Integer classNumber, Pageable pageable);
+    Page<StudentDetailWithEvidence> searchStudentDetailWithEvidenceReviewStatusNotNullMember(String name, Integer grade, Integer classNumber, MemberSortDirection sortBy, Pageable pageable);
 
     Integer findTotalScoreByEmail(String email);
 

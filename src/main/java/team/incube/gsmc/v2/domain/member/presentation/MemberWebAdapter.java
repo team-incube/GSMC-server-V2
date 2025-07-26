@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import team.incube.gsmc.v2.domain.member.application.port.MemberApplicationPort;
+import team.incube.gsmc.v2.domain.member.domain.constant.MemberSortDirection;
 import team.incube.gsmc.v2.domain.member.presentation.data.response.GetStudentResponse;
 import team.incube.gsmc.v2.domain.member.presentation.data.response.SearchStudentResponse;
 
@@ -44,10 +45,11 @@ public class MemberWebAdapter {
             @RequestParam(value = "grade", required = false) Integer grade,
             @RequestParam(value = "classNumber", required = false) Integer classNumber,
             @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "sortBy", required = false) MemberSortDirection sortBy,
             @RequestParam(value = "page", defaultValue = "0") @Min(value = 0) Integer page,
             @RequestParam(value = "size", defaultValue = "10") @Positive Integer size
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.searchStudents(name, grade, classNumber, page, size));
+        return ResponseEntity.status(HttpStatus.OK).body(memberApplicationPort.searchStudents(name, grade, classNumber, sortBy, page, size));
     }
 
     @GetMapping("/students/current")
