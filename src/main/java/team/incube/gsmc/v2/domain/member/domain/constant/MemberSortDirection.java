@@ -29,29 +29,4 @@ public enum MemberSortDirection {
 
     private final String field;
     private final String direction;
-
-    /**
-     * 정렬 방향에 따른 QueryDSL OrderSpecifier를 반환합니다.
-     * @return QueryDSL OrderSpecifier 배열
-     */
-    public OrderSpecifier<?>[] getOrderSpecifiers() {
-        return switch (this) {
-            case TOTAL_SCORE_ASC -> new OrderSpecifier[]{studentDetailJpaEntity.totalScore.max().asc()};
-            case TOTAL_SCORE_DESC -> new OrderSpecifier[]{studentDetailJpaEntity.totalScore.max().desc()};
-            case NAME_ASC -> new OrderSpecifier[]{studentDetailJpaEntity.member.name.min().asc()};
-            case NAME_DESC -> new OrderSpecifier[]{studentDetailJpaEntity.member.name.min().desc()};
-            case GRADE_AND_CLASS_ASC -> new OrderSpecifier[]{
-                studentDetailJpaEntity.grade.min().asc(),
-                studentDetailJpaEntity.classNumber.min().asc(),
-                studentDetailJpaEntity.number.min().asc()
-            };
-            case GRADE_AND_CLASS_DESC -> new OrderSpecifier[]{
-                studentDetailJpaEntity.grade.min().desc(),
-                studentDetailJpaEntity.classNumber.min().desc(),
-                studentDetailJpaEntity.number.min().desc()
-            };
-            case STUDENT_CODE_ASC -> new OrderSpecifier[]{studentDetailJpaEntity.studentCode.min().asc()};
-            case STUDENT_CODE_DESC -> new OrderSpecifier[]{studentDetailJpaEntity.studentCode.min().desc()};
-        };
-    }
 }

@@ -1,5 +1,6 @@
 package team.incube.gsmc.v2.domain.member.persistence;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -106,7 +107,7 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
 
     /**
      * 주어진 학년과 반 번호에 해당하며, 사용자 정보가 존재하는 학생 상세 정보를 조회합니다.
-     * @param grade 학년
+     * @param grade       학년
      * @param classNumber 반 번호
      * @return 학생 상세 도메인 객체 리스트
      */
@@ -194,11 +195,12 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
 
     /**
      * 검토 상태가 존재하는 학생 중 검색 조건에 부합하는 목록을 정렬 및 페이징하여 조회합니다.
-     * @param name 학생 이름 필터
-     * @param grade 학년 필터
+     *
+     * @param name        학생 이름 필터
+     * @param grade       학년 필터
      * @param classNumber 반 번호 필터
-     * @param sortBy 정렬 방향
-     * @param pageable 페이징 정보
+     * @param sortBy      정렬 방향
+     * @param pageable    페이징 정보
      * @return 페이징된 학생 상세 정보 목록
      */
     @Override
@@ -235,7 +237,7 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
                 .groupBy(studentDetailJpaEntity.member.id);
 
         if (sortBy != null) {
-            queryBuilder = queryBuilder.orderBy(sortBy.getOrderSpecifiers());
+            queryBuilder = queryBuilder.orderBy(getOrderSpecifiers(sortBy));
         } else {
             queryBuilder = queryBuilder.orderBy(studentDetailJpaEntity.studentCode.min().asc());
         }
@@ -280,11 +282,38 @@ public class StudentDetailPersistenceAdapter implements StudentDetailPersistence
 
     /**
      * 학생 상세 도메인 객체를 저장합니다.
+     *
      * @param studentDetail 저장할 도메인 객체
      * @return 저장된 학생 상세 도메인 객체
      */
     @Override
     public StudentDetail saveStudentDetail(StudentDetail studentDetail) {
         return studentDetailMapper.toDomain(studentDetailJpaRepository.save(studentDetailMapper.toEntity(studentDetail)));
+    }
+
+    /**
+     * 정렬 방향에 따른 QueryDSL OrderSpecifier를 반환합니다.
+     * @return QueryDSL OrderSpecifier 배열
+     */
+    private OrderSpecifier<?>[] getOrderSpecifiers(MemberSortDirection sortBy) {
+        return switch (sortBy) {
+            case MemberSortDirection.TOTAL_SCORE_ASC -> new OrderSpecifier[]{studentDetailJpaEntity.totalScore.asc()};
+            case MemberSortDirection.TOTAL_SCORE_DESC -> new OrderSpecifier[]{studentDetailJpaEntity.totalScore.desc()};
+            case MemberSortDirection.NAME_ASC -> new OrderSpecifier[]{studentDetailJpaEntity.member.name.asc()};
+            case MemberSortDirection.NAME_DESC -> new OrderSpecifier[]{studentDetailJpaEntity.member.name.desc()};
+            case MemberSortDirection.GRADE_AND_CLASS_ASC -> new OrderSpecifier[]{
+                    studentDetailJpaEntity.grade.asc(),
+                    studentDetailJpaEntity.classNumber.asc(),
+                    studentDetailJpaEntity.number.asc()
+            };
+            case MemberSortDirection.GRADE_AND_CLASS_DESC -> new OrderSpecifier[]{
+                    studentDetailJpaEntity.grade.desc(),
+                    studentDetailJpaEntity.classNumber.desc(),
+                    studentDetailJpaEntity.number.desc()
+            };
+            case MemberSortDirection.STUDENT_CODE_ASC -> new OrderSpecifier[]{studentDetailJpaEntity.studentCode.asc()};
+            case MemberSortDirection.STUDENT_CODE_DESC ->
+                    new OrderSpecifier[]{studentDetailJpaEntity.studentCode.desc()};
+        };
     }
 }
