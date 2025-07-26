@@ -15,7 +15,6 @@ import team.incube.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incube.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incube.gsmc.v2.domain.evidence.domain.constant.EvidenceType;
 import team.incube.gsmc.v2.domain.evidence.domain.constant.ReviewStatus;
-import team.incube.gsmc.v2.domain.member.application.port.StudentDetailPersistencePort;
 import team.incube.gsmc.v2.domain.member.domain.Member;
 import team.incube.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
 import team.incube.gsmc.v2.domain.score.application.port.ScorePersistencePort;
@@ -49,7 +48,6 @@ public class CreateCertificateService implements CreateCertificateUseCase {
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
     private final ScorePersistencePort scorePersistencePort;
-    private final StudentDetailPersistencePort studentDetailPersistencePort;
     private final S3Port s3Port;
     private final CurrentMemberProvider currentMemberProvider;
     private final ApplicationContext applicationContext;
@@ -74,7 +72,7 @@ public class CreateCertificateService implements CreateCertificateUseCase {
         String fileUri = uploadFileToS3(file);
         OtherEvidence otherEvidence = otherEvidencePersistencePort.saveOtherEvidence(createOtherEvidence(evidence, fileUri));
         saveCertificate(name, member, acquisitionDate, otherEvidence);
-        applicationContext.publishEvent(new ScoreUpdatedEvent(studentDetailPersistencePort.findStudentDetailByMemberEmail(member.getEmail()).getStudentCode()));
+        applicationContext.publishEvent(new ScoreUpdatedEvent(member.getEmail()));
     }
 
     /**

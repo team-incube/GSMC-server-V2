@@ -62,7 +62,8 @@ public class DomainAuthorizationConfig {
 
                 /* /api/v2/score */
                 .requestMatchers(HttpMethod.GET,
-                        "/api/v2/score/current"
+                        "/api/v2/score/current",
+                        "/api/v2/score/percentile/**"
                 )
                 .hasAnyAuthority(
                         MemberRole.ROLE_STUDENT.name()

@@ -56,6 +56,6 @@ public record GetScoreSimulateRequest(
         @NotNull Integer foreignLangOpicGrade,
         @NotNull Integer foreignLangJptScore,
         @NotNull Integer foreignLangCptScore,
-        @NotNull Integer foreignLangHskScore
+        @NotNull Integer foreignLangHskGrade
 ) {
 }

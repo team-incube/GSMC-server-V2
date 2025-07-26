@@ -2,12 +2,11 @@ package team.incube.gsmc.v2.domain.score.application;
 
 import lombok.RequiredArgsConstructor;
 import team.incube.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
-import team.incube.gsmc.v2.domain.score.application.usecase.CalculateTotalScoreUseCase;
-import team.incube.gsmc.v2.domain.score.application.usecase.FindScoreUseCase;
-import team.incube.gsmc.v2.domain.score.application.usecase.SimulateScoreUseCase;
-import team.incube.gsmc.v2.domain.score.application.usecase.UpdateScoreUseCase;
+import team.incube.gsmc.v2.domain.score.application.usecase.*;
+import team.incube.gsmc.v2.domain.score.domain.constant.PercentileType;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
+import team.incube.gsmc.v2.domain.score.presentation.data.response.GetStudentPercentResponse;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.adapter.Adapter;
 
@@ -32,6 +31,8 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     private final UpdateScoreUseCase updateScoreUseCase;
     private final SimulateScoreUseCase simulateScoreUseCase;
     private final CalculateTotalScoreUseCase calculateTotalScoreUseCase;
+    private final GetStudentPercentInClassUseCase getStudentPercentInClassUseCase;
+    private final GetStudentPercentInGradeUseCase getStudentPercentInGradeUseCase;
 
     /**
      * 현재 로그인한 사용자의 점수를 조회합니다.
@@ -120,7 +121,7 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
             Integer foreignLangOpicGrade,
             Integer foreignLangJptScore,
             Integer foreignLangCptScore,
-            Integer foreignLangHskScore
+            Integer foreignLangHskGrade
     ) {
         return simulateScoreUseCase.execute(
                 majorAwardCareerOutSchoolOfficial,
@@ -163,7 +164,7 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
                 foreignLangOpicGrade,
                 foreignLangJptScore,
                 foreignLangCptScore,
-                foreignLangHskScore
+                foreignLangHskGrade
         );
     }
 
@@ -174,5 +175,15 @@ public class ScoreApplicationAdapter implements ScoreApplicationPort {
     @Override
     public void calculateTotalScore(String studentCode) {
         calculateTotalScoreUseCase.execute(studentCode);
+    }
+
+    @Override
+    public GetStudentPercentResponse getStudentPercentInClass(PercentileType percentileType, Integer grade, Integer classNumber) {
+        return getStudentPercentInClassUseCase.execute(percentileType, grade, classNumber);
+    }
+
+    @Override
+    public GetStudentPercentResponse getStudentPercentInGrade(PercentileType percentileType, Integer grade) {
+        return getStudentPercentInGradeUseCase.execute(percentileType, grade);
     }
 }

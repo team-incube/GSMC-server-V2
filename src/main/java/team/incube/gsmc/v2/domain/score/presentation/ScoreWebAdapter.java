@@ -6,10 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team.incube.gsmc.v2.domain.score.application.port.ScoreApplicationPort;
+import team.incube.gsmc.v2.domain.score.domain.constant.PercentileType;
 import team.incube.gsmc.v2.domain.score.presentation.data.request.GetScoreSimulateRequest;
 import team.incube.gsmc.v2.domain.score.presentation.data.request.PatchScoreRequest;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
+import team.incube.gsmc.v2.domain.score.presentation.data.response.GetStudentPercentResponse;
 
 /**
  * 점수 관련 HTTP 요청을 처리하는 Web 어댑터 클래스입니다.
@@ -54,7 +56,7 @@ public class ScoreWebAdapter {
     }
 
     @PostMapping("/simulate")
-    ResponseEntity<GetScoreSimulateResponse> simulateScore(@Valid @RequestBody GetScoreSimulateRequest request) {
+    public ResponseEntity<GetScoreSimulateResponse> simulateScore(@Valid @RequestBody GetScoreSimulateRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.simulateScore(
                 request.majorAwardCareerOutSchoolOfficial(),
                 request.majorAwardCareerOutSchoolUnofficial(),
@@ -96,7 +98,17 @@ public class ScoreWebAdapter {
                 request.foreignLangOpicGrade(),
                 request.foreignLangJptScore(),
                 request.foreignLangCptScore(),
-                request.foreignLangHskScore()
+                request.foreignLangHskGrade()
         ));
+    }
+
+    @GetMapping("/percentile/{grade}/{classNumber}")
+    public ResponseEntity<GetStudentPercentResponse> getStudentPercentInClass(@RequestParam(value = "percentileType") PercentileType percentileType, @PathVariable(value = "grade") Integer grade, @PathVariable(value = "classNumber") Integer classNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.getStudentPercentInClass(percentileType, grade, classNumber));
+    }
+
+    @GetMapping("/percentile/{grade}")
+    public ResponseEntity<GetStudentPercentResponse> getStudentPercentInGrade(@RequestParam(value = "percentileType") PercentileType percentileType, @PathVariable(value = "grade") Integer grade) {
+        return ResponseEntity.status(HttpStatus.OK).body(scoreApplicationPort.getStudentPercentInGrade(percentileType, grade));
     }
 }

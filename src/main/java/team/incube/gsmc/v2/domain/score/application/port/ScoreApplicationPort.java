@@ -1,7 +1,9 @@
 package team.incube.gsmc.v2.domain.score.application.port;
 
+import team.incube.gsmc.v2.domain.score.domain.constant.PercentileType;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreResponse;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
+import team.incube.gsmc.v2.domain.score.presentation.data.response.GetStudentPercentResponse;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.port.Port;
 
@@ -17,6 +19,8 @@ import team.incube.gsmc.v2.global.annotation.port.Port;
  *   <li>{@code updateScoreByStudentCode} - 특정 학생 점수 수정</li>
  *   <li>{@code simulateScore} - 입력 데이터를 기반으로 점수 시뮬레이션</li>
  *   <li>{@code calculateTotalScore} - 총합 점수 계산</li>
+ *   <li>{@code getStudentPercentInClass} - 학급내 학생 백분율 조회 </li>
+ *   <li>{@code getStudentPercentInGrade} - 학년내 학생 백분율 조회 </li>
  * </ul>
  * @author snowykte0426
  */
@@ -30,7 +34,11 @@ public interface ScoreApplicationPort {
 
     void updateScoreByEmail(String email, String categoryName, Integer value);
 
-    GetScoreSimulateResponse simulateScore(Integer majorAwardCareerOutSchoolOfficial, Integer majorAwardCareerOutSchoolUnofficial, Integer majorAwardCareerOutSchoolHackathon, Integer majorAwardCareerInSchoolGsmfest, Integer majorAwardCareerInSchoolSchoolHackathon, Integer majorAwardCareerInSchoolPresentation, Integer majorCertificateNum, Integer majorTopcitScore, Integer majorClubAttendanceSemester1, Integer majorClubAttendanceSemester2, Integer majorOutSchoolAttendanceOfficialContest, Integer majorOutSchoolAttendanceUnofficialContest, Integer majorOutSchoolAttendanceHackathon, Integer majorOutSchoolAttendanceSeminar, Integer majorInSchoolAttendanceGsmfest, Integer majorInSchoolAttendanceHackathon, Integer majorInSchoolAttendanceClubPresentation, Integer majorInSchoolAttendanceSeminar, Integer majorInSchoolAttendanceAfterSchool, Integer humanitiesAwardCareerHumanityInSchool, Integer humanitiesAwardCareerHumanityOutSchool, Boolean humanitiesReadingReadAThonTurtle, Boolean humanitiesReadingReadAThonCrocodile, Boolean humanitiesReadingReadAThonRabbitOver, Integer humanitiesReading, Integer humanitiesServiceActivity, Integer humanitiesServiceClubSemester1, Integer humanitiesServiceClubSemester2, Boolean humanitiesCertificateChineseCharacter, Boolean humanitiesCertificateKoreanHistory, Integer humanitiesActivitiesNewrrow_S, Integer humanitiesActivitiesSelfDirectedActivities, Boolean foreignLangAttendanceToeicAcademyStatus, Integer foreignLangToeicScore, Integer foreignLangToeflScore, Integer foreignLangTepsScore, Integer foreignLangToeicSpeakingLevel, Integer foreignLangOpicGrade, Integer foreignLangJptScore, Integer foreignLangCptScore, Integer foreignLangHskScore);
+    GetScoreSimulateResponse simulateScore(Integer majorAwardCareerOutSchoolOfficial, Integer majorAwardCareerOutSchoolUnofficial, Integer majorAwardCareerOutSchoolHackathon, Integer majorAwardCareerInSchoolGsmfest, Integer majorAwardCareerInSchoolSchoolHackathon, Integer majorAwardCareerInSchoolPresentation, Integer majorCertificateNum, Integer majorTopcitScore, Integer majorClubAttendanceSemester1, Integer majorClubAttendanceSemester2, Integer majorOutSchoolAttendanceOfficialContest, Integer majorOutSchoolAttendanceUnofficialContest, Integer majorOutSchoolAttendanceHackathon, Integer majorOutSchoolAttendanceSeminar, Integer majorInSchoolAttendanceGsmfest, Integer majorInSchoolAttendanceHackathon, Integer majorInSchoolAttendanceClubPresentation, Integer majorInSchoolAttendanceSeminar, Integer majorInSchoolAttendanceAfterSchool, Integer humanitiesAwardCareerHumanityInSchool, Integer humanitiesAwardCareerHumanityOutSchool, Boolean humanitiesReadingReadAThonTurtle, Boolean humanitiesReadingReadAThonCrocodile, Boolean humanitiesReadingReadAThonRabbitOver, Integer humanitiesReading, Integer humanitiesServiceActivity, Integer humanitiesServiceClubSemester1, Integer humanitiesServiceClubSemester2, Boolean humanitiesCertificateChineseCharacter, Boolean humanitiesCertificateKoreanHistory, Integer humanitiesActivitiesNewrrow_S, Integer humanitiesActivitiesSelfDirectedActivities, Boolean foreignLangAttendanceToeicAcademyStatus, Integer foreignLangToeicScore, Integer foreignLangToeflScore, Integer foreignLangTepsScore, Integer foreignLangToeicSpeakingLevel, Integer foreignLangOpicGrade, Integer foreignLangJptScore, Integer foreignLangCptScore, Integer foreignLangHskGrade);
 
     void calculateTotalScore(String email);
+
+    GetStudentPercentResponse getStudentPercentInClass(PercentileType percentileType, Integer grade, Integer classNumber);
+
+    GetStudentPercentResponse getStudentPercentInGrade(PercentileType percentileType, Integer grade);
 }

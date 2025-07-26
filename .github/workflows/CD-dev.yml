@@ -1,0 +1,271 @@
+name: GSMC CD(Dev)
+
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/*.gradle.kts', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build and run unit tests
+        run: ./gradlew clean test --no-daemon --no-build-cache
+
+  Integration-Test:
+    runs-on: ubuntu-latest
+    needs: Unit-Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build JAR
+        run: ./gradlew clean build -x test --no-daemon
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and run Docker Compose
+        run: |
+          docker compose -f docker-compose.test.yaml up -d
+          sleep 30
+          echo "=== Docker 컨테이너 상태 ==="
+          docker ps -a
+          echo "=== 애플리케이션 로그 ==="
+          docker logs gsmc-server-v2-app-1 || true
+          echo "=== Redis 로그 ==="
+          docker logs gsmc-server-v2-redis-1 || true
+          echo "=== 포트 상태 확인 ==="
+          netstat -tlnp | grep :8080 || echo "8080 포트가 열려있지 않습니다"
+          echo "=== 헬스체크 시도 ==="
+          for i in {1..30}; do
+            if curl -v http://localhost:8080/api/v2/health/check 2>&1 | grep -q '200\|OK'; then
+              echo "Application is up!"
+              exit 0
+            fi
+            echo "Waiting for application... ($i/30)"
+            
+            # 10회마다 상세 로그 출력
+            if [ $((i % 10)) -eq 0 ]; then
+              echo "=== 상세 디버깅 정보 ($i회차) ==="
+              docker logs --tail 20 gsmc-server-v2-app-1 || true
+              curl -v http://localhost:8080/api/v2/health/check || true
+            fi
+            
+            sleep 3
+          done
+          echo "Application failed to start"
+          
+          # 최종 로그 출력
+          echo "=== 최종 애플리케이션 로그 ==="
+          docker logs gsmc-server-v2-app-1 || true
+          exit 1
+
+      - name: Stop Docker Compose
+        if: always()
+        run: docker compose -f docker-compose.test.yaml down
+
+  CD-dev:
+    runs-on: ubuntu-latest
+    needs: Integration-Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: suuuuuuminnnnnn/gsmc-server-v2
+          stage: main
+          yaml: |
+            name: gsmc-server-v2
+            app: java@21
+            options:
+              ports: "8080"
+              env:
+                - name: SPRING_PROFILES_ACTIVE
+                  value: prod
+                - name: JPA_DDL_AUTO
+                  value: ${{ secrets.JPA_DDL_AUTO }}
+                - name: SERVER_PORT
+                  value: ${{ secrets.SERVER_PORT }}
+                - name: AWS_ACCESS_KEY_ID
+                  value: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                - name: AWS_SECRET_ACCESS_KEY
+                  value: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                - name: AWS_REGION
+                  value: ${{ secrets.AWS_REGION }}
+                - name: AWS_S3_BUCKET
+                  value: ${{ secrets.AWS_S3_BUCKET }}
+                - name: JWT_ACCESS_TOKEN_SECRET
+                  value: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
+                - name: JWT_ACCESS_TOKEN_EXPIRATION
+                  value: ${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}
+                - name: JWT_REFRESH_TOKEN_SECRET
+                  value: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
+                - name: JWT_REFRESH_TOKEN_EXPIRATION
+                  value: ${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}
+                - name: EMAIL_HOST
+                  value: ${{ secrets.EMAIL_HOST }}
+                - name: EMAIL_USERNAME
+                  value: ${{ secrets.EMAIL_USERNAME }}
+                - name: EMAIL_PASSWORD
+                  value: ${{ secrets.EMAIL_PASSWORD }}
+                - name: EMAIL_TTL
+                  value: ${{ secrets.EMAIL_TTL }}
+                - name: RDB_TYPE
+                  value: ${{ secrets.RDB_TYPE }}
+                - name: RDB_HOST
+                  value: ${{ secrets.RDB_HOST }}
+                - name: RDB_PORT
+                  value: ${{ secrets.RDB_PORT }}
+                - name: RDB_SCHEMA
+                  value: ${{ secrets.RDB_SCHEMA }}
+                - name: RDB_USERNAME
+                  value: ${{ secrets.RDB_USERNAME }}
+                - name: RDB_PASSWORD
+                  value: ${{ secrets.RDB_PASSWORD }}
+                - name: REDIS_HOST
+                  value: ${{ secrets.REDIS_HOST }}
+                - name: REDIS_PORT
+                  value: ${{ secrets.REDIS_PORT }}
+              buildenv: []
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
+
+      - name: Notify Discord on Success
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{
+                 "embeds": [{
+                   "title": "🚀 Development Deployment Successful",
+                   "description": "GSMC Server V2 has been successfully deployed to development environment",
+                   "color": 5763719,
+                   "fields": [
+                     {
+                       "name": "Repository",
+                       "value": "${{ github.repository }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Branch",
+                       "value": "${{ github.ref_name }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Commit",
+                       "value": "[`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})",
+                       "inline": true
+                     },
+                     {
+                       "name": "Author",
+                       "value": "${{ github.actor }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Environment",
+                       "value": "Development (Cloudtype)",
+                       "inline": false
+                     },
+                     {
+                       "name": "Tests Passed",
+                       "value": "✅ Unit Tests\n✅ Integration Tests",
+                       "inline": true
+                     }
+                   ],
+                   "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+                 }]
+               }' \
+               $DISCORD_WEBHOOK
+
+      - name: Notify Discord on Failure
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{
+                 "embeds": [{
+                   "title": "❌ Development Deployment Failed",
+                   "description": "GSMC Server V2 deployment to development environment has failed",
+                   "color": 15158332,
+                   "fields": [
+                     {
+                       "name": "Repository",
+                       "value": "${{ github.repository }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Branch",
+                       "value": "${{ github.ref_name }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Commit",
+                       "value": "[`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})",
+                       "inline": true
+                     },
+                     {
+                       "name": "Author",
+                       "value": "${{ github.actor }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Environment",
+                       "value": "Development (Cloudtype)",
+                       "inline": false
+                     },
+                     {
+                       "name": "Workflow Run",
+                       "value": "[${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+                       "inline": false
+                     }
+                   ],
+                   "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+                 }]
+               }' \
+               $DISCORD_WEBHOOK
