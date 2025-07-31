@@ -14,6 +14,7 @@ import team.incube.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedExcepti
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -78,7 +79,7 @@ public class RetryUploadZSetAdapter implements RetryUploadZSetPort {
                             return null;
                         }
                     })
-                    .filter(dto -> dto != null)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         } catch (Exception e) {
             log.error("재시도 메시지 조회 중 오류 발생", e);
