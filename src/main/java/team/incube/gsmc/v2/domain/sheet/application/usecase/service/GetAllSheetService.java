@@ -423,33 +423,13 @@ public class GetAllSheetService implements GetAllSheetUseCase {
     }
 
     /**
-     * 학년과 반 정보를 담는 내부 클래스입니다.
-     */
-    private static class GradeClassInfo {
-        final int grade;
-        final int classNumber;
-
-        GradeClassInfo(int grade, int classNumber) {
-            this.grade = grade;
-            this.classNumber = classNumber;
-        }
+         * 학년과 반 정보를 담는 내부 클래스입니다.
+         */
+        private record GradeClassInfo(int grade, int classNumber) {
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            GradeClassInfo that = (GradeClassInfo) o;
-            return grade == that.grade && classNumber == that.classNumber;
+            public String toString() {
+                return grade + "-" + classNumber;
+            }
         }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(grade, classNumber);
-        }
-
-        @Override
-        public String toString() {
-            return grade + "-" + classNumber;
-        }
-    }
 }
