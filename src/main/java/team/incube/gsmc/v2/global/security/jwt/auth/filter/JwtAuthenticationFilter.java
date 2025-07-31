@@ -22,7 +22,7 @@ import java.util.Map;
  * JWT 인증 필터 클래스입니다.
  * <p>HTTP 요청에서 JWT 토큰을 추출하고, 유효성을 검사하여 인증 정보를 설정합니다.
  * <p>특정 경로에 대해서는 인증을 건너뛰며, 유효하지 않은 토큰에 대해서는 401 Unauthorized 응답을 반환합니다.
- * @author jihoonwjj, snowykte0426, C0ng_yun
+ * @author jihoonwjj, snowykte0426, Jeongjunyun777
  */
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

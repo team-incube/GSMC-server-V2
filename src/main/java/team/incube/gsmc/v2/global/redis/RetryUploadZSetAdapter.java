@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * <p>재시도 메시지를 직렬화하여 Redis의 ZSet에 저장하고, 재시도 시간 기준으로
  * 메시지를 조회 및 삭제하는 기능을 제공합니다.
  * <p>{@link RetryUploadZSetPort} 인터페이스를 구현하며, 아웃바운드 포트 역할을 수행합니다.
- * @author suuuuuuminnnnnn, C0ng_yun
+ * @author suuuuuuminnnnnn, Jeongjunyun777
  */
 @Adapter(direction = PortDirection.OUTBOUND)
 @Component
