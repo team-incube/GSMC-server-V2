@@ -14,6 +14,7 @@ import team.incube.gsmc.v2.global.thirdparty.aws.exception.S3UploadFailedExcepti
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,8 +23,7 @@ import java.util.stream.Collectors;
  * <p>재시도 메시지를 직렬화하여 Redis의 ZSet에 저장하고, 재시도 시간 기준으로
  * 메시지를 조회 및 삭제하는 기능을 제공합니다.
  * <p>{@link RetryUploadZSetPort} 인터페이스를 구현하며, 아웃바운드 포트 역할을 수행합니다.
- *
- * @author suuuuuuminnnnnn
+ * @author suuuuuuminnnnnn, Jeongjunyun777
  */
 @Adapter(direction = PortDirection.OUTBOUND)
 @Component
@@ -78,7 +78,7 @@ public class RetryUploadZSetAdapter implements RetryUploadZSetPort {
                             return null;
                         }
                     })
-                    .filter(dto -> dto != null)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         } catch (Exception e) {
             log.error("재시도 메시지 조회 중 오류 발생", e);

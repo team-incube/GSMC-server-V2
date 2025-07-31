@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * Apache POI를 사용하여 다중 시트, 계층적 헤더, 영역별 합계, 총합, 순위 등을 포함한 포맷을 구성합니다.
  * <p>생성된 시트는 {@link InMemoryMultipartFile}로 반환됩니다.
  * 예외 발생 시 {@link GenerationSheetFailedException}을 통해 오류를 처리합니다.
- * @author snowykte0426
+ * @author snowykte0426, Jeongjunyun777
  */
 @Service
 @RequiredArgsConstructor
@@ -423,33 +423,13 @@ public class GetAllSheetService implements GetAllSheetUseCase {
     }
 
     /**
-     * 학년과 반 정보를 담는 내부 클래스입니다.
-     */
-    private static class GradeClassInfo {
-        final int grade;
-        final int classNumber;
-
-        GradeClassInfo(int grade, int classNumber) {
-            this.grade = grade;
-            this.classNumber = classNumber;
-        }
+         * 학년과 반 정보를 담는 내부 클래스입니다.
+         */
+        private record GradeClassInfo(int grade, int classNumber) {
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            GradeClassInfo that = (GradeClassInfo) o;
-            return grade == that.grade && classNumber == that.classNumber;
+            public String toString() {
+                return grade + "-" + classNumber;
+            }
         }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(grade, classNumber);
-        }
-
-        @Override
-        public String toString() {
-            return grade + "-" + classNumber;
-        }
-    }
 }

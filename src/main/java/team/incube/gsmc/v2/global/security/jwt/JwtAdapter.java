@@ -23,7 +23,6 @@ import team.incube.gsmc.v2.global.security.jwt.data.TokenDto;
  *   <li>리프레시 토큰 삭제</li>
  * </ul>
  * 각 기능은 의존성 주입된 유스케이스 클래스에 위임됩니다.
- *
  * @author jihoonwjj
  */
 
