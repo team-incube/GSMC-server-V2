@@ -52,10 +52,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String token = jwtPort.resolveToken(request);
-        if (shouldNotFilter(request)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
         if (token != null && jwtPort.validateAccessToken(token)) {
             String email = jwtPort.getEmailFromAccessToken(token);
             MemberRole roles = jwtPort.getRolesFromAccessToken(token);
