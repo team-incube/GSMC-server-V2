@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     );
 
     /**
-     * 요청된 경로가 JWT 인증 필터를 건너뛸지 결정합니다
+     * 요청된 경로가 JWT 인증 필터를 건너뛸지 결정합니다.
      * <p>EXCLUDED_PATHS에 정의된 경로 패턴과 일치하는 요청은 JWT 토큰 검증을 수행하지 않습니다.
      * "/api/v2/auth/**", "/actuator/prometheus/**", "/api/v2/health/**" 경로는 인증을 건너뜁니다.
      *
