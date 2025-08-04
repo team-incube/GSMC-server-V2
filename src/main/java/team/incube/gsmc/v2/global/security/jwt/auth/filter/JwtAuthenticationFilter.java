@@ -30,12 +30,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtPort jwtPort;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
+    /**
+     * 건너뛰는 경로 목록
+     * <p>다음 경로들은 JWT 토큰 검증 없이 접근할 수 있습니다:
+     * <p>
+     * • /api/v2/auth/** - 인증 관련 API<br>
+     * • /actuator/prometheus/** - 모니터링 메트릭 엔드포인트<br>
+     * • /api/v2/health/** - 헬스체크 API
+     */
     private final static List<String> EXCLUDED_PATHS = List.of(
             "/api/v2/auth/**",
             "/actuator/prometheus/**",
             "/api/v2/health/**"
     );
 
+    /**
+     * 요청된 경로가 JWT 인증 필터를 건너뛸지 결정합니다.
+     * <p>EXCLUDED_PATHS에 정의된 경로 패턴과 일치하는 요청은 JWT 토큰 검증을 수행하지 않습니다.
+     * "/api/v2/auth/**", "/actuator/prometheus/**", "/api/v2/health/**" 경로는 인증을 건너뜁니다.
+     *
+     * @param request HTTP 요청 객체
+     * @return 필터를 건너뛸 경우 true, 필터를 적용할 경우 false
+     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         return EXCLUDED_PATHS.stream()
@@ -43,10 +59,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 필터가 적용될 경로를 정의합니다.
-     * <p>"/api/v2/auth/**", "/actuator/prometheus/**", "/api/v2/health/**" 경로는 인증을 건너뜁니다.
-     * @param request HTTP 요청
-     * @return true if the filter should be applied, false otherwise
+     * JWT 토큰을 검증하고 인증 정보를 설정하는 필터 로직을 수행합니다.
+     * <p>유효한 JWT 토큰이 있는 경우 SecurityContext에 인증 정보를 설정하고,
+     * 토큰이 없거나 유효하지 않은 경우 401 Unauthorized 응답을 반환합니다.
+     *
+     * @param request HTTP 요청 객체
+     * @param response HTTP 응답 객체
+     * @param filterChain 필터 체인
+     * @throws ServletException 서블릿 예외 발생 시
+     * @throws IOException I/O 예외 발생 시
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
