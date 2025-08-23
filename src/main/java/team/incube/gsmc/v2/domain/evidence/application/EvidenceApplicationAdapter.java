@@ -110,7 +110,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     /**
-     * 인문 활동 증빙자료를 수정합니다.
+     * 인문 활동 증빙자료를 수정합니다..
      */
     @Override
     public void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file) {
