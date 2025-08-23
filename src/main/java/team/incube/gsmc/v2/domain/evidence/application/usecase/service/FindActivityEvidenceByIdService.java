@@ -32,5 +32,6 @@ public class FindActivityEvidenceByIdService implements FindActivityEvidenceByEv
                 evidence.getId().getReviewStatus(),
                 evidence.getId().getScore().getCategory().getName()
         );
+
     }
 }
