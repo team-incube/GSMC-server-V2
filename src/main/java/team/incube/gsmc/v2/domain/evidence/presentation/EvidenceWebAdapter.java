@@ -260,4 +260,25 @@ public class EvidenceWebAdapter {
     public ResponseEntity<GetDraftEvidenceResponse> getCurrentDraft() {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftEvidenceByCurrentUser());
     }
+   @GetMapping("/major/{evidenceId}")
+   public ResponseEntity<GetActivityEvidenceResponse> getEvidenceId(@PathVariable Long evidenceId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityEvidencById(evidenceId));
+   }
+
+   @GetMapping("/humanities/{evideceId}")
+    public ResponseEntity<GetActivityEvidenceResponse> getHumanitiesEvidenceId(@PathVariable Long evideceId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findHumanitiesByEvidenceId(evideceId));
+   }
+    @GetMapping("/reading/{evidenceId}")
+    public ResponseEntity<GetReadingEvidenceResponse> getReadingEvidenceId(@PathVariable Long evidenceId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findReadingByEvidenceId(evidenceId));
+    }
+    @GetMapping("/other/{evidenceId}")
+    public ResponseEntity<GetOtherEvidenceResponse> getOtherEvidenceEvidenceId(@PathVariable Long evidenceId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findOtherEvidenceByEvidenceId(evidenceId));
+    }
+    @GetMapping("/scoring/{evidenceId}")
+    public ResponseEntity<GetOtherEvidenceResponse> getScoringEvidenceId(@PathVariable Long evidenceId) {
+        return  ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findScoringEvidenceByEvidenceId(evidenceId));
+    }
 }
