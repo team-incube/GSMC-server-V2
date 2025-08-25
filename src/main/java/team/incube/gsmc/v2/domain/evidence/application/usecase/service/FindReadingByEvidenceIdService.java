@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team.incube.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersistencePort;
 import team.incube.gsmc.v2.domain.evidence.application.usecase.FindReadingByEvidenceIdUseCase;
 import team.incube.gsmc.v2.domain.evidence.domain.ReadingEvidence;
-import team.incube.gsmc.v2.domain.evidence.exception.ActivityEvidenceAccessDeniedException;
+import team.incube.gsmc.v2.domain.evidence.exception.ReadingEvidenceNotFoundException;
 import team.incube.gsmc.v2.domain.evidence.presentation.data.response.GetReadingEvidenceResponse;
 import team.incube.gsmc.v2.domain.member.domain.Member;
 import team.incube.gsmc.v2.domain.member.domain.constant.MemberRole;
@@ -23,7 +23,7 @@ public class FindReadingByEvidenceIdService implements FindReadingByEvidenceIdUs
         ReadingEvidence evidence = readingEvidencePersistencePort.findReadingEvidenceById(id);
         if(member.getRole().equals(MemberRole.ROLE_STUDENT)
                 &&!evidence.getId().getScore().getMember().equals(member)) {
-            throw new ActivityEvidenceAccessDeniedException();
+            throw new ReadingEvidenceNotFoundException();
         }
         return new GetReadingEvidenceResponse(
                 evidence.getId().getId(),
