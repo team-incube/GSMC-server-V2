@@ -16,8 +16,10 @@ import team.incube.gsmc.v2.global.security.jwt.application.usecase.service.Curre
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FindScoringByEvideceIdService implements FindScoringByEvideceIdUseCase {
+
     private final CurrentMemberProvider currentMemberProvider;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
+
     @Override
     public GetOtherEvidenceResponse execute(Long id) {
         Member member = currentMemberProvider.getCurrentUser();
