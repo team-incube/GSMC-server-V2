@@ -5,9 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.incube.gsmc.v2.domain.evidence.application.port.OtherEvidencePersistencePort;
 import team.incube.gsmc.v2.domain.evidence.application.usecase.FindScoringByEvideceIdUseCase;
-import team.incube.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incube.gsmc.v2.domain.evidence.domain.OtherEvidence;
-import team.incube.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
+import team.incube.gsmc.v2.domain.evidence.exception.OtherEvidenceNotFoundException;
 import team.incube.gsmc.v2.domain.evidence.presentation.data.response.GetOtherEvidenceResponse;
 import team.incube.gsmc.v2.domain.member.domain.Member;
 import team.incube.gsmc.v2.domain.member.domain.constant.MemberRole;
@@ -20,12 +19,12 @@ public class FindScoringByEvideceIdService implements FindScoringByEvideceIdUseC
     private final CurrentMemberProvider currentMemberProvider;
     private final OtherEvidencePersistencePort otherEvidencePersistencePort;
     @Override
-    public GetOtherEvidenceResponse execute(Long Id) {
+    public GetOtherEvidenceResponse execute(Long id) {
         Member member = currentMemberProvider.getCurrentUser();
-        OtherEvidence evidence = otherEvidencePersistencePort.findOtherEvidenceById(Id);
+        OtherEvidence evidence = otherEvidencePersistencePort.findOtherEvidenceById(id);
         if(member.getRole().equals(MemberRole.ROLE_STUDENT)&&
         !evidence.getId().getScore().getMember().equals(member)) {
-            throw new ActivityEvidenceNotFountException();
+            throw new OtherEvidenceNotFoundException();
         }
 
         return new GetOtherEvidenceResponse(
