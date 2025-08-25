@@ -29,8 +29,6 @@ public interface EvidenceApplicationPort {
 
     GetActivityEvidenceResponse findActivityEvidencById(Long id);
 
-    GetActivityEvidenceResponse findHumanitiesByEvidenceId(Long id);
-
     GetReadingEvidenceResponse findReadingByEvidenceId(Long id);
 
     GetOtherEvidenceResponse findOtherEvidenceByEvidenceId(Long id);
