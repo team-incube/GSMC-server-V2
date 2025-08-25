@@ -260,25 +260,29 @@ public class EvidenceWebAdapter {
     public ResponseEntity<GetDraftEvidenceResponse> getCurrentDraft() {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftEvidenceByCurrentUser());
     }
+
    @GetMapping("/major/{evidenceId}")
-   public ResponseEntity<GetActivityEvidenceResponse> getEvidenceId(@PathVariable Long evidenceId) {
+   public ResponseEntity<GetActivityEvidenceResponse> getEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityEvidencById(evidenceId));
    }
 
-   @GetMapping("/humanities/{evideceId}")
-    public ResponseEntity<GetActivityEvidenceResponse> getHumanitiesEvidenceId(@PathVariable Long evideceId) {
-        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findHumanitiesByEvidenceId(evideceId));
+   @GetMapping("/humanities/{evidenceId}")
+    public ResponseEntity<GetActivityEvidenceResponse> getHumanitiesEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityEvidencById(evidenceId));
    }
-    @GetMapping("/reading/{evidenceId}")
-    public ResponseEntity<GetReadingEvidenceResponse> getReadingEvidenceId(@PathVariable Long evidenceId) {
+
+   @GetMapping("/reading/{evidenceId}")
+    public ResponseEntity<GetReadingEvidenceResponse> getReadingEvidenceId(@PathVariable (value = "evidenceId")Long evidenceId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findReadingByEvidenceId(evidenceId));
     }
+
     @GetMapping("/other/{evidenceId}")
-    public ResponseEntity<GetOtherEvidenceResponse> getOtherEvidenceEvidenceId(@PathVariable Long evidenceId) {
+    public ResponseEntity<GetOtherEvidenceResponse> getOtherEvidenceEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findOtherEvidenceByEvidenceId(evidenceId));
     }
+
     @GetMapping("/scoring/{evidenceId}")
-    public ResponseEntity<GetOtherEvidenceResponse> getScoringEvidenceId(@PathVariable Long evidenceId) {
+    public ResponseEntity<GetOtherEvidenceResponse> getScoringEvidenceId(@PathVariable (value = "evidenceId")Long evidenceId) {
         return  ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findScoringEvidenceByEvidenceId(evidenceId));
     }
 }
