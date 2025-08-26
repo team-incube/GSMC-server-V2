@@ -27,7 +27,7 @@ public interface EvidenceApplicationPort {
 
     GetEvidencesResponse findEvidenceByTitleAndType(String title, EvidenceType evidenceType);
 
-    GetActivityEvidenceResponse findActivityEvidencById(Long id);
+    GetActivityEvidenceResponse findActivityEvidencId(Long id);
 
     GetReadingEvidenceResponse findReadingByEvidenceId(Long id);
 

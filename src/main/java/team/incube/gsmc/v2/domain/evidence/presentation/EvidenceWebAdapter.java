@@ -263,7 +263,7 @@ public class EvidenceWebAdapter {
 
    @GetMapping("/activity/{evidenceId}")
    public ResponseEntity<GetActivityEvidenceResponse> getEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
-        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityEvidencById(evidenceId));
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityEvidencId(evidenceId));
    }
 
    @GetMapping("/reading/{evidenceId}")

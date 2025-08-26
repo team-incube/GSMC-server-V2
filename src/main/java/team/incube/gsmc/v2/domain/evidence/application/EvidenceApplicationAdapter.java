@@ -75,7 +75,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      * 저장된 ID 활동 증빙자료를 조회합니다.
      */
     @Override
-    public GetActivityEvidenceResponse findActivityEvidencById(Long id) {
+    public GetActivityEvidenceResponse findActivityEvidencId(Long id) {
         return findActivityEvidenceByEvidenceIdUseCase.execute(id);
     }
 
