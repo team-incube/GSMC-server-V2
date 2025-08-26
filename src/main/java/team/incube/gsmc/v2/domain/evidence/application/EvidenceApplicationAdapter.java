@@ -87,10 +87,18 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
         return findReadingByEvidenceIdUseCase.execute(id);
     }
 
+    /**
+     * 저장된 ID 기타 증빙자료를 조회합니다.
+     */
+
     @Override
     public GetOtherEvidenceResponse findOtherEvidenceByEvidenceId(Long id) {
         return findOtherByEvidenceIdUseCase.execute(id);
     }
+
+    /**
+     * 저장된 ID 기타 점수제 증빙자료를 조회합니다.
+     */
 
     @Override
     public GetOtherEvidenceResponse findScoringEvidenceByEvidenceId(Long id) {
