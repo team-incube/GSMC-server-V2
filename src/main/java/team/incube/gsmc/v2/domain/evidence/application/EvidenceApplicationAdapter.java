@@ -80,7 +80,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     /**
-     * 저장된 ID 독서 증빙자료를 조회합니다..
+     * 저장된 ID 독서 증빙자료를 조회합니다.
      */
     @Override
     public GetReadingEvidenceResponse findReadingByEvidenceId(Long id) {
@@ -107,7 +107,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     }
 
     /**
-     * 인문 활동 증빙자료를 수정합니다..
+     * 인문 활동 증빙자료를 수정합니다.
      */
     @Override
     public void updateHumanitiesEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file) {
