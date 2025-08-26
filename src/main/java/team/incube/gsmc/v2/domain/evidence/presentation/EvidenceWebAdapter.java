@@ -261,13 +261,8 @@ public class EvidenceWebAdapter {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftEvidenceByCurrentUser());
     }
 
-   @GetMapping("/major/{evidenceId}")
+   @GetMapping("/activity/{evidenceId}")
    public ResponseEntity<GetActivityEvidenceResponse> getEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
-        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityEvidencById(evidenceId));
-   }
-
-   @GetMapping("/humanities/{evidenceId}")
-    public ResponseEntity<GetActivityEvidenceResponse> getHumanitiesEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityEvidencById(evidenceId));
    }
 
