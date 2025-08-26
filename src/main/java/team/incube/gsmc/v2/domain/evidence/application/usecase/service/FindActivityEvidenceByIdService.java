@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team.incube.gsmc.v2.domain.evidence.application.port.ActivityEvidencePersistencePort;
 import team.incube.gsmc.v2.domain.evidence.application.usecase.FindActivityEvidenceByEvidenceIdUseCase;
 import team.incube.gsmc.v2.domain.evidence.domain.ActivityEvidence;
-import team.incube.gsmc.v2.domain.evidence.exception.ActivityEvidenceAccessDeniedException;
+import team.incube.gsmc.v2.domain.evidence.exception.ActivityEvidenceNotFountException;
 import team.incube.gsmc.v2.domain.evidence.presentation.data.response.GetActivityEvidenceResponse;
 import team.incube.gsmc.v2.domain.member.domain.Member;
 import team.incube.gsmc.v2.domain.member.domain.constant.MemberRole;
@@ -24,7 +24,7 @@ public class FindActivityEvidenceByIdService implements FindActivityEvidenceByEv
         Member member = currentMemberProvider.getCurrentUser();
         ActivityEvidence evidence = activityEvidencePersistencePort.findActivityEvidenceById(id);
         if(member.getRole().equals(MemberRole.ROLE_STUDENT) && !evidence.getId().getScore().getMember().equals(member)) {
-            throw new ActivityEvidenceAccessDeniedException();
+            throw new ActivityEvidenceNotFountException();
         }
         return new GetActivityEvidenceResponse(
                 evidence.getId().getId(),
