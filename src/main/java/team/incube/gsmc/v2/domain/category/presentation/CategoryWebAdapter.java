@@ -18,4 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v2/category")
 @RequiredArgsConstructor
 public class CategoryWebAdapter {
+
+
 }

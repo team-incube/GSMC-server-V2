@@ -11,6 +11,7 @@ import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.adapter.Adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 점수 분류(Category) 도메인의 영속성 어댑터 구현체입니다.
@@ -18,8 +19,8 @@ import java.util.List;
  * 도메인 객체와 엔티티 간의 변환은 {@link CategoryMapper}를 통해 수행됩니다.
  * <p>제공 기능:
  * <ul>
- *   <li>{@code findCategoryByName(String name)} - 이름을 기준으로 카테고리 조회 (캐싱 적용)</li>
- *   <li>{@code findAllCategory()} - 전체 카테고리 목록 조회</li>
+ *   <li>{@code findAllCategory()} - 전체 카테고리 목록 조회 (캐싱 적용)</li>
+ *   <li>{@code findCategoryById(Long id)} - ID를 기준으로 카테고리 조회</li>
  * </ul>
  * @author snowykte0426
  */
@@ -39,5 +40,15 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     @Override
     public List<Category> findAllCategory() {
         return categoryJpaRepository.findAll().stream().map(categoryMapper::toDomain).toList();
+    }
+
+    /**
+     * ID를 기준으로 특정 카테고리를 조회합니다.
+     * @param id 조회할 카테고리의 ID
+     * @return 조회된 카테고리 도메인 객체 (Optional)
+     */
+    @Override
+    public Optional<Category> findCategoryById(Long id) {
+        return categoryJpaRepository.findById(id).map(categoryMapper::toDomain);
     }
 }
