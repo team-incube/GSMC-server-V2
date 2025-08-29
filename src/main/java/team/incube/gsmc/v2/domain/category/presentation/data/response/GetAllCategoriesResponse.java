@@ -1,5 +1,6 @@
 package team.incube.gsmc.v2.domain.category.presentation.data.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 /**
@@ -13,7 +14,9 @@ import java.util.List;
  * 클라이언트에서 카테고리 선택 목록을 구성할 때 활용됩니다.
  * @author snowykte0426
  */
+@Schema(description = "모든 카테고리 목록 응답 DTO")
 public record GetAllCategoriesResponse(
+        @Schema(description = "전체 카테고리 정보를 담은 리스트")
         List<GetCategoryResponse> categories
 ) {
 }
