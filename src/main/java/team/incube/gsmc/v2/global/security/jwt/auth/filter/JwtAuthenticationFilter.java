@@ -36,19 +36,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * <p>
      * • /api/v2/auth/** - 인증 관련 API<br>
      * • /actuator/prometheus/** - 모니터링 메트릭 엔드포인트<br>
-     * • /api/v2/health/** - 헬스체크 API
+     * • /api/v2/health/** - 헬스체크 API<br>
+     * • /swagger-ui/** - Swagger UI 리소스<br>
+     * • /v3/api-docs/** - OpenAPI 문서<br>
+     * • /swagger-ui.html - Swagger UI 메인 페이지
      */
     private final static List<String> EXCLUDED_PATHS = List.of(
             "/api/v2/auth/**",
             "/actuator/prometheus/**",
             "/api/v2/health/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html"
     );
 
     /**
      * 요청된 경로가 JWT 인증 필터를 건너뛸지 결정합니다.
      * <p>EXCLUDED_PATHS에 정의된 경로 패턴과 일치하는 요청은 JWT 토큰 검증을 수행하지 않습니다.
-     * "/api/v2/auth/**", "/actuator/prometheus/**", "/api/v2/health/**" 경로는 인증을 건너뜁니다.
+     * "/api/v2/auth/**", "/actuator/prometheus/**", "/api/v2/health/**", 
+     * "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html" 경로는 인증을 건너뜁니다.
      *
      * @param request HTTP 요청 객체
      * @return 필터를 건너뛸 경우 true, 필터를 적용할 경우 false
