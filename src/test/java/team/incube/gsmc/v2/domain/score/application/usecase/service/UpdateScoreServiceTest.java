@@ -10,11 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import team.incube.gsmc.v2.domain.member.application.port.MemberPersistencePort;
 import team.incube.gsmc.v2.domain.member.domain.Member;
-import team.incube.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
+import team.incube.gsmc.v2.domain.category.application.port.CategoryPersistencePort;
 import team.incube.gsmc.v2.domain.score.application.port.ScorePersistencePort;
-import team.incube.gsmc.v2.domain.score.domain.Category;
+import team.incube.gsmc.v2.domain.category.domain.Category;
 import team.incube.gsmc.v2.domain.score.domain.Score;
-import team.incube.gsmc.v2.domain.score.exception.CategoryNotFoundException;
+import team.incube.gsmc.v2.domain.category.exception.CategoryNotFoundException;
 import team.incube.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incube.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
 

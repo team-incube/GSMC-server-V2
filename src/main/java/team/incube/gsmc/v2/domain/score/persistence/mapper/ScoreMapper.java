@@ -2,6 +2,7 @@ package team.incube.gsmc.v2.domain.score.persistence.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import team.incube.gsmc.v2.domain.category.persistence.mapper.CategoryMapper;
 import team.incube.gsmc.v2.domain.member.persistence.mapper.MemberMapper;
 import team.incube.gsmc.v2.domain.score.domain.Score;
 import team.incube.gsmc.v2.domain.score.persistence.entity.ScoreJpaEntity;

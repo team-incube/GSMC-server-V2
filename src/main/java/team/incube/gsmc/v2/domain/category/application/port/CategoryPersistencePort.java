@@ -1,6 +1,6 @@
-package team.incube.gsmc.v2.domain.score.application.port;
+package team.incube.gsmc.v2.domain.category.application.port;
 
-import team.incube.gsmc.v2.domain.score.domain.Category;
+import team.incube.gsmc.v2.domain.category.domain.Category;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.port.Port;
 

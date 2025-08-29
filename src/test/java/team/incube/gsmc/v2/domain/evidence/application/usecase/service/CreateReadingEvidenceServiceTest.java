@@ -12,7 +12,7 @@ import team.incube.gsmc.v2.domain.evidence.application.port.ReadingEvidencePersi
 import team.incube.gsmc.v2.domain.evidence.domain.ReadingEvidence;
 import team.incube.gsmc.v2.domain.member.domain.Member;
 import team.incube.gsmc.v2.domain.score.application.port.ScorePersistencePort;
-import team.incube.gsmc.v2.domain.score.domain.Category;
+import team.incube.gsmc.v2.domain.category.domain.Category;
 import team.incube.gsmc.v2.domain.score.domain.Score;
 import team.incube.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incube.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;

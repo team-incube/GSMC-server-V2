@@ -1,8 +1,8 @@
-package team.incube.gsmc.v2.domain.score.persistence.repository;
+package team.incube.gsmc.v2.domain.category.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import team.incube.gsmc.v2.domain.score.persistence.entity.CategoryJpaEntity;
+import team.incube.gsmc.v2.domain.category.persistence.entity.CategoryJpaEntity;
 
 /**
  * 점수 카테고리(Category) JPA Repository입니다.

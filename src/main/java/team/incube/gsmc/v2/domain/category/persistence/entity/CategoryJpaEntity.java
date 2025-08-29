@@ -1,4 +1,4 @@
-package team.incube.gsmc.v2.domain.score.persistence.entity;
+package team.incube.gsmc.v2.domain.category.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;

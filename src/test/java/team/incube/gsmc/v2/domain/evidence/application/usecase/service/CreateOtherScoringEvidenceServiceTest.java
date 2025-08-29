@@ -16,9 +16,9 @@ import team.incube.gsmc.v2.domain.evidence.application.port.OtherEvidencePersist
 import team.incube.gsmc.v2.domain.evidence.domain.Evidence;
 import team.incube.gsmc.v2.domain.evidence.domain.OtherEvidence;
 import team.incube.gsmc.v2.domain.member.domain.Member;
-import team.incube.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
+import team.incube.gsmc.v2.domain.category.application.port.CategoryPersistencePort;
 import team.incube.gsmc.v2.domain.score.application.port.ScorePersistencePort;
-import team.incube.gsmc.v2.domain.score.domain.Category;
+import team.incube.gsmc.v2.domain.category.domain.Category;
 import team.incube.gsmc.v2.domain.score.domain.Score;
 import team.incube.gsmc.v2.global.event.ScoreUpdatedEvent;
 import team.incube.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;

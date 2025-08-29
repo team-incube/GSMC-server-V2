@@ -1,12 +1,12 @@
-package team.incube.gsmc.v2.domain.score.persistence;
+package team.incube.gsmc.v2.domain.category.persistence;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
-import team.incube.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
-import team.incube.gsmc.v2.domain.score.domain.Category;
-import team.incube.gsmc.v2.domain.score.persistence.mapper.CategoryMapper;
-import team.incube.gsmc.v2.domain.score.persistence.repository.CategoryJpaRepository;
+import team.incube.gsmc.v2.domain.category.application.port.CategoryPersistencePort;
+import team.incube.gsmc.v2.domain.category.domain.Category;
+import team.incube.gsmc.v2.domain.category.persistence.mapper.CategoryMapper;
+import team.incube.gsmc.v2.domain.category.persistence.repository.CategoryJpaRepository;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.adapter.Adapter;
 

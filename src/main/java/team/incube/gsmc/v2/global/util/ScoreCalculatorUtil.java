@@ -1,7 +1,7 @@
 package team.incube.gsmc.v2.global.util;
 
 import lombok.experimental.UtilityClass;
-import team.incube.gsmc.v2.domain.score.exception.CategoryNotFoundException;
+import team.incube.gsmc.v2.domain.category.exception.CategoryNotFoundException;
 
 /**
  * 특정 카테고리명과 값을 기반으로 개별 점수를 계산하는 유틸리티 클래스입니다.

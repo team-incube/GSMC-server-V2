@@ -1,4 +1,4 @@
-package team.incube.gsmc.v2.domain.score.exception;
+package team.incube.gsmc.v2.domain.category.exception;
 
 import team.incube.gsmc.v2.global.error.ErrorCode;
 import team.incube.gsmc.v2.global.error.exception.GsmcException;
