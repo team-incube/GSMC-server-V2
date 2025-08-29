@@ -28,6 +28,7 @@ import java.util.List;
  *   <li>Swagger UI: {@code /swagger-ui/index.html}</li>
  *   <li>API 문서 JSON: {@code /v3/api-docs}</li>
  * </ul>
+ *
  * @author snowykte0426
  */
 @Configuration
@@ -37,7 +38,7 @@ public class SwaggerConfig {
      * OpenAPI 3.0 문서 설정을 구성합니다.
      * <p>GSMC 서버의 API 문서를 생성하며, JWT 인증을 포함한 보안 설정을 적용합니다.
      * 개발 및 운영 환경의 서버 정보를 제공하여 다양한 환경에서 테스트할 수 있습니다.
-     * 
+     *
      * @return 구성된 OpenAPI 객체
      */
     @Bean
@@ -45,7 +46,7 @@ public class SwaggerConfig {
         String jwtSchemeName = "Bearer Authentication";
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList(jwtSchemeName);
-        
+
         Components components = new Components()
                 .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
                         .name(jwtSchemeName)
@@ -77,8 +78,11 @@ public class SwaggerConfig {
                                 .url("http://localhost:8080")
                                 .description("로컬 개발 서버"),
                         new Server()
-                                .url("https://api.gsmc.example.com")
-                                .description("운영 서버")))
+                                .url("https://port-0-gsmc-server-v2-m9f71rgbc364f8aa.sel4.cloudtype.app")
+                                .description("개발 서버"),
+                        new Server()
+                                .url("https://amond-server.kro.kr")
+                                .description("상용 서버")))
                 .addSecurityItem(securityRequirement)
                 .components(components);
     }
