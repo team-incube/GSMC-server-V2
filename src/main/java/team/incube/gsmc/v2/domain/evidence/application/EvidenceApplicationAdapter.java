@@ -75,7 +75,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      * 저장된 ID 활동 증빙자료를 조회합니다.
      */
     @Override
-    public GetActivityEvidenceResponse findActivityEvidencId(Long id) {
+    public GetActivityEvidenceResponse findActivityByEvidencById(Long id) {
         return findActivityEvidenceByEvidenceIdUseCase.execute(id);
     }
 
@@ -83,7 +83,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      * 저장된 ID 독서 증빙자료를 조회합니다.
      */
     @Override
-    public GetReadingEvidenceResponse findReadingByEvidenceId(Long id) {
+    public GetReadingEvidenceResponse findReadingByEvidenceById(Long id) {
         return findReadingByEvidenceIdUseCase.execute(id);
     }
 
@@ -92,7 +92,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      */
 
     @Override
-    public GetOtherEvidenceResponse findOtherEvidenceByEvidenceId(Long id) {
+    public GetOtherEvidenceResponse findOtherEvidenceByEvidenceById(Long id) {
         return findOtherByEvidenceIdUseCase.execute(id);
     }
 
@@ -101,7 +101,7 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
      */
 
     @Override
-    public GetOtherEvidenceResponse findScoringEvidenceByEvidenceId(Long id) {
+    public GetOtherEvidenceResponse findScoringEvidenceByEvidenceById(Long id) {
         return findScoringByEvidenceIdUseCase.execute(id);
     }
 
