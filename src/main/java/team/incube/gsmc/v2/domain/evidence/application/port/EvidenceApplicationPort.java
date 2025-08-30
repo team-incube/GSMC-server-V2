@@ -27,13 +27,13 @@ public interface EvidenceApplicationPort {
 
     GetEvidencesResponse findEvidenceByTitleAndType(String title, EvidenceType evidenceType);
 
-    GetActivityEvidenceResponse findActivityEvidencId(Long id);
+    GetActivityEvidenceResponse findActivityByEvidencById(Long id);
 
-    GetReadingEvidenceResponse findReadingByEvidenceId(Long id);
+    GetReadingEvidenceResponse findReadingByEvidenceById(Long id);
 
-    GetOtherEvidenceResponse findOtherEvidenceByEvidenceId(Long id);
+    GetOtherEvidenceResponse findOtherEvidenceByEvidenceById(Long id);
 
-    GetOtherEvidenceResponse findScoringEvidenceByEvidenceId(Long id);
+    GetOtherEvidenceResponse findScoringEvidenceByEvidenceById(Long id);
 
     void updateMajorEvidenceByCurrentUser(Long evidenceId, String title, String content, MultipartFile file);
 
