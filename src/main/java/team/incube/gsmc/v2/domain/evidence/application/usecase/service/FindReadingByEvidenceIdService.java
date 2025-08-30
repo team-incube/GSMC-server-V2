@@ -11,6 +11,7 @@ import team.incube.gsmc.v2.domain.evidence.presentation.data.response.GetReading
 import team.incube.gsmc.v2.domain.member.domain.Member;
 import team.incube.gsmc.v2.domain.member.domain.constant.MemberRole;
 import team.incube.gsmc.v2.global.security.jwt.application.usecase.service.CurrentMemberProvider;
+
 /**
  * 독서 증빙자료를 단일 조회하는 서비스 클래스입니다.
  * <p>
