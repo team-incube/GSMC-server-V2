@@ -260,22 +260,42 @@ public class EvidenceWebAdapter {
     public ResponseEntity<GetDraftEvidenceResponse> getCurrentDraft() {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftEvidenceByCurrentUser());
     }
-
+    /**
+     * 특정 활동 증빙자료를 조회합니다.
+     *
+     * @param evidenceId 증빙자료의 ID
+     * @return  증빙자료 정보
+     */
    @GetMapping("/activity/{evidenceId}")
    public ResponseEntity<GetActivityEvidenceResponse> getEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityEvidencId(evidenceId));
    }
-
+    /**
+     * 특정 독서 증빙자료를 조회합니다.
+     *
+     * @param evidenceId 증빙자료의 ID
+     * @return 해당 독서 증빙자료 정보
+     */
    @GetMapping("/reading/{evidenceId}")
     public ResponseEntity<GetReadingEvidenceResponse> getReadingEvidenceId(@PathVariable (value = "evidenceId")Long evidenceId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findReadingByEvidenceId(evidenceId));
     }
-
+    /**
+     * 특정 기타 증빙자료를 조회합니다.
+     *
+     * @param evidenceId 증빙자료의 ID
+     * @return 해당 기타 증빙자료 정보
+     */
     @GetMapping("/other/{evidenceId}")
     public ResponseEntity<GetOtherEvidenceResponse> getOtherEvidenceEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findOtherEvidenceByEvidenceId(evidenceId));
     }
-
+    /**
+     * 특정 채점 증빙자료를 조회합니다.
+     *
+     * @param evidenceId 증빙자료의 ID
+     * @return 해당 채점 증빙자료 정보
+     */
     @GetMapping("/scoring/{evidenceId}")
     public ResponseEntity<GetOtherEvidenceResponse> getScoringEvidenceId(@PathVariable (value = "evidenceId")Long evidenceId) {
         return  ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findScoringEvidenceByEvidenceId(evidenceId));
