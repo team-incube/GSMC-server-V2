@@ -220,6 +220,11 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 jpaQueryFactory
                         .selectFrom(activityEvidenceJpaEntity)
                         .where(activityEvidenceJpaEntity.id.eq(id))
+                        .join(evidenceJpaEntity).on(evidenceJpaEntity.id.eq(id))
+                        .fetchJoin()
+                        .join(scoreJpaEntity).on(scoreJpaEntity.id.eq(evidenceJpaEntity.id))
+                        .fetchJoin()
+                        .join(categoryJpaEntity).on(categoryJpaEntity.id.eq(scoreJpaEntity.id))
                         .fetchOne()
                 ).map(activityEvidenceMapper::toDomain).orElseThrow(ActivityEvidenceNotFountException::new);
 

@@ -42,6 +42,10 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     private final FindDraftReadingEvidenceByDraftIdUseCase findDraftReadingEvidenceUseCase;
     private final FindDraftEvidenceByCurrentUserUseCase findDraftEvidenceByCurrentUserUseCase;
     private final UpdateEvidenceFileUseCase updateEvidenceFileUseCase;
+    private final FindActivityEvidenceByEvidenceIdUseCase findActivityEvidenceByEvidenceIdUseCase;
+    private final FindReadingByEvidenceIdUseCase findReadingByEvidenceIdUseCase;
+    private final FindOtherByEvidenceIdUseCase findOtherByEvidenceIdUseCase;
+    private final FindScoringByEvideceIdUseCase findScoringByEvidenceIdUseCase;
 
     /**
      * 현재 사용자의 증빙자료를 타입별로 조회합니다.
@@ -66,6 +70,41 @@ public class EvidenceApplicationAdapter implements EvidenceApplicationPort {
     public GetEvidencesResponse findEvidenceByTitleAndType(String title, EvidenceType evidenceType) {
         return findEvidenceByTitleAndTypeUseCase.execute(title, evidenceType);
     }
+
+    /**
+     * 저장된 ID 활동 증빙자료를 조회합니다.
+     */
+    @Override
+    public GetActivityEvidenceResponse findActivityByEvidencById(Long id) {
+        return findActivityEvidenceByEvidenceIdUseCase.execute(id);
+    }
+
+    /**
+     * 저장된 ID 독서 증빙자료를 조회합니다.
+     */
+    @Override
+    public GetReadingEvidenceResponse findReadingByEvidenceById(Long id) {
+        return findReadingByEvidenceIdUseCase.execute(id);
+    }
+
+    /**
+     * 저장된 ID 기타 증빙자료를 조회합니다.
+     */
+
+    @Override
+    public GetOtherEvidenceResponse findOtherEvidenceByEvidenceById(Long id) {
+        return findOtherByEvidenceIdUseCase.execute(id);
+    }
+
+    /**
+     * 저장된 ID 기타 점수제 증빙자료를 조회합니다.
+     */
+
+    @Override
+    public GetOtherEvidenceResponse findScoringEvidenceByEvidenceById(Long id) {
+        return findScoringByEvidenceIdUseCase.execute(id);
+    }
+
 
     /**
      * 전공 활동 증빙자료를 수정합니다.
