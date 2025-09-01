@@ -1,15 +1,15 @@
-name: GSMC CD(Prod)
-
-on:
-  push:
-    branches:
-        - main
-
-env:
-  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/gsmc-server-v2
-  DOCKER_TAG: latest
-
-jobs:
+#name: GSMC CD(Prod)
+#
+#on:
+#  push:
+#    branches:
+#        - main
+#
+#env:
+#  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/gsmc-server-v2
+#  DOCKER_TAG: latest
+#
+#jobs:
 #  CD-prod:
 #    runs-on: ubuntu-latest
 #
