@@ -1,10 +1,11 @@
-package team.incube.gsmc.v2.domain.score.application.port;
+package team.incube.gsmc.v2.domain.category.application.port;
 
-import team.incube.gsmc.v2.domain.score.domain.Category;
+import team.incube.gsmc.v2.domain.category.domain.Category;
 import team.incube.gsmc.v2.global.annotation.PortDirection;
 import team.incube.gsmc.v2.global.annotation.port.Port;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 점수 분류(Category) 도메인의 영속성 계층과의 통신을 담당하는 포트 인터페이스입니다.
@@ -14,12 +15,13 @@ import java.util.List;
  * 구현체는 보통 JPA 또는 외부 시스템과 연동됩니다.
  * 주요 기능:
  * <ul>
- *   <li>{@code findCategoryByName} - 카테고리 이름으로 단건 조회</li>
  *   <li>{@code findAllCategory} - 전체 카테고리 목록 조회</li>
+ *   <li>{@code findCategoryById} - ID로 특정 카테고리 조회</li>
  * </ul>
  * @author snowykte0426
  */
 @Port(direction = PortDirection.OUTBOUND)
 public interface CategoryPersistencePort {
     List<Category> findAllCategory();
+    Optional<Category> findCategoryById(Long id);
 }

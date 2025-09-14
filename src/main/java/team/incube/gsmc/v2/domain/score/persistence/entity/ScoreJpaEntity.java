@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import team.incube.gsmc.v2.domain.category.persistence.entity.CategoryJpaEntity;
 import team.incube.gsmc.v2.domain.member.persistence.entity.MemberJpaEntity;
 
 @Entity

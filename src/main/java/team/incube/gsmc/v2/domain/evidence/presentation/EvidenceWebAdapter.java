@@ -251,7 +251,6 @@ public class EvidenceWebAdapter {
     public ResponseEntity<GetDraftReadingEvidenceResponse> getDraftReading(@PathVariable UUID draftId) {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftReadingEvidenceByDraftId(draftId));
     }
-
     /**
      * 현재 사용자의 증빙자료 임시저장을 조회합니다.
      * @return 임시저장 목록
@@ -259,5 +258,45 @@ public class EvidenceWebAdapter {
     @GetMapping("/current/draft")
     public ResponseEntity<GetDraftEvidenceResponse> getCurrentDraft() {
         return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findDraftEvidenceByCurrentUser());
+    }
+
+    /**
+     * 특정 전공 증빙자료를 조회합니다.
+     * @param evidenceId 증빙자료의 ID
+     * @return 전공 증빙자료 정보
+     */
+   @GetMapping("/activity/{evidenceId}")
+   public ResponseEntity<GetActivityEvidenceResponse> getEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findActivityByEvidencById(evidenceId));
+   }
+
+    /**
+     * 특정 독서 증빙자료를 조회합니다.
+     * @param evidenceId 증빙자료의 ID
+     * @return 해당 독서 증빙자료 정보
+     */
+   @GetMapping("/reading/{evidenceId}")
+    public ResponseEntity<GetReadingEvidenceResponse> getReadingEvidenceId(@PathVariable (value = "evidenceId")Long evidenceId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findReadingByEvidenceById(evidenceId));
+    }
+
+    /**
+     * 특정 기타 증빙자료를 조회합니다.
+     * @param evidenceId 증빙자료의 ID
+     * @return 해당 기타 증빙자료 정보
+     */
+    @GetMapping("/other/{evidenceId}")
+    public ResponseEntity<GetOtherEvidenceResponse> getOtherEvidenceEvidenceId(@PathVariable(value = "evidenceId") Long evidenceId) {
+        return ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findOtherEvidenceByEvidenceById(evidenceId));
+    }
+
+    /**
+     * 특정 기타점수제 증빙자료를 조회합니다.
+     * @param evidenceId 증빙자료의 ID
+     * @return 해당 기타점수제 증빙자료 정보
+     */
+    @GetMapping("/scoring/{evidenceId}")
+    public ResponseEntity<GetOtherEvidenceResponse> getScoringEvidenceId(@PathVariable (value = "evidenceId")Long evidenceId) {
+        return  ResponseEntity.status(HttpStatus.OK).body(evidenceApplicationPort.findScoringEvidenceByEvidenceById(evidenceId));
     }
 }

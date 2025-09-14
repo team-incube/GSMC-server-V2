@@ -19,6 +19,16 @@ spring:
   cache:
     expire-after-write: ${CACHE_EXPIRE_AFTER_WRITE:60}
     type: caffeine
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    display-request-duration: true
 management:
   endpoints:
     web:

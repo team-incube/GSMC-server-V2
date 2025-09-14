@@ -2,9 +2,9 @@ package team.incube.gsmc.v2.domain.score.application.usecase.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import team.incube.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
+import team.incube.gsmc.v2.domain.category.application.port.CategoryPersistencePort;
 import team.incube.gsmc.v2.domain.score.application.usecase.SimulateScoreUseCase;
-import team.incube.gsmc.v2.domain.score.domain.Category;
+import team.incube.gsmc.v2.domain.category.domain.Category;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
 import team.incube.gsmc.v2.global.util.SimulateScoreUtil;
 import team.incube.gsmc.v2.global.util.SnakeKebabToCamelCaseConverterUtil;

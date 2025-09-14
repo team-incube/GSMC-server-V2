@@ -25,7 +25,7 @@ import static team.incube.gsmc.v2.domain.evidence.persistence.entity.QActivityEv
 import static team.incube.gsmc.v2.domain.evidence.persistence.entity.QEvidenceJpaEntity.evidenceJpaEntity;
 import static team.incube.gsmc.v2.domain.member.persistence.entity.QMemberJpaEntity.memberJpaEntity;
 import static team.incube.gsmc.v2.domain.member.persistence.entity.QStudentDetailJpaEntity.studentDetailJpaEntity;
-import static team.incube.gsmc.v2.domain.score.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
+import static team.incube.gsmc.v2.domain.category.persistence.entity.QCategoryJpaEntity.categoryJpaEntity;
 import static team.incube.gsmc.v2.domain.score.persistence.entity.QScoreJpaEntity.scoreJpaEntity;
 
 /**
@@ -220,6 +220,11 @@ public class ActivityEvidencePersistenceAdapter implements ActivityEvidencePersi
                 jpaQueryFactory
                         .selectFrom(activityEvidenceJpaEntity)
                         .where(activityEvidenceJpaEntity.id.eq(id))
+                        .join(evidenceJpaEntity).on(evidenceJpaEntity.id.eq(id))
+                        .fetchJoin()
+                        .join(scoreJpaEntity).on(scoreJpaEntity.id.eq(evidenceJpaEntity.id))
+                        .fetchJoin()
+                        .join(categoryJpaEntity).on(categoryJpaEntity.id.eq(scoreJpaEntity.id))
                         .fetchOne()
                 ).map(activityEvidenceMapper::toDomain).orElseThrow(ActivityEvidenceNotFountException::new);
 

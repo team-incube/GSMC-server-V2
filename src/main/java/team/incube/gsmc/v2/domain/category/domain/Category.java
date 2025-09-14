@@ -1,4 +1,4 @@
-package team.incube.gsmc.v2.domain.score.domain;
+package team.incube.gsmc.v2.domain.category.domain;
 
 import lombok.Builder;
 import lombok.Getter;

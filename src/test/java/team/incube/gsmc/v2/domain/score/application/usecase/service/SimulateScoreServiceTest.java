@@ -7,8 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import team.incube.gsmc.v2.domain.score.application.port.CategoryPersistencePort;
-import team.incube.gsmc.v2.domain.score.domain.Category;
+import team.incube.gsmc.v2.domain.category.application.port.CategoryPersistencePort;
+import team.incube.gsmc.v2.domain.category.domain.Category;
 import team.incube.gsmc.v2.domain.score.presentation.data.response.GetScoreSimulateResponse;
 
 import java.util.List;

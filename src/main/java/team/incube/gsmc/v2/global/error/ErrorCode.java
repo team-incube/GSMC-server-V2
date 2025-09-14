@@ -72,6 +72,7 @@ public enum ErrorCode {
     // Activity Evidence
     ACTIVITY_EVIDENCE_NOT_FOUNT("Activity Evidence Not Found", HttpStatus.NOT_FOUND.value()),
     DRAFT_ACTIVITY_EVIDENCE_NOT_FOUND("Draft Activity Not Found", HttpStatus.NOT_FOUND.value()),
+    ACTIVITY_EVIDENCE_ACCESS_DENIED("Activity Evidence Access Denied", HttpStatus.FORBIDDEN.value()),
 
     // Other Evidence
     OTHER_EVIDENCE_NOT_FOUND("Other Evidence Not Found", HttpStatus.NOT_FOUND.value()),
